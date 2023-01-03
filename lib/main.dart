@@ -1,10 +1,13 @@
-import 'dart:ui';
-
+import 'package:dipantau_desktop_client/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await windowManager.ensureInitialized();
   const windowSize = Size(500, 500);
   const windowOptions = WindowOptions(

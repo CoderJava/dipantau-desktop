@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1053712180632-tl81l5b9abv4r55710ec6aqaa6m6bfht.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1053712180632-tl81l5b9abv4r55710ec6aqaa6m6bfht</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCqz2MN37ZWfViDxMyQ9U3jyecvRNBXkvw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1053712180632</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ysn.dipantauDesktopClient</string>
+	<key>PROJECT_ID</key>
+	<string>dipantau-bce72</string>
+	<key>STORAGE_BUCKET</key>
+	<string>dipantau-bce72.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1053712180632:ios:3e620f7cbbaf5095d2b7ed</string>
+</dict>
+</plist>
