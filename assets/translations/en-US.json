@@ -27,5 +27,10 @@
   "create_account_successfully": "Verify your email",
   "subtitle_create_account_successfully": "You're in. An email has been sent to \n{}. Verify your email and you'll\nbe ready to start working.",
   "sign_out": "Sign Out",
-  "back_to_login": "Back to Login"
+  "back_to_login": "Back to Login",
+  "sign_in_failed": "Sign in failed",
+  "user_disabled": "Sorry... This account has been disabled",
+  "user_not_found": "Sorry... We could not found your account",
+  "wrong_password_login": "Incorrect email or password",
+  "please_verify_your_email": "Please verify your email"
 }

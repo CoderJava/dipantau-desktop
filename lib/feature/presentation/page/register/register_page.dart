@@ -29,7 +29,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   var valueNotifierShowPassword = ValueNotifier<bool>(false);
   var isLoadingButton = false;
-  var isTriggerFromButtonEnter = false;
   var isIgnorePointer = false;
 
   @override
@@ -39,36 +38,48 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(24),
-          child: SizedBox(
-            width: double.infinity,
-            child: Form(
-              key: formState,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    'register'.tr(),
-                    style: Theme.of(context).textTheme.headline5,
+          child: Stack(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Form(
+                  key: formState,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Text(
+                        'register'.tr(),
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'subtitle_register'.tr(),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                              color: Colors.grey,
+                            ),
+                      ),
+                      const SizedBox(height: 24),
+                      buildWidgetTextFieldFullName(),
+                      const SizedBox(height: 24),
+                      buildWidgetTextFieldEmail(),
+                      const SizedBox(height: 24),
+                      buildWidgetTextFieldPassword(),
+                      const SizedBox(height: 24),
+                      buildWidgetButtonRegister(),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'subtitle_register'.tr(),
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                          color: Colors.grey,
-                        ),
-                  ),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldFullName(),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldEmail(),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldPassword(),
-                  const SizedBox(height: 24),
-                  buildWidgetButtonRegister(),
-                ],
+                ),
               ),
-            ),
+              IconButton(
+                icon: const Icon(Icons.keyboard_backspace),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () {
+                  context.pop();
+                },
+              ),
+            ],
           ),
         ),
       ),
@@ -100,16 +111,15 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
-        if (value != null && value.isEmpty) {
-          if (isTriggerFromButtonEnter) {
+        if (value != null) {
+          if (value.isEmpty) {
             return 'invalid_email'.tr();
           } else {
-            return null;
+            final isEmailValid = helper.checkValidationEmail(value);
+            return !isEmailValid ? 'invalid_email'.tr() : null;
           }
-        } else {
-          final isEmailValid = helper.checkValidationEmail(value ?? '');
-          return !isEmailValid ? 'invalid_email'.tr() : null;
         }
+        return null;
       },
       textInputAction: TextInputAction.next,
     );
@@ -183,7 +193,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> doCreateAccount() async {
-    isTriggerFromButtonEnter = true;
     if (formState.currentState!.validate()) {
       try {
         setState(() {
