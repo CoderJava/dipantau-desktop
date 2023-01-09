@@ -1,13 +1,28 @@
+import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/firebase_options.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Easy localization
+  await EasyLocalization.ensureInitialized();
+
+  // Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Window manager
   await windowManager.ensureInitialized();
   const windowSize = Size(500, 500);
   const windowOptions = WindowOptions(
@@ -19,6 +34,7 @@ void main() async {
   );
   windowManager.setMinimumSize(windowSize);
   windowManager.setMaximumSize(windowSize);
+  // windowManager.setPosition(const Offset(0, 0)); // Comment jika mode production
   windowManager.waitUntilReadyToShow(
     windowOptions,
     () async {
@@ -26,67 +42,75 @@ void main() async {
       await windowManager.focus();
     },
   );
-  runApp(const MyApp());
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en', 'US'),
+      ],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en', 'US'),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        name: SplashPage.routeName,
+        builder: (context, state) => const SplashPage(),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      GoRoute(
+        path: HomePage.routePath,
+        name: HomePage.routeName,
+        builder: (context, state) => const HomePage(),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      GoRoute(
+        path: LoginPage.routePath,
+        name: LoginPage.routeName,
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: RegisterPage.routePath,
+        name: RegisterPage.routeName,
+        builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: RegisterSuccessPage.routePath,
+        name: RegisterSuccessPage.routeName,
+        builder: (context, state) => RegisterSuccessPage(
+          email: state.queryParams['email'] as String,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+    ],
+  );
+
+  MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: 'Dipantau',
+      theme: buildTheme(),
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+
+  ThemeData buildTheme() {
+    final baseTheme = ThemeData(
+      primarySwatch: Colors.blue,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      useMaterial3: false,
+    );
+    return baseTheme.copyWith(
+      textTheme: GoogleFonts.ubuntuTextTheme(baseTheme.textTheme),
     );
   }
 }
