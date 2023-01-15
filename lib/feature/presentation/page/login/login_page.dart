@@ -2,6 +2,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -99,10 +100,16 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         InkWell(
           onTap: () {
-            // TODO: Buat fitur reset password
+            final email = controllerEmail.text.trim();
+            context.pushNamed(
+              ResetPasswordPage.routeName,
+              queryParams: {
+                'email': email,
+              },
+            );
           },
           child: Text(
-            'reset_password'.tr(),
+            'forgot_password'.tr(),
             style: TextStyle(color: Theme.of(context).primaryColor),
           ),
         ),

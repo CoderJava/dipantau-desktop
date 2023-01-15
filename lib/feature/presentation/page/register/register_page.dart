@@ -38,48 +38,38 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(24),
-          child: Stack(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: Form(
-                  key: formState,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text(
-                        'register'.tr(),
-                        style: Theme.of(context).textTheme.headline5,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'subtitle_register'.tr(),
-                        style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                              color: Colors.grey,
-                            ),
-                      ),
-                      const SizedBox(height: 24),
-                      buildWidgetTextFieldFullName(),
-                      const SizedBox(height: 24),
-                      buildWidgetTextFieldEmail(),
-                      const SizedBox(height: 24),
-                      buildWidgetTextFieldPassword(),
-                      const SizedBox(height: 24),
-                      buildWidgetButtonRegister(),
-                    ],
+          child: SizedBox(
+            width: double.infinity,
+            child: Form(
+              key: formState,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'register'.tr(),
+                    style: Theme.of(context).textTheme.headline5,
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'subtitle_register'.tr(),
+                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                          color: Colors.grey,
+                        ),
+                  ),
+                  const SizedBox(height: 24),
+                  buildWidgetTextFieldFullName(),
+                  const SizedBox(height: 24),
+                  buildWidgetTextFieldEmail(),
+                  const SizedBox(height: 24),
+                  buildWidgetTextFieldPassword(),
+                  const SizedBox(height: 24),
+                  buildWidgetButtonRegister(),
+                  const SizedBox(height: 24),
+                  buildWidgetButtonBackToLogin(),
+                ],
               ),
-              IconButton(
-                icon: const Icon(Icons.keyboard_backspace),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () {
-                  context.pop();
-                },
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -199,7 +189,6 @@ class _RegisterPageState extends State<RegisterPage> {
           isIgnorePointer = true;
           isLoadingButton = true;
         });
-        await Future.delayed(const Duration(seconds: 2));
         final email = controllerEmail.text.trim();
         final password = controllerPassword.text.trim();
         final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -239,5 +228,27 @@ class _RegisterPageState extends State<RegisterPage> {
         });
       }
     }
+  }
+
+  Widget buildWidgetButtonBackToLogin() {
+    return TextButton(
+      onPressed: () => context.pop(),
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.grey[700],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.keyboard_backspace,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'back_to_login'.tr(),
+          ),
+        ],
+      ),
+    );
   }
 }

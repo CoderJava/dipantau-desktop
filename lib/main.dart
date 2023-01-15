@@ -2,6 +2,8 @@ import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/firebase_options.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -83,6 +85,20 @@ class MyApp extends StatelessWidget {
         name: RegisterSuccessPage.routeName,
         builder: (context, state) => RegisterSuccessPage(
           email: state.queryParams['email'] as String,
+        ),
+      ),
+      GoRoute(
+        path: ResetPasswordPage.routePath,
+        name: ResetPasswordPage.routeName,
+        builder: (context, state) => ResetPasswordPage(
+          email: state.queryParams['email'],
+        ),
+      ),
+      GoRoute(
+        path: ResetPasswordSuccessPage.routePath,
+        name: ResetPasswordSuccessPage.routeName,
+        builder: (context, state) => ResetPasswordSuccessPage(
+          email: state.queryParams['email'] ?? '',
         ),
       ),
     ],
