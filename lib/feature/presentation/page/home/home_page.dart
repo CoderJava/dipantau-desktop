@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+// TODO: Lanjutkan di sini untuk membuat tampilan home_page.dart
 class HomePage extends StatelessWidget {
   static const routePath = '/home-page';
   static const routeName = 'home';
