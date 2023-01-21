@@ -33,10 +33,16 @@ class ItemProjectResponse extends Equatable {
   final int? id;
   @JsonKey(name: 'name')
   final String? name;
+  @JsonKey(name: 'tracked_in_seconds')
+  final int? trackedInSeconds;
+  @JsonKey(name: 'list_tasks')
+  final List<ItemTaskProjectResponse> listTasks;
 
   ItemProjectResponse({
     required this.id,
     required this.name,
+    required this.trackedInSeconds,
+    required this.listTasks,
   });
 
   factory ItemProjectResponse.fromJson(Map<String, dynamic> json) => _$ItemProjectResponseFromJson(json);
@@ -45,12 +51,46 @@ class ItemProjectResponse extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
+        name,
+        trackedInSeconds,
+        listTasks,
+      ];
+
+  @override
+  String toString() {
+    return 'ItemProjectResponse{id: $id, name: $name, trackedInSeconds: $trackedInSeconds, listTasks}';
+  }
+}
+
+@JsonSerializable()
+class ItemTaskProjectResponse extends Equatable {
+  @JsonKey(name: 'id')
+  final int? id;
+  @JsonKey(name: 'name')
+  final String? name;
+  @JsonKey(name: 'tracked_in_seconds')
+  final int? trackedInSeconds;
+
+  ItemTaskProjectResponse({
+    required this.id,
+    required this.name,
+    required this.trackedInSeconds,
+  });
+
+  factory ItemTaskProjectResponse.fromJson(Map<String, dynamic> json) => _$ItemTaskProjectResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ItemTaskProjectResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
     id,
     name,
+    trackedInSeconds,
   ];
 
   @override
   String toString() {
-    return 'ItemProjectResponse{id: $id, name: $name}';
+    return 'ItemTaskProjectResponse{id: $id, name: $name, trackedInSeconds: $trackedInSeconds}';
   }
 }
