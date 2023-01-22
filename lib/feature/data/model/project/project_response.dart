@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'list_projects_response.g.dart';
+part 'project_response.g.dart';
 
 @JsonSerializable()
-class ListProjectsResponse extends Equatable {
+class ProjectResponse extends Equatable {
   @JsonKey(name: 'data')
   final List<ItemProjectResponse> data;
 
-  ListProjectsResponse({
+  ProjectResponse({
     required this.data,
   });
 
-  factory ListProjectsResponse.fromJson(Map<String, dynamic> json) => _$ListProjectsResponseFromJson(json);
+  factory ProjectResponse.fromJson(Map<String, dynamic> json) => _$ProjectResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ListProjectsResponseToJson(this);
+  Map<String, dynamic> toJson() => _$ProjectResponseToJson(this);
 
   @override
   List<Object?> get props => [
@@ -23,7 +23,7 @@ class ListProjectsResponse extends Equatable {
 
   @override
   String toString() {
-    return 'ListProjectsResponse{data: $data}';
+    return 'ProjectResponse{data: $data}';
   }
 }
 
