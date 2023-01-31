@@ -83,10 +83,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Widget buildWidgetTextFieldEmail() {
     return TextFormField(
       controller: controllerEmail,
-      decoration: InputDecoration(
+      decoration: widgetHelper.setDefaultTextFieldDecoration(
         labelText: 'email'.tr(),
-        isDense: true,
-        border: const OutlineInputBorder(),
       ),
       keyboardType: TextInputType.emailAddress,
       validator: (value) {

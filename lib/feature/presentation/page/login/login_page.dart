@@ -184,10 +184,8 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context, bool isShowPassword, _) {
         return TextFormField(
           controller: controllerPassword,
-          decoration: InputDecoration(
+          decoration: widgetHelper.setDefaultTextFieldDecoration(
             labelText: 'password'.tr(),
-            isDense: true,
-            border: const OutlineInputBorder(),
             suffixIcon: InkWell(
               onTap: () {
                 valueNotifierShowPassword.value = !valueNotifierShowPassword.value;
@@ -211,10 +209,8 @@ class _LoginPageState extends State<LoginPage> {
   TextFormField buildWidgetTextFieldEmail() {
     return TextFormField(
       controller: controllerEmail,
-      decoration: InputDecoration(
+      decoration: widgetHelper.setDefaultTextFieldDecoration(
         labelText: 'email'.tr(),
-        isDense: true,
-        border: const OutlineInputBorder(),
       ),
       keyboardType: TextInputType.emailAddress,
       validator: (value) {

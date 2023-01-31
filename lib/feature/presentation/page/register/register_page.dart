@@ -81,10 +81,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget buildWidgetTextFieldFullName() {
     return TextFormField(
       controller: controllerFullname,
-      decoration: InputDecoration(
+      decoration: widgetHelper.setDefaultTextFieldDecoration(
         labelText: 'full_name'.tr(),
-        isDense: true,
-        border: const OutlineInputBorder(),
       ),
       validator: (value) {
         return value == null || value.isEmpty ? 'full_name_is_required'.tr() : null;
@@ -96,10 +94,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget buildWidgetTextFieldEmail() {
     return TextFormField(
       controller: controllerEmail,
-      decoration: InputDecoration(
+      decoration: widgetHelper.setDefaultTextFieldDecoration(
         labelText: 'email'.tr(),
-        isDense: true,
-        border: const OutlineInputBorder(),
       ),
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
@@ -123,10 +119,8 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (BuildContext context, bool isShowPassword, _) {
         return TextFormField(
           controller: controllerPassword,
-          decoration: InputDecoration(
+          decoration: widgetHelper.setDefaultTextFieldDecoration(
             labelText: 'password'.tr(),
-            isDense: true,
-            border: const OutlineInputBorder(),
             suffixIcon: InkWell(
               onTap: () {
                 valueNotifierShowPassword.value = !valueNotifierShowPassword.value;

@@ -11,4 +11,16 @@ class WidgetHelper {
       ),
     );
   }
+
+  InputDecoration setDefaultTextFieldDecoration({
+    String? labelText,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      isDense: true,
+      border: const OutlineInputBorder(),
+      suffixIcon: suffixIcon,
+    );
+  }
 }
