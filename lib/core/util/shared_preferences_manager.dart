@@ -4,6 +4,7 @@ class SharedPreferencesManager {
   static late SharedPreferences _sharedPreferences;
 
   static const keyFullName = 'full_name';
+  static const keyEmail = 'email';
 
   SharedPreferencesManager();
 
