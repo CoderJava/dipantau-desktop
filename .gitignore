@@ -46,3 +46,10 @@ app.*.map.json
 # Generator
 *.g.dart
 *.mocks.dart
+
+# Report test coverage
+/coverage/
+
+# iOS
+/ios/Podfile.lock
+/ios/build/
