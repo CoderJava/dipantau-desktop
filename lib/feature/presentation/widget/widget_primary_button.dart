@@ -28,9 +28,7 @@ class WidgetPrimaryButton extends StatelessWidget {
     return const SizedBox(
       width: 24,
       height: 24,
-      child: WidgetCustomCircularProgressIndicator(
-        color: Colors.white,
-      ),
+      child: WidgetCustomCircularProgressIndicator(),
     );
   }
 }
