@@ -36,39 +36,41 @@ class _RegisterPageState extends State<RegisterPage> {
     return IgnorePointer(
       ignoring: isIgnorePointer,
       child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(24),
-          child: SizedBox(
-            width: double.infinity,
-            child: Form(
-              key: formState,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
+        body: SizedBox(
+          width: double.infinity,
+          child: Form(
+            key: formState,
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                Center(
+                  child: Text(
                     'register'.tr(),
                     style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
+                ),
+                const SizedBox(height: 8),
+                Center(
+                  child: Text(
                     'subtitle_register'.tr(),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey,
                         ),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldFullName(),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldEmail(),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldPassword(),
-                  const SizedBox(height: 24),
-                  buildWidgetButtonRegister(),
-                  const SizedBox(height: 24),
-                  buildWidgetButtonBackToLogin(),
-                ],
-              ),
+                ),
+                const SizedBox(height: 24),
+                buildWidgetTextFieldFullName(),
+                const SizedBox(height: 24),
+                buildWidgetTextFieldEmail(),
+                const SizedBox(height: 24),
+                buildWidgetTextFieldPassword(),
+                const SizedBox(height: 24),
+                buildWidgetButtonRegister(),
+                const SizedBox(height: 24),
+                buildWidgetButtonBackToLogin(),
+              ],
             ),
           ),
         ),
