@@ -1,0 +1,44 @@
+part of 'home_bloc.dart';
+
+abstract class HomeState extends Equatable {
+  const HomeState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class InitialHomeState extends HomeState {}
+
+class LoadingHomeState extends HomeState {}
+
+class FailureHomeState extends HomeState {
+  final String errorMessage;
+
+  FailureHomeState({required this.errorMessage});
+
+  @override
+  List<Object?> get props => [
+    errorMessage,
+  ];
+
+  @override
+  String toString() {
+    return 'FailureHomeState{errorMessage: $errorMessage}';
+  }
+}
+
+class SuccessLoadDataProjectHomeState extends HomeState {
+  final ProjectResponse project;
+
+  SuccessLoadDataProjectHomeState({required this.project});
+
+  @override
+  List<Object?> get props => [
+    project,
+  ];
+
+  @override
+  String toString() {
+    return 'SuccessLoadDataProjectHomeState{project: $project}';
+  }
+}
