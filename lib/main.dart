@@ -1,3 +1,4 @@
+import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
@@ -6,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/reset_password
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/firebase_options.dart';
+import 'package:dipantau_desktop_client/injection_container.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +25,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Service locator
+  await di.init();
 
   // Window manager
   await windowManager.ensureInitialized();
@@ -43,6 +48,13 @@ void main() async {
       await windowManager.show();
       await windowManager.focus();
     },
+  );
+
+  // Flavor config
+  FlavorConfig(
+    values: FlavorValues(
+      baseUrl: 'https://api.dipantau.com', // TODO: Set domain API
+    ),
   );
 
   runApp(
