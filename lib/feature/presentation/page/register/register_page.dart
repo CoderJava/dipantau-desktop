@@ -48,12 +48,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   Text(
                     'register'.tr(),
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'subtitle_register'.tr(),
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey,
                         ),
                   ),

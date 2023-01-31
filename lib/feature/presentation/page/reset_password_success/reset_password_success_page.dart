@@ -42,19 +42,19 @@ class ResetPasswordSuccessPage extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 'reset_password_successfully'.tr(),
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
               Text(
                 'subtitle_reset_password_successfully'.tr(),
-                style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
                 ),
                 textAlign: TextAlign.center,
               ),
               Text(
                 email,
-                style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
               ),

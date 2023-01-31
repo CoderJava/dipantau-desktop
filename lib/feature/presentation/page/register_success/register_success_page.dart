@@ -42,7 +42,7 @@ class RegisterSuccessPage extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 'create_account_successfully'.tr(),
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
               Text(
@@ -51,7 +51,7 @@ class RegisterSuccessPage extends StatelessWidget {
                     email,
                   ],
                 ),
-                style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
                 textAlign: TextAlign.center,

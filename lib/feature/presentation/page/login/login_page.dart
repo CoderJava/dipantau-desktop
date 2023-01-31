@@ -46,12 +46,12 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Text(
                     'login'.tr(),
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'subtitle_login'.tr(),
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey,
                         ),
                   ),
