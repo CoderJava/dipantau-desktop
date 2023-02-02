@@ -10,9 +10,11 @@ class WidgetCustomCircularProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircularProgressIndicator(
-      strokeWidth: 1,
-      color: color,
+    return Center(
+      child: CircularProgressIndicator(
+        strokeWidth: 1,
+        color: color,
+      ),
     );
   }
 }
