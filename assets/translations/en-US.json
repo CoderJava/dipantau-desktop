@@ -37,5 +37,12 @@
   "reset_password": "Reset Password",
   "reset_password_failed": "Reset password failed",
   "reset_password_successfully": "Reset Password Successfully",
-  "subtitle_reset_password_successfully": "We sent a password reset link to"
+  "subtitle_reset_password_successfully": "We sent a password reset link to",
+  "choose_project": "Choose project",
+  "tasks": {
+    "zero": "Task",
+    "one": "Task ({})",
+    "many": "Tasks ({})",
+    "other": "Tasks ({})"
+  }
 }
