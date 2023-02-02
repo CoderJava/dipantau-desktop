@@ -1,0 +1,78 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Career Concept Design",
+      "tracked_in_seconds": 3729,
+      "list_tasks": [
+        {
+          "id": 1,
+          "name": "Prepare mindmap",
+          "tracked_in_seconds": 1850
+        },
+        {
+          "id": 2,
+          "name": "User research",
+          "tracked_in_seconds": 1050
+        },
+        {
+          "id": 3,
+          "name": "Discuss project with client",
+          "tracked_in_seconds": 550
+        },
+        {
+          "id": 4,
+          "name": "Wireframing",
+          "tracked_in_seconds": 279
+        },
+        {
+          "id": 5,
+          "name": "Animation",
+          "tracked_in_seconds": 0
+        },
+        {
+          "id": 6,
+          "name": "Design icons",
+          "tracked_in_seconds": 0
+        },
+        {
+          "id": 7,
+          "name": "Create prototype",
+          "tracked_in_seconds": 0
+        },
+        {
+          "id": 8,
+          "name": "Copywriting english",
+          "tracked_in_seconds": 0
+        },
+        {
+          "id": 9,
+          "name": "Create mockup",
+          "tracked_in_seconds": 0
+        },
+        {
+          "id": 10,
+          "name": "Design sprint",
+          "tracked_in_seconds": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Prototyping",
+      "tracked_in_seconds": 2900,
+      "list_tasks": [
+        {
+          "id": 11,
+          "name": "Prepare mindmap",
+          "tracked_in_seconds": 1850
+        },
+        {
+          "id": 12,
+          "name": "User research",
+          "tracked_in_seconds": 1050
+        }
+      ]
+    }
+  ]
+}
