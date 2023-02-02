@@ -1,9 +1,11 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
+import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +24,11 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
-  final helper = Helper();
+  final helper = sl<Helper>();
   final valueNotifierShowPassword = ValueNotifier<bool>(false);
   final formState = GlobalKey<FormState>();
   final widgetHelper = WidgetHelper();
+  final sharedPreferencesManager = sl<SharedPreferencesManager>();
 
   var isLoading = false;
 
@@ -35,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       ignoring: isLoading,
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
           child: SizedBox(
             width: double.infinity,
             child: Form(
@@ -155,6 +158,7 @@ class _LoginPageState extends State<LoginPage> {
             widgetHelper.showSnackBar(context, 'please_verify_your_email'.tr());
           }
         } else {
+          await sharedPreferencesManager.putString(SharedPreferencesManager.keyEmail, email);
           if (mounted) {
             context.goNamed(HomePage.routeName);
           }

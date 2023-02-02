@@ -3,6 +3,7 @@ import 'package:dipantau_desktop_client/core/util/validator_password.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
+import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
   final formState = GlobalKey<FormState>();
-  final helper = Helper();
+  final helper = sl<Helper>();
   final validatorPassword = ValidatorPassword();
   final widgetHelper = WidgetHelper();
 
@@ -41,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Form(
             key: formState,
             child: ListView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
               children: [
                 Center(
                   child: Text(

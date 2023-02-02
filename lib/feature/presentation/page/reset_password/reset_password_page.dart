@@ -2,6 +2,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
+import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -24,7 +25,7 @@ class ResetPasswordPage extends StatefulWidget {
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final formState = GlobalKey<FormState>();
-  final helper = Helper();
+  final helper = sl<Helper>();
   final widgetHelper = WidgetHelper();
   final controllerEmail = TextEditingController();
 
@@ -44,7 +45,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       ignoring: isLoading,
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
           child: SizedBox(
             width: double.infinity,
             child: Form(

@@ -1,5 +1,7 @@
+import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
+import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -10,16 +12,18 @@ class RegisterSuccessPage extends StatelessWidget {
 
   final String email;
 
-  const RegisterSuccessPage({
+  RegisterSuccessPage({
     Key? key,
     required this.email,
   }) : super(key: key);
+
+  final helper = sl<Helper>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
         child: SizedBox(
           width: double.infinity,
           child: Column(
