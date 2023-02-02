@@ -1,4 +1,5 @@
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
@@ -8,6 +9,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/reset_password
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/firebase_options.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
+import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -30,12 +32,13 @@ void main() async {
   await di.init();
 
   // Window manager
+  final helper = sl<Helper>();
+  final defaultWindowSize = helper.getDefaultWindowSize;
   await windowManager.ensureInitialized();
-  const windowSize = Size(500, 500);
-  const windowOptions = WindowOptions(
+  final windowSize = Size(defaultWindowSize, defaultWindowSize);
+  final windowOptions = WindowOptions(
     size: windowSize,
     center: true,
-    backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.normal,
   );
@@ -135,7 +138,7 @@ class MyApp extends StatelessWidget {
     final baseTheme = ThemeData(
       primarySwatch: Colors.blue,
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      useMaterial3: false,
+      useMaterial3: true,
     );
     return baseTheme.copyWith(
       textTheme: GoogleFonts.ubuntuTextTheme(baseTheme.textTheme),
