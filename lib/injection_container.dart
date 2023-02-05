@@ -8,6 +8,7 @@ import 'package:dipantau_desktop_client/feature/data/repository/general/general_
 import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +18,12 @@ Future<void> init() async {
   // bloc
   sl.registerFactory(
     () => HomeBloc(
+      sharedPreferencesManager: sl(),
+      getProject: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => ProjectBloc(
       sharedPreferencesManager: sl(),
       getProject: sl(),
     ),
