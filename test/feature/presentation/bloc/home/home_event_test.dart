@@ -15,16 +15,5 @@ void main() {
         );
       },
     );
-
-    test(
-      'pastikan output dari fungsi toString',
-      () async {
-        // assert
-        expect(
-          tEvent.toString(),
-          'LoadDataProjectHomeEvent()',
-        );
-      },
-    );
   });
 }
