@@ -44,5 +44,6 @@
     "one": "Task ({})",
     "many": "Tasks ({})",
     "other": "Tasks ({})"
-  }
+  },
+  "no_data_to_display": "No data to display"
 }
