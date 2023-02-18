@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/method_channel_helper.dart';
+import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
@@ -15,6 +16,7 @@ import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -38,12 +40,16 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final methodChannelHelper = MethodChannelHelper();
   final valueNotifierTotalTracked = ValueNotifier<int>(0);
   final valueNotifierTaskTracked = ValueNotifier<int>(0);
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final notificationHelper = sl<NotificationHelper>();
+  final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
 
   DetailProjectResponse? selectedProject;
   DetailTaskResponse? selectedTask;
   var isTimerStart = false;
   var isWindowVisible = true;
   Timer? timer;
+  var countTimerInSeconds = 0;
 
   @override
   void setState(VoidCallback fn) {
@@ -59,6 +65,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     setTrayIcon();
     setTrayTitle();
     setTrayContextMenu();
+    notificationHelper.requestPermissionNotification();
     doLoadData();
     super.initState();
   }
@@ -271,8 +278,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             selectedTask = null;
             isTimerStart = !isTimerStart;
             if (isTimerStart) {
+              resetCountTimer();
               startTimer();
             } else {
+              doTakeScreenshot();
               stopTimer();
             }
             setState(() {});
@@ -291,7 +300,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             // TODO: Buat fitur add new task
           },
           style: ElevatedButton.styleFrom(
@@ -305,6 +314,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         ),
       ],
     );
+  }
+
+  void doTakeScreenshot() {
+    methodChannelHelper.doTakeScreenshot();
+    notificationHelper.showScreenshotTakenNotification();
   }
 
   Widget buildWidgetListTasks() {
@@ -366,6 +380,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       selectedTask = null;
                       isTimerStart = false;
                       itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
+                      doTakeScreenshot();
                       stopTimer();
                     }
                     setState(() {});
@@ -391,7 +406,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                             if (!isStart) {
                               return child ?? Container();
                             }
-                            final strTrackingTimeTask = helper.convertTrackingTimeToString(valueNotifierTaskTracked.value);
+                            final strTrackingTimeTask =
+                                helper.convertTrackingTimeToString(valueNotifierTaskTracked.value);
                             return Text(
                               strTrackingTimeTask,
                               style: TextStyle(
@@ -427,6 +443,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
+  void resetCountTimer() {
+    countTimerInSeconds = 0;
+  }
+
   void startTimer() {
     stopTimer();
     increaseTimerTray();
@@ -437,8 +457,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   void increaseTimerTray() {
     valueNotifierTotalTracked.value += 1;
+    countTimerInSeconds += 1;
     if (selectedTask != null) {
       valueNotifierTaskTracked.value += 1;
+    }
+    if (countTimerInSeconds == intervalScreenshot) {
+      resetCountTimer();
+      doTakeScreenshot();
     }
     final strTrackingTimeTemp = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
     setTrayTitle(title: strTrackingTimeTemp);
