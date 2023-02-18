@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -10,7 +12,7 @@ class DetailTaskResponse extends Equatable {
   @JsonKey(name: 'name')
   final String? name;
   @JsonKey(name: 'tracked_in_seconds')
-  final int? trackedInSeconds;
+  int? trackedInSeconds;
 
   DetailTaskResponse({
     required this.id,
