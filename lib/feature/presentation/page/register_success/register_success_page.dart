@@ -1,5 +1,6 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/widget/widget_icon_circle.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -31,18 +32,7 @@ class RegisterSuccessPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).primaryColor),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check,
-                  color: Theme.of(context).primaryColor,
-                  size: 32,
-                ),
-              ),
+              const WidgetIconCircle(iconData: Icons.check),
               const SizedBox(height: 24),
               Text(
                 'create_account_successfully'.tr(),
