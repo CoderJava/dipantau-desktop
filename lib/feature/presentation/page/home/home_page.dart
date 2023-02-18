@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
+import 'package:dipantau_desktop_client/core/util/method_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final keyTrayShowTimer = 'tray-show-timer';
   final keyTrayHideTimer = 'tray-hide-timer';
   final keyTrayQuitApp = 'tray-quit-app';
+  final methodChannelHelper = MethodChannelHelper();
 
   DetailProjectResponse? selectedProject;
   DetailTaskResponse? selectedTask;
@@ -429,7 +431,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       windowManager.hide();
       isWindowVisible = false;
     } else if (keyMenuItem == keyTrayQuitApp) {
-      // TODO: Buat fitur quit app dengan cara tekan menu "Quit app"
+      methodChannelHelper.doQuitApp();
     }
   }
 }
