@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dipantau_desktop_client/core/util/helper.dart';
@@ -35,12 +36,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final keyTrayHideTimer = 'tray-hide-timer';
   final keyTrayQuitApp = 'tray-quit-app';
   final methodChannelHelper = MethodChannelHelper();
+  final valueNotifierTotalTracked = ValueNotifier<int>(0);
+  final valueNotifierTaskTracked = ValueNotifier<int>(0);
 
   DetailProjectResponse? selectedProject;
   DetailTaskResponse? selectedTask;
-  var totalTrackedInSeconds = 0;
   var isTimerStart = false;
   var isWindowVisible = true;
+  Timer? timer;
 
   @override
   void setState(VoidCallback fn) {
@@ -127,7 +130,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 selectedProject = listProjects.first;
               }
               if (selectedProject != null) {
-                totalTrackedInSeconds = selectedProject?.trackedInSeconds ?? 0;
+                valueNotifierTotalTracked.value = selectedProject?.trackedInSeconds ?? 0;
+                final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
+                setTrayTitle(title: strTotalTrackingTime);
+              } else {
+                setTrayTitle();
               }
             }
           },
@@ -191,7 +198,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 ) as DetailProjectResponse?;
                 if (chooseProject != null) {
                   selectedProject = chooseProject;
-                  totalTrackedInSeconds = selectedProject?.trackedInSeconds ?? 0;
+                  valueNotifierTotalTracked.value = selectedProject?.trackedInSeconds ?? 0;
                   setState(() {});
                 }
               },
@@ -239,17 +246,16 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   Widget buildWidgetTimer() {
-    final trackingTime = helper.convertSecondToTrackingTime(totalTrackedInSeconds);
-    final hour = trackingTime.hour;
-    final minute = trackingTime.minute;
-    final second = trackingTime.second;
-    final strHour = hour < 10 ? '0$hour' : hour.toString();
-    final strMinute = minute < 10 ? '0$minute' : minute.toString();
-    final strSecond = second < 10 ? '0$second' : second.toString();
-    return Text(
-      '$strHour:$strMinute:$strSecond',
-      style: Theme.of(context).textTheme.displayMedium,
-      textAlign: TextAlign.center,
+    return ValueListenableBuilder(
+      valueListenable: valueNotifierTotalTracked,
+      builder: (BuildContext context, int value, _) {
+        final strTrackingTime = helper.convertTrackingTimeToString(value);
+        return Text(
+          strTrackingTime,
+          style: Theme.of(context).textTheme.displayMedium,
+          textAlign: TextAlign.center,
+        );
+      },
     );
   }
 
@@ -259,8 +265,16 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       children: [
         ElevatedButton(
           onPressed: () {
-            isTimerStart = !isTimerStart;
+            if (selectedTask != null) {
+              selectedTask?.trackedInSeconds = valueNotifierTaskTracked.value;
+            }
             selectedTask = null;
+            isTimerStart = !isTimerStart;
+            if (isTimerStart) {
+              startTimer();
+            } else {
+              stopTimer();
+            }
             setState(() {});
           },
           style: ElevatedButton.styleFrom(
@@ -334,24 +348,25 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 final itemTask = listTasks[index];
-                final trackingTime = helper.convertSecondToTrackingTime(itemTask.trackedInSeconds ?? 0);
-                final hour = trackingTime.hour;
-                final minute = trackingTime.minute;
-                final second = trackingTime.second;
-                final strHour = hour < 10 ? '0$hour' : hour.toString();
-                final strMinute = minute < 10 ? '0$minute' : minute.toString();
-                final strSecond = second < 10 ? '0$second' : second.toString();
+                final strTrackingTime = helper.convertTrackingTimeToString(itemTask.trackedInSeconds ?? 0);
                 final isStart = (itemTask.id ?? -1) == (selectedTask?.id ?? -2);
                 final activeColor = Theme.of(context).primaryColor;
+
                 return InkWell(
                   onTap: () {
-                    // TODO: Buat fitur start / stop task
                     if (selectedTask != itemTask) {
+                      if (selectedTask != null) {
+                        selectedTask!.trackedInSeconds = valueNotifierTaskTracked.value;
+                      }
                       selectedTask = itemTask;
                       isTimerStart = true;
+                      valueNotifierTaskTracked.value = itemTask.trackedInSeconds ?? 0;
+                      startTimer();
                     } else {
                       selectedTask = null;
                       isTimerStart = false;
+                      itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
+                      stopTimer();
                     }
                     setState(() {});
                   },
@@ -370,10 +385,25 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Text(
-                          '$strHour:$strMinute:$strSecond',
-                          style: TextStyle(
-                            color: isStart ? activeColor : Colors.grey,
+                        ValueListenableBuilder(
+                          valueListenable: valueNotifierTaskTracked,
+                          builder: (BuildContext context, int value, Widget? child) {
+                            if (!isStart) {
+                              return child ?? Container();
+                            }
+                            final strTrackingTimeTask = helper.convertTrackingTimeToString(valueNotifierTaskTracked.value);
+                            return Text(
+                              strTrackingTimeTask,
+                              style: TextStyle(
+                                color: activeColor,
+                              ),
+                            );
+                          },
+                          child: Text(
+                            strTrackingTime,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -395,6 +425,29 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         ),
       ],
     );
+  }
+
+  void startTimer() {
+    stopTimer();
+    increaseTimerTray();
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      increaseTimerTray();
+    });
+  }
+
+  void increaseTimerTray() {
+    valueNotifierTotalTracked.value += 1;
+    if (selectedTask != null) {
+      valueNotifierTaskTracked.value += 1;
+    }
+    final strTrackingTimeTemp = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
+    setTrayTitle(title: strTrackingTimeTemp);
+  }
+
+  void stopTimer() {
+    if (timer != null && timer!.isActive) {
+      timer!.cancel();
+    }
   }
 
   @override
