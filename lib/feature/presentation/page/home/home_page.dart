@@ -1,7 +1,9 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
@@ -22,6 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final homeBloc = sl<HomeBloc>();
   final helper = sl<Helper>();
+  final widgetHelper = WidgetHelper();
 
   DetailProjectResponse? selectedProject;
   DetailTaskResponse? selectedTask;
@@ -108,8 +111,24 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(8),
         onTap: isTimerStart
             ? null
-            : () {
-                // TODO: Buat fitur pilih project (lanjutkan di sini)
+            : () async {
+                final selectedProjectId = selectedProject?.id;
+                final chooseProject = await showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  enableDrag: false,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  builder: (context) => WidgetChooseProject(
+                    defaultSelectedProjectId: selectedProjectId,
+                  ),
+                ) as DetailProjectResponse?;
+                if (chooseProject != null) {
+                  selectedProject = chooseProject;
+                  totalTrackedInSeconds = selectedProject?.trackedInSeconds ?? 0;
+                  setState(() {});
+                }
               },
         child: Container(
           width: double.infinity,
@@ -213,6 +232,9 @@ class _HomePageState extends State<HomePage> {
     final now = DateTime.now();
     final formattedNow = helper.setDateFormat('EEE, dd MMM yyyy').format(now);
     final listTasks = selectedProject?.listTasks ?? [];
+    if (listTasks.isEmpty) {
+      return WidgetError(message: 'no_data_to_display'.tr());
+    }
     return Column(
       children: [
         Row(
