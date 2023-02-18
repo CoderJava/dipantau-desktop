@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
@@ -10,6 +13,8 @@ import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tray_manager/tray_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
 class HomePage extends StatefulWidget {
   static const routePath = '/home-page';
@@ -21,15 +26,19 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final homeBloc = sl<HomeBloc>();
   final helper = sl<Helper>();
   final widgetHelper = WidgetHelper();
+  final keyTrayShowTimer = 'tray-show-timer';
+  final keyTrayHideTimer = 'tray-hide-timer';
+  final keyTrayQuitApp = 'tray-quit-app';
 
   DetailProjectResponse? selectedProject;
   DetailTaskResponse? selectedTask;
   var totalTrackedInSeconds = 0;
   var isTimerStart = false;
+  var isWindowVisible = true;
 
   @override
   void setState(VoidCallback fn) {
@@ -40,12 +49,66 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    windowManager.addListener(this);
+    trayManager.addListener(this);
+    setTrayIcon();
+    setTrayTitle();
+    setTrayContextMenu();
     doLoadData();
     super.initState();
   }
 
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    trayManager.removeListener(this);
+    super.dispose();
+  }
+
   void doLoadData() {
     homeBloc.add(LoadDataProjectHomeEvent());
+  }
+
+  void setTrayIcon() {
+    final pathIconTray = Platform.isWindows ? BaseIconTray.iconOriginalIco : BaseIconTray.iconOriginalPng;
+    trayManager.setIcon(pathIconTray);
+  }
+
+  void setTrayTitle({String title = '--:--:--'}) {
+    trayManager.setTitle(title);
+  }
+
+  void setTrayContextMenu() {
+    final items = <MenuItem>[];
+    if (isWindowVisible) {
+      items.add(
+        MenuItem(
+          key: keyTrayHideTimer,
+          label: 'hide_timer'.tr(),
+        ),
+      );
+    } else {
+      items.add(
+        MenuItem(
+          key: keyTrayShowTimer,
+          label: 'show_timer'.tr(),
+        ),
+      );
+    }
+
+    items.add(MenuItem.separator());
+    items.add(
+      MenuItem(
+        key: keyTrayQuitApp,
+        label: 'quit_app'.tr(),
+      ),
+    );
+
+    trayManager.setContextMenu(
+      Menu(
+        items: items,
+      ),
+    );
   }
 
   @override
@@ -330,5 +393,43 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
+  }
+
+  @override
+  void onWindowEvent(String eventName) async {
+    isWindowVisible = await windowManager.isVisible();
+  }
+
+  @override
+  void onWindowMinimize() {
+    isWindowVisible = false;
+    setTrayContextMenu();
+  }
+
+  @override
+  void onWindowRestore() {
+    isWindowVisible = true;
+    setTrayContextMenu();
+  }
+
+  @override
+  void onTrayIconMouseDown() {
+    setTrayContextMenu();
+    trayManager.popUpContextMenu();
+    super.onTrayIconMouseDown();
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    final keyMenuItem = menuItem.key;
+    if (keyMenuItem == keyTrayShowTimer) {
+      windowManager.show();
+      isWindowVisible = true;
+    } else if (keyMenuItem == keyTrayHideTimer) {
+      windowManager.hide();
+      isWindowVisible = false;
+    } else if (keyMenuItem == keyTrayQuitApp) {
+      // TODO: Buat fitur quit app dengan cara tekan menu "Quit app"
+    }
   }
 }

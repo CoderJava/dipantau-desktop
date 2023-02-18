@@ -45,5 +45,8 @@
     "many": "Tasks ({})",
     "other": "Tasks ({})"
   },
-  "no_data_to_display": "No data to display"
+  "no_data_to_display": "No data to display",
+  "show_timer": "Show timer",
+  "hide_timer": "Hide timer",
+  "quit_app": "Quit app"
 }
