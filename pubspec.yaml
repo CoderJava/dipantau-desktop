@@ -99,6 +99,14 @@ dependencies:
   # This plugin allows Flutter desktop apps to defines system tray.
   tray_manager: ^0.2.0
 
+  # Flutter plugin for getting commonly used locations on host platform file systems, such as the
+  # temp and app data directories.
+  path_provider: ^2.0.12
+
+  # A cross platform plugin for displaying and scheduling local notifications for Flutter applications
+  # with the ability to customize for each platform.
+  flutter_local_notifications: ^13.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
