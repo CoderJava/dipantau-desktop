@@ -48,5 +48,6 @@
   "no_data_to_display": "No data to display",
   "show_timer": "Show timer",
   "hide_timer": "Hide timer",
-  "quit_app": "Quit app"
+  "quit_app": "Quit app",
+  "screenshot_taken": "Screenshot taken"
 }
