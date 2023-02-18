@@ -43,4 +43,15 @@ class Helper {
       second: second,
     );
   }
+
+  String convertTrackingTimeToString(int durationInSecond) {
+    final trackingTime = convertSecondToTrackingTime(durationInSecond);
+    final hour = trackingTime.hour;
+    final minute = trackingTime.minute;
+    final second = trackingTime.second;
+    final strHour = hour < 10 ? '0$hour' : hour.toString();
+    final strMinute = minute < 10 ? '0$minute' : minute.toString();
+    final strSecond = second < 10 ? '0$second' : second.toString();
+    return '$strHour:$strMinute:$strSecond';
+  }
 }
