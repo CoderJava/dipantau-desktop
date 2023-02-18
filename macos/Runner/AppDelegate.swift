@@ -4,6 +4,8 @@ import FlutterMacOS
 @NSApplicationMain
 class AppDelegate: FlutterAppDelegate {
   override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-    return true
+    // Set quit while window is minimized
+    // return true
+    return false
   }
 }
