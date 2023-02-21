@@ -25,20 +25,20 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
             } else if ("take_screenshot" == call.method) {
                 let args: [String: Any] = call.arguments as! [String: Any]
                 let path: String = args["path"] as! String
-                self.takeScreenshots(folderName: path)
-                result(true)
+                let listPathImages = self.takeScreenshots(folderName: path)
+                result(listPathImages)
             }
         })
         
         eventChannel.setStreamHandler(self)
     }
     
-    func takeScreenshots(folderName: String) {
+    func takeScreenshots(folderName: String) -> Array<String> {
         var displayCount: UInt32 = 0
         var result = CGGetActiveDisplayList(0, nil, &displayCount)
         if (result != CGError.success) {
             print("Error get active display list: \(result)")
-            return
+            return [String]()
         }
         
         let allocated = Int(displayCount)
@@ -46,15 +46,17 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
         result = CGGetActiveDisplayList(displayCount, activeDisplays, &displayCount)
         if (result != CGError.success) {
             print("Error get active display list 2: \(result)")
-            return
+            return [String]()
         }
         
+        var listPathImages = [String]()
         for i in 1...displayCount {
             let unixTimestamp = createTimestamp()
             let fileUrl = URL(fileURLWithPath: folderName + "/\(unixTimestamp)" + "_" + "\(i)" + ".jpg", isDirectory: true)
             let screenshot:CGImage = CGDisplayCreateImage(activeDisplays[Int(i-1)])!
             let bitmapRep = NSBitmapImageRep(cgImage: screenshot)
             let jpegData = bitmapRep.representation(using: NSBitmapImageRep.FileType.jpeg, properties: [:])!
+            listPathImages.append(fileUrl.absoluteString)
             
             do {
                 try jpegData.write(to: fileUrl, options: .atomic)
@@ -62,6 +64,7 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
                 print("Error in looping display count: \(error)")
             }
         }
+        return listPathImages
     }
     
     func createTimestamp() -> Int32 {
