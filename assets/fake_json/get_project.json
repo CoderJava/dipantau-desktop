@@ -7,51 +7,56 @@
       "list_tasks": [
         {
           "id": 1,
+          "name": "General",
+          "tracked_in_seconds": 0
+        },
+        {
+          "id": 2,
           "name": "Prepare mindmap",
           "tracked_in_seconds": 1850
         },
         {
-          "id": 2,
+          "id": 3,
           "name": "User research",
           "tracked_in_seconds": 1050
         },
         {
-          "id": 3,
+          "id": 4,
           "name": "Discuss project with client",
           "tracked_in_seconds": 550
         },
         {
-          "id": 4,
+          "id": 5,
           "name": "Wireframing",
           "tracked_in_seconds": 279
         },
         {
-          "id": 5,
+          "id": 6,
           "name": "Animation",
           "tracked_in_seconds": 0
         },
         {
-          "id": 6,
+          "id": 7,
           "name": "Design icons",
           "tracked_in_seconds": 0
         },
         {
-          "id": 7,
+          "id": 8,
           "name": "Create prototype",
           "tracked_in_seconds": 0
         },
         {
-          "id": 8,
+          "id": 9,
           "name": "Copywriting english",
           "tracked_in_seconds": 0
         },
         {
-          "id": 9,
+          "id": 10,
           "name": "Create mockup",
           "tracked_in_seconds": 0
         },
         {
-          "id": 10,
+          "id": 11,
           "name": "Design sprint",
           "tracked_in_seconds": 0
         }
@@ -63,12 +68,17 @@
       "tracked_in_seconds": 2900,
       "list_tasks": [
         {
-          "id": 11,
+          "id": 12,
+          "name": "General",
+          "tracked_in_seconds": 0
+        },
+        {
+          "id": 13,
           "name": "Prepare mindmap",
           "tracked_in_seconds": 1850
         },
         {
-          "id": 12,
+          "id": 14,
           "name": "User research",
           "tracked_in_seconds": 1050
         }
