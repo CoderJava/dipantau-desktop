@@ -52,6 +52,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var countTimerInSeconds = 0;
   var isHaveActivity = false;
   var counterActivity = 0;
+  DateTime? startTime;
+  DateTime? endTime;
 
   @override
   void setState(VoidCallback fn) {
@@ -289,13 +291,29 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             if (selectedTask != null) {
               selectedTask?.trackedInSeconds = valueNotifierTaskTracked.value;
             }
-            selectedTask = null;
             isTimerStart = !isTimerStart;
             if (isTimerStart) {
               resetCountTimer();
+              startTime = DateTime.now();
+              if (selectedProject == null) {
+                widgetHelper.showSnackBar(context, 'please_choose_a_project'.tr());
+                return;
+              }
+              final generalTask = (selectedProject!.listTasks ?? [])
+                  .where((element) => (element.name ?? '').toLowerCase() == 'general');
+              if (generalTask.isEmpty) {
+                widgetHelper.showSnackBar(context, 'general_task_not_found'.tr());
+                return;
+              }
+              selectedTask = generalTask.first;
+              valueNotifierTaskTracked.value = selectedTask!.trackedInSeconds ?? 0;
               startTimer();
             } else {
               doTakeScreenshot();
+              endTime = DateTime.now();
+              debugPrint('start time: $startTime & end time: $endTime');
+              // TODO: Simpan data tracking ke lokal
+              selectedTask = null;
               stopTimer();
             }
             setState(() {});
@@ -390,16 +408,25 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     if (selectedTask != itemTask) {
                       if (selectedTask != null) {
                         selectedTask!.trackedInSeconds = valueNotifierTaskTracked.value;
+                        doTakeScreenshot();
+                        endTime = DateTime.now();
+                        debugPrint('start time: $startTime & end time: $endTime');
+                        // TODO: Simpan data tracking ke lokal
                       }
                       selectedTask = itemTask;
                       isTimerStart = true;
                       valueNotifierTaskTracked.value = itemTask.trackedInSeconds ?? 0;
+                      startTime = DateTime.now();
+                      resetCountTimer();
                       startTimer();
                     } else {
                       selectedTask = null;
                       isTimerStart = false;
                       itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
                       doTakeScreenshot();
+                      endTime = DateTime.now();
+                      debugPrint('start time: $startTime & end time: $endTime');
+                      // TODO: Simpan data tracking ke lokal
                       stopTimer();
                     }
                     setState(() {});
