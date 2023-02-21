@@ -30,22 +30,41 @@ class PlatformChannelHelper {
     }
   }
 
-  Future<void> doTakeScreenshot() async {
+  Future<List<String?>> doTakeScreenshot() async {
+    final listPathScreenshots = <String?>[];
     try {
       final directory = await getApplicationDocumentsDirectory();
       final directoryPath = '${directory.path}/dipantau';
       final isDirectoryExists = checkDirectory(directoryPath);
       if (isDirectoryExists) {
-        await _methodChannel.invokeMethod(
+        final listScreenshots = await _methodChannel.invokeMethod<List?>(
           _keyInvokeMethodTakeScreenshot,
           {
             'path': directoryPath,
           },
         );
+        if (listScreenshots != null) {
+          listPathScreenshots.addAll(listScreenshots.map((e) {
+            var strValue = e as String?;
+            if (strValue == null || strValue.isEmpty) {
+              return null;
+            }
+            if (strValue.toLowerCase().contains('user')) {
+              final startIndex = strValue.toLowerCase().indexOf('user');
+              if (startIndex == -1) {
+                return strValue;
+              } else {
+                strValue = strValue.substring(startIndex);
+              }
+            }
+            return strValue;
+          }).toList());
+        }
       }
     } catch (error) {
       debugPrint('Error do take screenshot: $error');
     }
+    return listPathScreenshots;
   }
 
   bool checkDirectory(String pathDirectory) {
