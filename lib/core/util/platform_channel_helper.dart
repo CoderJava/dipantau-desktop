@@ -4,20 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
-class MethodChannelHelper {
-  final channelName = 'dipantau/channel';
-  final keyInvokeMethodQuitApp = 'quit_app';
-  final keyInvokeMethodTakeScreenshot = 'take_screenshot';
+class PlatformChannelHelper {
+  // Method channel
+  final _methodChannelName = 'dipantau/channel';
+  final _keyInvokeMethodQuitApp = 'quit_app';
+  final _keyInvokeMethodTakeScreenshot = 'take_screenshot';
 
-  late MethodChannel methodChannel;
+  // Event channel
+  final _eventChannelName = 'dipantau/event';
+  final _keyEventChannelActivityListener = 'activity_listener';
 
-  MethodChannelHelper() {
-    methodChannel = MethodChannel(channelName);
+  late MethodChannel _methodChannel;
+  late EventChannel _eventChannel;
+
+  PlatformChannelHelper() {
+    _methodChannel = MethodChannel(_methodChannelName);
+    _eventChannel = EventChannel(_eventChannelName);
   }
 
   void doQuitApp() async {
     try {
-      await methodChannel.invokeMethod(keyInvokeMethodQuitApp);
+      await _methodChannel.invokeMethod(_keyInvokeMethodQuitApp);
     } catch (error) {
       debugPrint('Error quit app: $error');
     }
@@ -29,8 +36,8 @@ class MethodChannelHelper {
       final directoryPath = '${directory.path}/dipantau';
       final isDirectoryExists = checkDirectory(directoryPath);
       if (isDirectoryExists) {
-        await methodChannel.invokeMethod(
-          keyInvokeMethodTakeScreenshot,
+        await _methodChannel.invokeMethod(
+          _keyInvokeMethodTakeScreenshot,
           {
             'path': directoryPath,
           },
@@ -53,5 +60,17 @@ class MethodChannelHelper {
       }
     }
     return true;
+  }
+
+  void setActivityListener() {
+    try {
+      _methodChannel.invokeMethod(_keyEventChannelActivityListener);
+    } catch (error) {
+      debugPrint('Error set activity listener: $error');
+    }
+  }
+
+  Stream startEventChannel() {
+    return _eventChannel.receiveBroadcastStream();
   }
 }

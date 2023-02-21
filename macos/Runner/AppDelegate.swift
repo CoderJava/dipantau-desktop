@@ -2,7 +2,9 @@ import Cocoa
 import FlutterMacOS
 
 @NSApplicationMain
-class AppDelegate: FlutterAppDelegate {
+class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
+    private var eventSink: FlutterEventSink?
+    
     override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         // Set quit while window is minimized
         // return true
@@ -13,6 +15,7 @@ class AppDelegate: FlutterAppDelegate {
     override func applicationDidFinishLaunching(_ notification: Notification) {
         let controller: FlutterViewController = mainFlutterWindow?.contentViewController as! FlutterViewController
         let channel = FlutterMethodChannel.init(name: "dipantau/channel", binaryMessenger: controller.engine.binaryMessenger)
+        let eventChannel = FlutterEventChannel(name: "dipantau/event", binaryMessenger: controller.engine.binaryMessenger)
         
         channel.setMethodCallHandler({
             (_ call: FlutterMethodCall, _ result: FlutterResult) -> Void in
@@ -26,6 +29,8 @@ class AppDelegate: FlutterAppDelegate {
                 result(true)
             }
         })
+        
+        eventChannel.setStreamHandler(self)
     }
     
     func takeScreenshots(folderName: String) {
@@ -61,5 +66,33 @@ class AppDelegate: FlutterAppDelegate {
     
     func createTimestamp() -> Int32 {
         return Int32(Date().timeIntervalSince1970)
+    }
+    
+    func onListen(withArguments arguments: Any?, eventSink: @escaping FlutterEventSink) -> FlutterError? {
+        self.eventSink = eventSink
+        setActivityListener()
+        return nil
+    }
+    
+    func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        eventSink = nil
+        return nil
+    }
+    
+    func setActivityListener() {
+        NSEvent.addGlobalMonitorForEvents(matching: [NSEvent.EventTypeMask.keyDown, NSEvent.EventTypeMask.leftMouseDown, NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseDragged, NSEvent.EventTypeMask.rightMouseDragged], handler: {(event: NSEvent) in
+            guard let eventSink = self.eventSink else {
+                return
+            }
+            
+            switch event.type {
+            case .keyDown, .leftMouseDown, .rightMouseDown, .leftMouseDragged, .rightMouseDragged:
+                // let strKeyCode = String(format: "key down \(event.characters)")
+                // let strKeyCode = "key down \(event.characters as String?)"
+                eventSink("triggered")
+            default:
+                break
+            }
+        })
     }
 }
