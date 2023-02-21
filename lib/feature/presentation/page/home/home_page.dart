@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
-import 'package:dipantau_desktop_client/core/util/method_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
+import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final keyTrayShowTimer = 'tray-show-timer';
   final keyTrayHideTimer = 'tray-hide-timer';
   final keyTrayQuitApp = 'tray-quit-app';
-  final methodChannelHelper = MethodChannelHelper();
+  final platformChannelHelper = PlatformChannelHelper();
   final valueNotifierTotalTracked = ValueNotifier<int>(0);
   final valueNotifierTaskTracked = ValueNotifier<int>(0);
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -50,6 +50,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var isWindowVisible = true;
   Timer? timer;
   var countTimerInSeconds = 0;
+  var isHaveActivity = false;
+  var counterActivity = 0;
 
   @override
   void setState(VoidCallback fn) {
@@ -65,9 +67,21 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     setTrayIcon();
     setTrayTitle();
     setTrayContextMenu();
+    doStartActivityListener();
     notificationHelper.requestPermissionNotification();
     doLoadData();
     super.initState();
+  }
+
+  void doStartActivityListener() {
+    platformChannelHelper.setActivityListener();
+    platformChannelHelper.startEventChannel().listen((Object? event) {
+      if (event != null) {
+        if (event is String) {
+          isHaveActivity = true;
+        }
+      }
+    });
   }
 
   @override
@@ -317,8 +331,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void doTakeScreenshot() {
-    methodChannelHelper.doTakeScreenshot();
+    platformChannelHelper.doTakeScreenshot();
     notificationHelper.showScreenshotTakenNotification();
+    var percentActivity = 0.0;
+    if (counterActivity > 0) {
+      percentActivity = (counterActivity / intervalScreenshot) * 100;
+    }
+    counterActivity = 0;
   }
 
   Widget buildWidgetListTasks() {
@@ -456,6 +475,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void increaseTimerTray() {
+    if (isHaveActivity) {
+      counterActivity += 1;
+    }
+    isHaveActivity = false;
     valueNotifierTotalTracked.value += 1;
     countTimerInSeconds += 1;
     if (selectedTask != null) {
@@ -509,7 +532,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       windowManager.hide();
       isWindowVisible = false;
     } else if (keyMenuItem == keyTrayQuitApp) {
-      methodChannelHelper.doQuitApp();
+      platformChannelHelper.doQuitApp();
     }
   }
 }
