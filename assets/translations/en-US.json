@@ -49,5 +49,7 @@
   "show_timer": "Show timer",
   "hide_timer": "Hide timer",
   "quit_app": "Quit app",
-  "screenshot_taken": "Screenshot taken"
+  "screenshot_taken": "Screenshot taken",
+  "please_choose_a_project": "Please choose a project",
+  "general_task_not_found": "General task not found"
 }
