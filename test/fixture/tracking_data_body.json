@@ -1,11 +1,15 @@
 {
-  "email": "testEmail",
-  "formatted_start_time": "testFormattedStartTime",
-  "formatted_end_time": "testFormattedEndTime",
-  "duration_activity_in_seconds": 0,
-  "interval_in_seconds": 0,
-  "percent_activity": 0.0,
-  "screenshots": [
-    "testScreenshots"
+  "data": [
+    {
+      "email": "testEmail",
+      "formatted_start_time": "testFormattedStartTime",
+      "formatted_end_time": "testFormattedEndTime",
+      "duration_activity_in_seconds": 0,
+      "interval_in_seconds": 0,
+      "percent_activity": 0.0,
+      "screenshots": [
+        "testScreenshots"
+      ]
+    }
   ]
 }

@@ -5,6 +5,28 @@ part 'tracking_data_body.g.dart';
 
 @JsonSerializable()
 class TrackingDataBody extends Equatable {
+  @JsonKey(name: 'data')
+  final List<ItemTrackingDataBody> data;
+
+  TrackingDataBody({required this.data});
+
+  factory TrackingDataBody.fromJson(Map<String, dynamic> json) => _$TrackingDataBodyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TrackingDataBodyToJson(this);
+
+  @override
+  List<Object?> get props => [
+    data,
+  ];
+
+  @override
+  String toString() {
+    return 'TrackingDataBody{data: $data}';
+  }
+}
+
+@JsonSerializable()
+class ItemTrackingDataBody extends Equatable {
   @JsonKey(name: 'email')
   final String email;
   @JsonKey(name: 'formatted_start_time')
@@ -20,7 +42,7 @@ class TrackingDataBody extends Equatable {
   @JsonKey(name: 'screenshots')
   final List<String> screenshots;
 
-  TrackingDataBody({
+  ItemTrackingDataBody({
     required this.email,
     required this.formattedStartTime,
     required this.formattedEndTime,
@@ -30,9 +52,9 @@ class TrackingDataBody extends Equatable {
     required this.screenshots,
   });
 
-  factory TrackingDataBody.fromJson(Map<String, dynamic> json) => _$TrackingDataBodyFromJson(json);
+  factory ItemTrackingDataBody.fromJson(Map<String, dynamic> json) => _$ItemTrackingDataBodyFromJson(json);
 
-  Map<String, dynamic> toJson() => _$TrackingDataBodyToJson(this);
+  Map<String, dynamic> toJson() => _$ItemTrackingDataBodyToJson(this);
 
   @override
   List<Object?> get props => [
@@ -47,7 +69,7 @@ class TrackingDataBody extends Equatable {
 
   @override
   String toString() {
-    return 'TrackingDataBody{email: $email, formattedStartTime: $formattedStartTime, '
+    return 'ItemTrackingDataBody{email: $email, formattedStartTime: $formattedStartTime, '
         'formattedEndTime: $formattedEndTime, durationActivityInSeconds: $durationActivityInSeconds, '
         'intervalInSeconds: $intervalInSeconds, percentActivity: $percentActivity, screenshots: $screenshots}';
   }

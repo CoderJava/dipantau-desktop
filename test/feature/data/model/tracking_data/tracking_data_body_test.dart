@@ -20,13 +20,7 @@ void main() {
       expect(
         tModel.props,
         [
-          tModel.email,
-          tModel.formattedStartTime,
-          tModel.formattedEndTime,
-          tModel.durationActivityInSeconds,
-          tModel.intervalInSeconds,
-          tModel.percentActivity,
-          tModel.screenshots,
+          tModel.data,
         ],
       );
     },
@@ -38,10 +32,7 @@ void main() {
       // assert
       expect(
         tModel.toString(),
-        'TrackingDataBody{email: ${tModel.email}, formattedStartTime: ${tModel.formattedStartTime}, '
-        'formattedEndTime: ${tModel.formattedEndTime}, durationActivityInSeconds: ${tModel.durationActivityInSeconds}, '
-        'intervalInSeconds: ${tModel.intervalInSeconds}, percentActivity: ${tModel.percentActivity}, '
-        'screenshots: ${tModel.screenshots}}',
+        'TrackingDataBody{data: ${tModel.data}}',
       );
     },
   );
