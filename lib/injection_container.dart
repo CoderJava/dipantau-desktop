@@ -7,9 +7,11 @@ import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dar
 import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/general/general_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,9 +31,15 @@ Future<void> init() async {
       getProject: sl(),
     ),
   );
+  sl.registerFactory(
+    () => TrackingBloc(
+      createTrackingData: sl(),
+    ),
+  );
 
   // use case
   sl.registerLazySingleton(() => GetProject(generalRepository: sl()));
+  sl.registerLazySingleton(() => CreateTrackingData(generalRepository: sl()));
 
   // repository
   sl.registerLazySingleton<GeneralRepository>(
