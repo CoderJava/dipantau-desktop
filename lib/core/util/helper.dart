@@ -9,7 +9,7 @@ class Helper {
     return isEmailValid;
   }
 
-  double get getDefaultPaddingLayout => 24.0;
+  double get getDefaultPaddingLayout => 16.0;
 
   double get getDefaultWindowSize => 500.0;
 
