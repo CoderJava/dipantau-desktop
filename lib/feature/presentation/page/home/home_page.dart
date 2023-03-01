@@ -17,6 +17,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -163,35 +164,130 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           },
           child: SizedBox(
             width: double.infinity,
-            child: Padding(
-              padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-              child: BlocBuilder<HomeBloc, HomeState>(
-                builder: (context, state) {
-                  if (state is LoadingHomeState) {
-                    return const WidgetCustomCircularProgressIndicator();
-                  } else if (state is FailureHomeState) {
-                    final errorMessage = state.errorMessage;
-                    return WidgetError(message: errorMessage);
-                  } else if (state is SuccessLoadDataProjectHomeState) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        buildWidgetFieldProject(),
-                        const SizedBox(height: 24),
-                        buildWidgetTimer(),
-                        const SizedBox(height: 24),
-                        buildWidgetButtonTimer(),
-                        const SizedBox(height: 24),
-                        Expanded(
-                          child: buildWidgetListTasks(),
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is LoadingHomeState) {
+                  return const WidgetCustomCircularProgressIndicator();
+                } else if (state is FailureHomeState) {
+                  final errorMessage = state.errorMessage;
+                  return Padding(
+                    padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
+                    child: WidgetError(message: errorMessage),
+                  );
+                } else if (state is SuccessLoadDataProjectHomeState) {
+                  return Column(
+                    children: [
+                      Container(
+                        color: Theme.of(context).primaryColor,
+                        padding: const EdgeInsets.only(
+                          left: 12,
+                          top: 8,
+                          right: 12,
+                          bottom: 8,
                         ),
-                      ],
-                    );
-                  }
-                  return Container();
-                },
-              ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(999),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(999),
+                                onTap: () {
+                                  // TODO: Buat fitur view profile
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Row(
+                                    children: [
+                                      const FaIcon(
+                                        FontAwesomeIcons.houseChimneyUser,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'kolonel.y...@gmail.com',
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(),
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(999),
+                                onTap: () {
+                                  // TODO: Buat fitur sync
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(4.0),
+                                  child: Icon(
+                                    Icons.sync,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(999),
+                                onTap: () {
+                                  // TODO: Buat fitur settings
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(4.0),
+                                  child: Icon(
+                                    Icons.settings,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: helper.getDefaultPaddingLayout,
+                            top: helper.getDefaultPaddingLayout,
+                            right: helper.getDefaultPaddingLayout,
+                            bottom: helper.getDefaultPaddingLayout,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              buildWidgetFieldProject(),
+                              const SizedBox(height: 24),
+                              buildWidgetTimer(),
+                              const SizedBox(height: 24),
+                              buildWidgetButtonTimer(),
+                              const SizedBox(height: 24),
+                              Expanded(
+                                child: buildWidgetListTasks(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                return Container();
+              },
             ),
           ),
         ),
