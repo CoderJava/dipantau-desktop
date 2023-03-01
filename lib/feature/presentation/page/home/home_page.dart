@@ -9,15 +9,18 @@ import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -209,9 +212,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                                       Text(
                                         'kolonel.y...@gmail.com',
                                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -242,13 +245,44 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(999),
-                                onTap: () {
-                                  // TODO: Buat fitur settings
+                                onTap: () async {
+                                  final isLogout = await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          'confirm_logout'.tr(),
+                                        ),
+                                        content: Text(
+                                          'description_logout'.tr(),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('cancel'.tr()),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, true);
+                                            },
+                                            child: Text('yes'.tr()),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ) as bool?;
+                                  if (isLogout != null) {
+                                    FirebaseAuth.instance.signOut().then((_) {
+                                      context.goNamed(LoginPage.routeName);
+                                    });
+                                  }
                                 },
                                 child: const Padding(
                                   padding: EdgeInsets.all(4.0),
                                   child: Icon(
-                                    Icons.settings,
+                                    Icons.logout,
                                     size: 16,
                                     color: Colors.white,
                                   ),
