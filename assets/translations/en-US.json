@@ -51,5 +51,10 @@
   "quit_app": "Quit app",
   "screenshot_taken": "Screenshot taken",
   "please_choose_a_project": "Please choose a project",
-  "general_task_not_found": "General task not found"
+  "general_task_not_found": "General task not found",
+  "logout": "Logout",
+  "description_logout": "Do you want to logout?",
+  "confirm_logout": "Confirmation",
+  "yes": "Yes",
+  "cancel": "Cancel"
 }
