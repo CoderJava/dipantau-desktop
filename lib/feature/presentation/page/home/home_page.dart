@@ -5,6 +5,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
@@ -47,6 +48,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final notificationHelper = sl<NotificationHelper>();
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
+  final sharedPreferencesManager = sl<SharedPreferencesManager>();
 
   DetailProjectResponse? selectedProject;
   DetailTaskResponse? selectedTask;
@@ -58,6 +60,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var counterActivity = 0;
   DateTime? startTime;
   DateTime? endTime;
+  var email = '';
 
   @override
   void setState(VoidCallback fn) {
@@ -68,6 +71,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   @override
   void initState() {
+    email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail) ?? '-';
     windowManager.addListener(this);
     trayManager.addListener(this);
     setTrayIcon();
@@ -204,18 +208,12 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                                   child: Row(
                                     children: [
                                       const FaIcon(
-                                        FontAwesomeIcons.houseChimneyUser,
+                                        FontAwesomeIcons.solidCircleUser,
                                         color: Colors.white,
                                         size: 14,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
-                                        'kolonel.y...@gmail.com',
-                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
+                                      buildWidgetTextEmail(),
                                     ],
                                   ),
                                 ),
@@ -326,6 +324,26 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildWidgetTextEmail() {
+    var strEmail = email;
+    if (strEmail.length >= 30) {
+      final splittedEmail = strEmail.split('@');
+      var username = splittedEmail.first;
+      final domain = splittedEmail.last;
+      if (username.length >= 10) {
+        username = username.substring(0, 10);
+      }
+      strEmail = '$username...@$domain';
+    }
+    return Text(
+      strEmail,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
     );
   }
 
