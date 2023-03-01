@@ -107,6 +107,10 @@ dependencies:
   # with the ability to customize for each platform.
   flutter_local_notifications: ^13.0.0
 
+  # The Font Awesome Icon pack available as Flutter Icons. Provides 1600 additional icons to use
+  # in your apps.
+  font_awesome_flutter: ^10.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
