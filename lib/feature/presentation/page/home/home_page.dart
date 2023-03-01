@@ -501,7 +501,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     notificationHelper.showScreenshotTakenNotification();
     var percentActivity = 0.0;
     if (counterActivity > 0) {
-      percentActivity = (counterActivity / intervalScreenshot) * 100;
+      // percentActivity = (counterActivity / intervalScreenshot) * 100;
+      percentActivity = (counterActivity / countTimerInSeconds) * 100;
     }
     counterActivity = 0;
   }
