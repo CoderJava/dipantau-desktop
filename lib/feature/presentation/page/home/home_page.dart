@@ -9,7 +9,7 @@ import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
-import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
@@ -275,7 +275,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                                   ) as bool?;
                                   if (isLogout != null) {
                                     FirebaseAuth.instance.signOut().then((_) {
-                                      context.goNamed(LoginPage.routeName);
+                                      context.goNamed(SplashPage.routeName);
                                     });
                                   }
                                 },
