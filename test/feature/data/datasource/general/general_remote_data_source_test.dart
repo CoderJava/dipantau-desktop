@@ -23,6 +23,7 @@ void main() {
     FlavorConfig(
       values: FlavorValues(
         baseUrl: baseUrl,
+        baseUrlAuth: '$baseUrl/auth',
       ),
     );
     mockDio = MockDio();

@@ -59,7 +59,8 @@ void main() async {
   // Flavor config
   FlavorConfig(
     values: FlavorValues(
-      baseUrl: localhost, // TODO: Set domain API
+      baseUrl: localhost,
+      baseUrlAuth: '$localhost/auth',
     ),
   );
 
