@@ -31,7 +31,7 @@ void main() {
     'pastikan output dari variable getDefaultPaddingLayout',
     () async {
       // assert
-      expect(helper.getDefaultPaddingLayout, 24.0);
+      expect(helper.getDefaultPaddingLayout, 16.0);
     },
   );
 
@@ -68,6 +68,17 @@ void main() {
       expect(result, TrackingTime(hour: 0, minute: 0, second: 34));
       expect(result2, TrackingTime(hour: 0, minute: 1, second: 35));
       expect(result3, TrackingTime(hour: 1, minute: 1, second: 6));
+    },
+  );
+
+  test(
+    'pastikan fungsi convertTrackingTimeToString bisa mengubah nilai detik menjadi string dalam bentuk HH:mm:ss',
+    () async {
+      // act
+      final result = helper.convertTrackingTimeToString(3666);
+
+      // assert
+      expect(result, '01:01:06');
     },
   );
 }

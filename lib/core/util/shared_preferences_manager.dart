@@ -5,6 +5,9 @@ class SharedPreferencesManager {
 
   static const keyFullName = 'full_name';
   static const keyEmail = 'email';
+  static const keyIsLogin = 'is_Login';
+  static const keyAccessToken = 'access_token';
+  static const keyRefreshToken = 'refresh_token';
 
   SharedPreferencesManager();
 

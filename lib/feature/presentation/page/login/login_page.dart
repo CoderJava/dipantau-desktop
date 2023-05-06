@@ -1,14 +1,16 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
-import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,13 +24,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final loginBloc = sl<LoginBloc>();
   final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
   final helper = sl<Helper>();
   final valueNotifierShowPassword = ValueNotifier<bool>(false);
   final formState = GlobalKey<FormState>();
   final widgetHelper = WidgetHelper();
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
 
   var isLoading = false;
 
@@ -36,58 +38,72 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return IgnorePointer(
       ignoring: isLoading,
-      child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-          child: SizedBox(
-            width: double.infinity,
-            child: Form(
-              key: formState,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'login'.tr(),
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'subtitle_login'.tr(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey,
-                        ),
-                  ),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldEmail(),
-                  const SizedBox(height: 24),
-                  buildWidgetTextFieldPassword(),
-                  const SizedBox(height: 8),
-                  buildWidgetResetPassword(),
-                  const SizedBox(height: 24),
-                  buildWidgetButtonSignIn(),
-                  const SizedBox(height: 24),
-                  Row(
+      child: BlocProvider<LoginBloc>(
+        create: (context) => loginBloc,
+        child: BlocListener<LoginBloc, LoginState>(
+          listener: (context, state) {
+            isLoading = state is LoadingLoginState;
+            if (state is FailureLoginState) {
+              final errorMessage = state.errorMessage;
+              widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
+            } else if (state is SuccessSubmitLoginState) {
+              context.goNamed(HomePage.routeName);
+            }
+          },
+          child: Scaffold(
+            body: Padding(
+              padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
+              child: SizedBox(
+                width: double.infinity,
+                child: Form(
+                  key: formState,
+                  child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'dont_have_an_account'.tr(),
+                        'login'.tr(),
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      InkWell(
-                        onTap: () {
-                          context.push(RegisterPage.routePath);
-                        },
-                        child: Text(
-                          'Register now for free',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                      const SizedBox(height: 8),
+                      Text(
+                        'subtitle_login'.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey,
+                            ),
+                      ),
+                      const SizedBox(height: 24),
+                      buildWidgetTextFieldEmail(),
+                      const SizedBox(height: 24),
+                      buildWidgetTextFieldPassword(),
+                      const SizedBox(height: 8),
+                      buildWidgetResetPassword(),
+                      const SizedBox(height: 24),
+                      buildWidgetButtonSignIn(),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'dont_have_an_account'.tr(),
                           ),
-                        ),
+                          InkWell(
+                            onTap: () {
+                              context.push(RegisterPage.routePath);
+                            },
+                            child: Text(
+                              'Register now for free',
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -120,65 +136,32 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  SizedBox buildWidgetButtonSignIn() {
-    return SizedBox(
-      width: double.infinity,
-      child: WidgetPrimaryButton(
-        onPressed: doSignIn,
-        isLoading: isLoading,
-        child: Text(
-          'sign_in'.tr(),
-        ),
-      ),
+  Widget buildWidgetButtonSignIn() {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return SizedBox(
+          width: double.infinity,
+          child: WidgetPrimaryButton(
+            onPressed: doSignIn,
+            isLoading: isLoading,
+            child: Text(
+              'sign_in'.tr(),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Future<void> doSignIn() async {
+  void doSignIn() {
     if (formState.currentState!.validate()) {
-      setState(() => isLoading = true);
-      final email = controllerEmail.text.trim();
+      final username = controllerEmail.text.trim();
       final password = controllerPassword.text.trim();
-      try {
-        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        final user = userCredential.user;
-        if (user == null) {
-          if (mounted) {
-            widgetHelper.showSnackBar(context, 'Error: User is null');
-          }
-          return;
-        }
-        final isEmailVerified = user.emailVerified;
-        if (!isEmailVerified) {
-          await user.sendEmailVerification();
-          await FirebaseAuth.instance.signOut();
-          if (mounted) {
-            widgetHelper.showSnackBar(context, 'please_verify_your_email'.tr());
-          }
-        } else {
-          await sharedPreferencesManager.putString(SharedPreferencesManager.keyEmail, email);
-          if (mounted) {
-            context.goNamed(HomePage.routeName);
-          }
-        }
-      } on FirebaseAuthException catch (e) {
-        final errorCode = e.code;
-        var errorMessage = e.message ?? 'sign_in_failed'.tr();
-        if (errorCode == 'invalid-email') {
-          errorMessage = 'invalid_email'.tr();
-        } else if (errorCode == 'user-disabled') {
-          errorMessage = 'user_disabled'.tr();
-        } else if (errorCode == 'user-not-found') {
-          errorMessage = 'user_not_found'.tr();
-        } else if (errorCode == 'wrong-password') {
-          errorMessage = 'wrong_password_login'.tr();
-        }
-        widgetHelper.showSnackBar(context, errorMessage);
-      } finally {
-        setState(() => isLoading = false);
-      }
+      final body = LoginBody(
+        username: username,
+        password: password,
+      );
+      loginBloc.add(SubmitLoginEvent(body: body));
     }
   }
 

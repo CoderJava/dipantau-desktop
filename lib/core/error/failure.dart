@@ -6,6 +6,7 @@ class ConstantErrorMessage {
   final connectionTimedOut = 'Connection timed out';
   final parsingError = 'parsingError';
   final failureUnknown = 'Unknown';
+  final testErrorMessage = 'testErrorMessage';
 }
 
 abstract class Failure extends Equatable {}

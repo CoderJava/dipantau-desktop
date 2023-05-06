@@ -56,5 +56,7 @@
   "description_logout": "Do you want to logout?",
   "confirm_logout": "Confirmation",
   "yes": "Yes",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "server_busy": "Server is busy. Please try again later.",
+  "oops_body": "There's a problem on our end. Please refresh again in a minute."
 }
