@@ -53,10 +53,13 @@ void main() async {
     },
   );
 
+  const localhost = 'http://localhost:8080';
+  const production = '';
+
   // Flavor config
   FlavorConfig(
     values: FlavorValues(
-      baseUrl: 'https://api.dipantau.com', // TODO: Set domain API
+      baseUrl: localhost, // TODO: Set domain API
     ),
   );
 
