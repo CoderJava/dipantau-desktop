@@ -53,14 +53,13 @@ void main() async {
     },
   );
 
-  const localhost = 'http://localhost:8080';
-  const production = '';
+  const baseUrl = 'http://localhost:8080';
 
   // Flavor config
   FlavorConfig(
     values: FlavorValues(
-      baseUrl: localhost,
-      baseUrlAuth: '$localhost/auth',
+      baseUrl: baseUrl,
+      baseUrlAuth: '$baseUrl/auth',
     ),
   );
 
