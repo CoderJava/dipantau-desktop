@@ -86,7 +86,7 @@ void main() {
 
   void testParsingFailure(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
-      'pastikan mengembalikan objek ParsingFailure ketika GeneralRemoteDataSource menerima respon kegagalan '
+      'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
       'dari endpoint',
       () async {
         // arrange
@@ -116,7 +116,7 @@ void main() {
     );
 
     test(
-      'pastikan mengembalikan objek model LoginResponse ketika GeneralRemoteDataSource berhasil menerima '
+      'pastikan mengembalikan objek model LoginResponse ketika RemoteDataSource berhasil menerima '
       'respon sukses dari endpoint',
       () async {
         // arrange
@@ -133,7 +133,7 @@ void main() {
     );
 
     test(
-      'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource berhasil menerima '
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
       'respon timeout dari endpoint',
       () async {
         // arrange
@@ -150,7 +150,7 @@ void main() {
     );
 
     test(
-      'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource menerima respon kegagalan '
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
       'dari endpoint',
       () async {
         // arrange
@@ -207,7 +207,7 @@ void main() {
     );
 
     test(
-      'pastikan mengembalikan objek model SignUpResponse ketika GeneralRemoteDataSource berhasil menerima '
+      'pastikan mengembalikan objek model SignUpResponse ketika RemoteDataSource berhasil menerima '
       'respon sukses dari endpoint',
       () async {
         // arrange
@@ -224,7 +224,7 @@ void main() {
     );
 
     test(
-      'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource berhasil menerima '
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
       'respon timeout dari endpoint',
       () async {
         // arrange
@@ -241,7 +241,7 @@ void main() {
     );
 
     test(
-      'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource menerima respon kegagalan '
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
       'dari endpoint',
       () async {
         // arrange
