@@ -26,6 +26,7 @@ void main() {
       values: FlavorValues(
         baseUrl: '',
         baseUrlAuth: baseUrl,
+        baseUrlUser: '',
       ),
     );
     mockDio = MockDio();

@@ -24,6 +24,7 @@ void main() {
       values: FlavorValues(
         baseUrl: baseUrl,
         baseUrlAuth: '$baseUrl/auth',
+        baseUrlUser: '',
       ),
     );
     mockDio = MockDio();

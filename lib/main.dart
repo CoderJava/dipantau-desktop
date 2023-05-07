@@ -60,6 +60,7 @@ void main() async {
     values: FlavorValues(
       baseUrl: baseUrl,
       baseUrlAuth: '$baseUrl/auth',
+      baseUrlUser: '$baseUrl/user',
     ),
   );
 
