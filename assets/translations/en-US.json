@@ -58,5 +58,6 @@
   "yes": "Yes",
   "cancel": "Cancel",
   "server_busy": "Server is busy. Please try again later.",
-  "oops_body": "There's a problem on our end. Please refresh again in a minute."
+  "oops_body": "There's a problem on our end. Please refresh again in a minute.",
+  "this_feature_is_available_soon": "This feature will be available soon."
 }
