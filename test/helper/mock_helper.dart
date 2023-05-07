@@ -10,6 +10,7 @@ import 'package:dipantau_desktop_client/feature/domain/repository/general/genera
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,5 +29,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   GetProject,
   CreateTrackingData,
   Login,
+  SignUp,
 ])
 void main() {}

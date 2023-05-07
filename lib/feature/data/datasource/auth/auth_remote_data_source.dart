@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
@@ -53,9 +54,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<SignUpResponse> signUp(SignUpBody body) async {
     pathSignUp = '$baseUrl/signup';
+    var data = body.toJson();
+    String strUserRole;
+    switch (body.userRole) {
+      case UserRole.superAdmin:
+        strUserRole = 'super_admin';
+        break;
+      case UserRole.admin:
+        strUserRole = 'admin';
+        break;
+      case UserRole.employee:
+        strUserRole = 'employee';
+        break;
+    }
+    data['user_role'] = strUserRole;
     final response = await dio.post(
       pathSignUp,
-      data: body.toJson(),
+      data: data,
     );
     if (response.statusCode.toString().startsWith('2')) {
       return SignUpResponse.fromJson(response.data);

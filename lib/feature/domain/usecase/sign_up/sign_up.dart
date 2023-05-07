@@ -6,21 +6,21 @@ import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_respo
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 import 'package:equatable/equatable.dart';
 
-class SignUp implements UseCase<SignUpResponse, ParamsSignUp> {
+class SignUp implements UseCase<SignUpResponse, SignUpParams> {
   final AuthRepository repository;
 
   SignUp({required this.repository});
 
   @override
-  Future<Either<Failure, SignUpResponse>> call(ParamsSignUp params) {
+  Future<Either<Failure, SignUpResponse>> call(SignUpParams params) {
     return repository.signUp(params.body);
   }
 }
 
-class ParamsSignUp extends Equatable {
+class SignUpParams extends Equatable {
   final SignUpBody body;
 
-  ParamsSignUp({required this.body});
+  SignUpParams({required this.body});
 
   @override
   List<Object?> get props => [
@@ -29,6 +29,6 @@ class ParamsSignUp extends Equatable {
 
   @override
   String toString() {
-    return 'ParamsSignUp{body: $body}';
+    return 'SignUpParams{body: $body}';
   }
 }

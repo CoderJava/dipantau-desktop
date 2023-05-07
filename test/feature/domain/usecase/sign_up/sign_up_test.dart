@@ -24,7 +24,7 @@ void main() {
       fixture('sign_up_body.json'),
     ),
   );
-  final tParams = ParamsSignUp(body: tBody);
+  final tParams = SignUpParams(body: tBody);
 
   test(
     'pastikan objek repository berhasil menerima respon sukses atau gagal dari endpoint',

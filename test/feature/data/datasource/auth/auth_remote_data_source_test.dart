@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
@@ -118,6 +119,18 @@ void main() {
         fixture(tPathBody),
       ),
     );
+    final tBody2 = SignUpBody(
+      name: tBody.name,
+      email: tBody.email,
+      password: tBody.password,
+      userRole: UserRole.admin,
+    );
+    final tBody3 = SignUpBody(
+      name: tBody.name,
+      email: tBody.email,
+      password: tBody.password,
+      userRole: UserRole.employee,
+    );
     const tPathResponse = 'sign_up_response.json';
     final tResponse = SignUpResponse.fromJson(
       json.decode(
@@ -146,6 +159,8 @@ void main() {
 
         // act
         await remoteDataSource.signUp(tBody);
+        await remoteDataSource.signUp(tBody2);
+        await remoteDataSource.signUp(tBody3);
 
         // assert
         verify(mockDio.post('$baseUrl/signup', data: anyNamed('data')));

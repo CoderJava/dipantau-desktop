@@ -13,9 +13,11 @@ import 'package:dipantau_desktop_client/feature/domain/repository/general/genera
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,11 +49,17 @@ Future<void> init() async {
       sharedPreferencesManager: sl(),
     ),
   );
+  sl.registerFactory(
+    () => SignUpBloc(
+      signUp: sl(),
+    ),
+  );
 
   // use case
   sl.registerLazySingleton(() => GetProject(generalRepository: sl()));
   sl.registerLazySingleton(() => CreateTrackingData(generalRepository: sl()));
   sl.registerLazySingleton(() => Login(repository: sl()));
+  sl.registerLazySingleton(() => SignUp(repository: sl()));
 
   // repository
   sl.registerLazySingleton<GeneralRepository>(

@@ -1,12 +1,16 @@
+import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/validator_password.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -20,6 +24,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final signUpBloc = sl<SignUpBloc>();
   final controllerFullname = TextEditingController();
   final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
@@ -30,48 +35,66 @@ class _RegisterPageState extends State<RegisterPage> {
 
   var valueNotifierShowPassword = ValueNotifier<bool>(false);
   var isLoadingButton = false;
-  var isIgnorePointer = false;
 
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      ignoring: isIgnorePointer,
-      child: Scaffold(
-        body: SizedBox(
-          width: double.infinity,
-          child: Form(
-            key: formState,
-            child: ListView(
-              padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-              children: [
-                Center(
-                  child: Text(
-                    'register'.tr(),
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
+      ignoring: isLoadingButton,
+      child: BlocProvider<SignUpBloc>(
+        create: (context) => signUpBloc,
+        child: BlocListener<SignUpBloc, SignUpState>(
+          listener: (context, state) {
+            isLoadingButton = state is LoadingSignUpState;
+            if (state is FailureSignUpState) {
+              final errorMessage = state.errorMessage;
+              widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
+            } else if (state is SuccessSubmitSignUpState) {
+              context.goNamed(
+                RegisterSuccessPage.routeName,
+                queryParams: {
+                  'email': state.response.email ?? '-',
+                },
+              );
+            }
+          },
+          child: Scaffold(
+            body: SizedBox(
+              width: double.infinity,
+              child: Form(
+                key: formState,
+                child: ListView(
+                  padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
+                  children: [
+                    Center(
+                      child: Text(
+                        'register'.tr(),
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Text(
+                        'subtitle_register'.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    buildWidgetTextFieldFullName(),
+                    const SizedBox(height: 24),
+                    buildWidgetTextFieldEmail(),
+                    const SizedBox(height: 24),
+                    buildWidgetTextFieldPassword(),
+                    const SizedBox(height: 24),
+                    buildWidgetButtonRegister(),
+                    const SizedBox(height: 24),
+                    buildWidgetButtonBackToLogin(),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Center(
-                  child: Text(
-                    'subtitle_register'.tr(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                buildWidgetTextFieldFullName(),
-                const SizedBox(height: 24),
-                buildWidgetTextFieldEmail(),
-                const SizedBox(height: 24),
-                buildWidgetTextFieldPassword(),
-                const SizedBox(height: 24),
-                buildWidgetButtonRegister(),
-                const SizedBox(height: 24),
-                buildWidgetButtonBackToLogin(),
-              ],
+              ),
             ),
           ),
         ),
@@ -167,63 +190,37 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget buildWidgetButtonRegister() {
-    return SizedBox(
-      width: double.infinity,
-      child: WidgetPrimaryButton(
-        onPressed: doCreateAccount,
-        isLoading: isLoadingButton,
-        child: Text(
-          'create_account'.tr(),
-        ),
-      ),
+    return BlocBuilder<SignUpBloc, SignUpState>(
+      builder: (context, state) {
+        return SizedBox(
+          width: double.infinity,
+          child: WidgetPrimaryButton(
+            onPressed: doCreateAccount,
+            isLoading: isLoadingButton,
+            child: Text(
+              'create_account'.tr(),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Future<void> doCreateAccount() async {
+  void doCreateAccount() {
     if (formState.currentState!.validate()) {
-      try {
-        setState(() {
-          isIgnorePointer = true;
-          isLoadingButton = true;
-        });
-        final email = controllerEmail.text.trim();
-        final password = controllerPassword.text.trim();
-        final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        await userCredential.user!.sendEmailVerification();
-        await FirebaseAuth.instance.signOut();
-        if (mounted) {
-          context.goNamed(
-            RegisterSuccessPage.routeName,
-            queryParams: {
-              'email': email,
-            },
-          );
-        }
-      } on FirebaseAuthException catch (e) {
-        final errorCode = e.code;
-        var errorMessage = e.message ?? 'failed_create_account'.tr();
-        if (errorCode == 'email-already-in-use') {
-          errorMessage = 'email_already_in_use'.tr();
-        } else if (errorCode == 'invalid-email') {
-          errorMessage = 'invalid_email'.tr();
-        } else if (errorCode == 'operation-not-allowed') {
-          errorMessage = 'operation_not_allowed'.tr();
-        } else if (errorCode == 'weak-password') {
-          errorMessage = 'weak_password'.tr();
-        }
-        widgetHelper.showSnackBar(
-          context,
-          errorMessage,
-        );
-      } finally {
-        setState(() {
-          isIgnorePointer = false;
-          isLoadingButton = false;
-        });
-      }
+      final name = controllerFullname.text.trim();
+      final email = controllerEmail.text.trim();
+      final password = controllerPassword.text.trim();
+      signUpBloc.add(
+        SubmitSignUpEvent(
+          body: SignUpBody(
+            name: name,
+            email: email,
+            password: password,
+            userRole: UserRole.employee,
+          ),
+        ),
+      );
     }
   }
 
