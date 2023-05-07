@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -115,8 +117,8 @@ void main() {
 
     test(
       'pastikan mengembalikan objek model LoginResponse ketika GeneralRemoteDataSource berhasil menerima '
-          'respon sukses dari endpoint',
-          () async {
+      'respon sukses dari endpoint',
+      () async {
         // arrange
         setUpMockNetworkConnected();
         when(mockRemoteDataSource.login(any)).thenAnswer((_) async => tResponse);
@@ -132,12 +134,11 @@ void main() {
 
     test(
       'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource berhasil menerima '
-          'respon timeout dari endpoint',
-          () async {
+      'respon timeout dari endpoint',
+      () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.login(any))
-            .thenThrow(DioError(requestOptions: tRequestOptions, error: 'testError'));
+        when(mockRemoteDataSource.login(any)).thenThrow(DioError(requestOptions: tRequestOptions, error: 'testError'));
 
         // act
         final result = await repository.login(tBody);
@@ -150,8 +151,8 @@ void main() {
 
     test(
       'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource menerima respon kegagalan '
-          'dari endpoint',
-          () async {
+      'dari endpoint',
+      () async {
         // arrange
         setUpMockNetworkConnected();
         when(mockRemoteDataSource.login(any)).thenThrow(
@@ -179,17 +180,108 @@ void main() {
     );
 
     testServerFailureString(
-          () => mockRemoteDataSource.login(any),
-          () => repository.login(tBody),
-          () => mockRemoteDataSource.login(tBody),
+      () => mockRemoteDataSource.login(any),
+      () => repository.login(tBody),
+      () => mockRemoteDataSource.login(tBody),
     );
 
     testParsingFailure(
-          () => mockRemoteDataSource.login(any),
-          () => repository.login(tBody),
-          () => mockRemoteDataSource.login(tBody),
+      () => mockRemoteDataSource.login(any),
+      () => repository.login(tBody),
+      () => mockRemoteDataSource.login(tBody),
     );
 
     testDisconnected(() => repository.login(tBody));
+  });
+
+  group('sign up', () {
+    final tBody = SignUpBody.fromJson(
+      json.decode(
+        fixture('sign_up_body.json'),
+      ),
+    );
+    final tResponse = SignUpResponse.fromJson(
+      json.decode(
+        fixture('sign_up_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model SignUpResponse ketika GeneralRemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.signUp(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.signUp(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.signUp(tBody));
+        expect(result, Right(tResponse));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.signUp(any)).thenThrow(DioError(requestOptions: tRequestOptions, error: 'testError'));
+
+        // act
+        final result = await repository.signUp(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.signUp(tBody));
+        expect(result, Left(ServerFailure('testError')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika GeneralRemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.signUp(any)).thenThrow(
+          DioError(
+            requestOptions: tRequestOptions,
+            error: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.signUp(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.signUp(tBody));
+        expect(result, Left(ServerFailure('400 testMessageError')));
+      },
+    );
+
+    testServerFailureString(
+      () => mockRemoteDataSource.signUp(any),
+      () => repository.signUp(tBody),
+      () => mockRemoteDataSource.signUp(tBody),
+    );
+
+    testParsingFailure(
+      () => mockRemoteDataSource.signUp(any),
+      () => repository.signUp(tBody),
+      () => mockRemoteDataSource.signUp(tBody),
+    );
+
+    testDisconnected(() => repository.signUp(tBody));
   });
 }

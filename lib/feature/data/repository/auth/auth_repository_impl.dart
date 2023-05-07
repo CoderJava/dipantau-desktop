@@ -5,6 +5,8 @@ import 'package:dipantau_desktop_client/core/network/network_info.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -32,6 +34,32 @@ class AuthRepositoryImpl implements AuthRepository {
     if (isConnected) {
       try {
         final response = await remoteDataSource.login(body);
+        return Right(response);
+      } on DioError catch (error) {
+        if (error.response == null) {
+          return Left(ServerFailure(error.message));
+        }
+        final errorMessage = getErrorMessageFromEndpoint(
+          error.response?.data,
+          error.message,
+          error.response?.statusCode,
+        );
+        return Left(ServerFailure(errorMessage));
+      } on TypeError catch (error) {
+        final errorMessage = error.toString();
+        return Left(ParsingFailure(errorMessage));
+      }
+    } else {
+      return Left(ConnectionFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, SignUpResponse>> signUp(SignUpBody body) async {
+    final isConnected = await networkInfo.isConnected;
+    if (isConnected) {
+      try {
+        final response = await remoteDataSource.signUp(body);
         return Right(response);
       } on DioError catch (error) {
         if (error.response == null) {
