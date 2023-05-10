@@ -59,5 +59,6 @@
   "cancel": "Cancel",
   "server_busy": "Server is busy. Please try again later.",
   "oops_body": "There's a problem on our end. Please refresh again in a minute.",
-  "this_feature_is_available_soon": "This feature will be available soon."
+  "this_feature_is_available_soon": "This feature will be available soon.",
+  "invalid_user_role": "Invalid user role"
 }

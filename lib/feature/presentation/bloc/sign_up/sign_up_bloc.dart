@@ -39,7 +39,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           } else if (failure is ConnectionFailure) {
             errorMessage = failure.errorMessage;
           } else if (failure is ParsingFailure) {
-            errorMessage = ConstantErrorMessage().parsingError;
+            errorMessage = failure.defaultErrorMessage;
           }
           return FailureSignUpState(errorMessage: errorMessage);
         },

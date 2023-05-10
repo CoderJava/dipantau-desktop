@@ -46,16 +46,18 @@ class ConnectionFailure extends Failure {
 
 class ParsingFailure extends Failure {
   final String errorMessage;
+  final String defaultErrorMessage = ConstantErrorMessage().parsingError;
 
   ParsingFailure(this.errorMessage);
 
   @override
   List<Object> get props => [
         errorMessage,
+        defaultErrorMessage,
       ];
 
   @override
   String toString() {
-    return 'ParsingFailure{errorMessage: $errorMessage}';
+    return 'ParsingFailure{errorMessage: $errorMessage, defaultErrorMessage: $defaultErrorMessage}';
   }
 }

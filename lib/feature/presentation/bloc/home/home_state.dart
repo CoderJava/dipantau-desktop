@@ -27,6 +27,22 @@ class FailureHomeState extends HomeState {
   }
 }
 
+class SuccessPrepareDataHomeState extends HomeState {
+  final UserProfileResponse? user;
+
+  SuccessPrepareDataHomeState({required this.user});
+
+  @override
+  List<Object?> get props => [
+    user,
+  ];
+
+  @override
+  String toString() {
+    return 'SuccessPrepareDataHomeState{user: $user}';
+  }
+}
+
 class SuccessLoadDataProjectHomeState extends HomeState {
   final ProjectResponse project;
 

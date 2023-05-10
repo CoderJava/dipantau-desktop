@@ -26,10 +26,10 @@ class _SplashPageState extends State<SplashPage> {
       final isLogin = sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsLogin) ?? false;
       if (isLogin) {
         // Jika sudah login maka, arahkan ke halaman home_page.dart
-        context.goNamed(HomePage.routePath);
+        context.go(HomePage.routePath);
       } else {
         // Jika belum login maka, arahkan ke halaman login_page.dart
-        context.goNamed(LoginPage.routePath);
+        context.go(LoginPage.routePath);
       }
     });
   }

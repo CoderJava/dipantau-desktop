@@ -8,6 +8,7 @@ class SharedPreferencesManager {
   static const keyIsLogin = 'is_Login';
   static const keyAccessToken = 'access_token';
   static const keyRefreshToken = 'refresh_token';
+  static const keyUserRole = 'user_role';
 
   SharedPreferencesManager();
 

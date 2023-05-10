@@ -72,6 +72,7 @@ void main() {
           tFailure.props,
           [
             tFailure.errorMessage,
+            tFailure.defaultErrorMessage,
           ],
         );
       },
@@ -83,7 +84,7 @@ void main() {
         // assert
         expect(
           tFailure.toString(),
-          'ParsingFailure{errorMessage: ${tFailure.errorMessage}}',
+          'ParsingFailure{errorMessage: ${tFailure.errorMessage}, defaultErrorMessage: ${tFailure.defaultErrorMessage}}',
         );
       },
     );

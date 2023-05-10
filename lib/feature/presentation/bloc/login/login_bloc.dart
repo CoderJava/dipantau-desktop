@@ -38,7 +38,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           } else if (failure is ConnectionFailure) {
             errorMessage = failure.errorMessage;
           } else if (failure is ParsingFailure) {
-            errorMessage = ConstantErrorMessage().parsingError;
+            errorMessage = failure.defaultErrorMessage;
           }
           return FailureLoginState(errorMessage: errorMessage);
         },
