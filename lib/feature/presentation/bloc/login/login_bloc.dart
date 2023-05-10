@@ -53,6 +53,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             SharedPreferencesManager.keyRefreshToken,
             response.refreshToken ?? '',
           );
+          await sharedPreferencesManager.putString(
+            SharedPreferencesManager.keyUserRole,
+            response.role?.name ?? '',
+          );
           return SuccessSubmitLoginState();
         },
       ),

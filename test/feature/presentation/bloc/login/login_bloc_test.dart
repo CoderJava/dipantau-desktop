@@ -62,6 +62,8 @@ void main() {
           .thenAnswer((_) async => true);
       when(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyRefreshToken, tResponse.refreshToken))
           .thenAnswer((_) async => true);
+      when(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyUserRole, tResponse.role!.name))
+          .thenAnswer((_) async => true);
     }
 
     void verifyMockSharedPreferencesManager() {
@@ -69,6 +71,7 @@ void main() {
       verify(mockSharedPreferencesManager.putBool(SharedPreferencesManager.keyIsLogin, true));
       verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyAccessToken, tResponse.accessToken));
       verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyRefreshToken, tResponse.refreshToken));
+      verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyUserRole, tResponse.role!.name));
     }
 
     blocTest(
