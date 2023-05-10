@@ -6,6 +6,7 @@ import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -196,6 +197,82 @@ void main() {
 
         // act
         final call = remoteDataSource.signUp(tBody);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioError>()));
+      },
+    );
+  });
+
+  group('refresh token', () {
+    const tPathBody = 'refresh_token_body.json';
+    final tBody = RefreshTokenBody.fromJson(
+      json.decode(
+        fixture(tPathBody),
+      ),
+    );
+    const tPathResponse = 'login_response.json';
+    final tResponse = LoginResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.post(any, data: anyNamed('data'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint refreshToken benar-benar terpanggil dengan method POST',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.refreshToken(tBody);
+
+        // assert
+        verify(mockDio.post('$baseUrl/refresh', data: anyNamed('data')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model LoginResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.refreshToken(tBody);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioError ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.post(any, data: anyNamed('data'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.refreshToken(tBody);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioError>()));

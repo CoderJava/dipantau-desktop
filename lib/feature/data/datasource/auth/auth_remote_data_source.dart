@@ -3,6 +3,7 @@ import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
 
@@ -20,6 +21,13 @@ abstract class AuthRemoteDataSource {
   late String pathSignUp;
 
   Future<SignUpResponse> signUp(SignUpBody body);
+
+  /// Panggil endpoint [host]/auth/refresh
+  ///
+  /// Throws [DioError] untuk semua error kode
+  late String pathRefreshToken;
+
+  Future<LoginResponse> refreshToken(RefreshTokenBody body);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -76,6 +84,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return SignUpResponse.fromJson(response.data);
     } else {
       throw DioError(requestOptions: RequestOptions(path: pathSignUp));
+    }
+  }
+
+  @override
+  String pathRefreshToken = '';
+
+  @override
+  Future<LoginResponse> refreshToken(RefreshTokenBody body) async {
+    pathRefreshToken = '$baseUrl/refresh';
+    final response = await dio.post(
+      pathRefreshToken,
+      data: body.toJson(),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return LoginResponse.fromJson(response.data);
+    } else {
+      throw DioError(requestOptions: RequestOptions(path: pathRefreshToken));
     }
   }
 }
