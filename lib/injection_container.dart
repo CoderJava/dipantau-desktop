@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/network/network_info.dart';
+import 'package:dipantau_desktop_client/core/util/dio_logging_interceptor_refresh_token.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
@@ -17,6 +18,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_d
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
@@ -29,6 +31,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  const dioRefreshToken = 'dio_refresh_token';
+  const dioLogging = 'dio_logging';
+
   // bloc
   sl.registerFactory(
     () => HomeBloc(
@@ -66,6 +71,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Login(repository: sl()));
   sl.registerLazySingleton(() => SignUp(repository: sl()));
   sl.registerLazySingleton(() => GetProfile(repository: sl()));
+  sl.registerLazySingleton(() => RefreshToken(repository: sl()));
 
   // repository
   sl.registerLazySingleton<GeneralRepository>(
@@ -88,9 +94,11 @@ Future<void> init() async {
   );
 
   // data source
-  sl.registerLazySingleton<GeneralRemoteDataSource>(() => GeneralRemoteDataSourceImpl(dio: sl()));
-  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(dio: sl()));
-  sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(dio: sl()));
+  sl.registerLazySingleton<GeneralRemoteDataSource>(
+      () => GeneralRemoteDataSourceImpl(dio: sl(instanceName: dioRefreshToken)));
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(dio: sl(instanceName: dioLogging)));
+  sl.registerLazySingleton<UserRemoteDataSource>(
+      () => UserRemoteDataSourceImpl(dio: sl(instanceName: dioRefreshToken)));
 
   // core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
@@ -99,7 +107,32 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   final sharedPreferencesManager = SharedPreferencesManager.getInstance(sharedPreferences);
   sl.registerLazySingleton(() => sharedPreferencesManager);
-  sl.registerLazySingleton(() => Dio());
+  sl.registerLazySingleton(
+    () {
+      final dio = Dio();
+      dio.interceptors.add(
+        DioLoggingInterceptorRefreshToken(
+          sharedPreferencesManager: sl(),
+        ),
+      );
+      return dio;
+    },
+    instanceName: dioRefreshToken,
+  );
+  sl.registerLazySingleton(
+    () {
+      final dio = Dio();
+      dio.interceptors.add(
+        LogInterceptor(
+          requestBody: true,
+          responseBody: true,
+          logPrint: (_) {},
+        ),
+      );
+      return dio;
+    },
+    instanceName: dioLogging,
+  );
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => Helper());
   sl.registerLazySingleton(() => NotificationHelper());

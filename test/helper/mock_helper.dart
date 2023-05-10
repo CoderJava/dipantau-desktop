@@ -13,6 +13,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_d
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,5 +37,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   Login,
   SignUp,
   GetProfile,
+  RefreshToken,
 ])
 void main() {}
