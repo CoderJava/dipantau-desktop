@@ -7,9 +7,21 @@ import '../../../../fixture/fixture_reader.dart';
 
 void main() {
   const tPathJson = 'login_response.json';
+  const tPathJson2 = 'login_admin_response.json';
+  const tPathJson3 = 'login_employee_response.json';
   final tModel = LoginResponse.fromJson(
     json.decode(
       fixture(tPathJson),
+    ),
+  );
+  final tModel2 = LoginResponse.fromJson(
+    json.decode(
+      fixture(tPathJson2),
+    ),
+  );
+  final tModel3 = LoginResponse.fromJson(
+    json.decode(
+      fixture(tPathJson3),
     ),
   );
 
@@ -22,6 +34,7 @@ void main() {
         [
           tModel.accessToken,
           tModel.refreshToken,
+          tModel.role,
         ],
       );
     },
@@ -33,7 +46,7 @@ void main() {
       // assert
       expect(
         tModel.toString(),
-        'LoginResponse{accessToken: ${tModel.accessToken}, refreshToken: ${tModel.refreshToken}}',
+        'LoginResponse{accessToken: ${tModel.accessToken}, refreshToken: ${tModel.refreshToken}, role: ${tModel.role}}',
       );
     },
   );
@@ -43,12 +56,18 @@ void main() {
     () async {
       // arrange
       final jsonData = json.decode(fixture(tPathJson));
+      final jsonData2 = json.decode(fixture(tPathJson2));
+      final jsonData3 = json.decode(fixture(tPathJson3));
 
       // act
       final actualModel = LoginResponse.fromJson(jsonData);
+      final actualModel2 = LoginResponse.fromJson(jsonData2);
+      final actualModel3 = LoginResponse.fromJson(jsonData3);
 
       // assert
       expect(actualModel, tModel);
+      expect(actualModel2, tModel2);
+      expect(actualModel3, tModel3);
     },
   );
 
