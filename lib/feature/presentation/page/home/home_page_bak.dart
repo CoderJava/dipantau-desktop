@@ -7,8 +7,8 @@ import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
-import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
-import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response_bak.dart';
+import 'package:dipantau_desktop_client/feature/data/model/detail_task/detail_task_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
@@ -49,8 +49,8 @@ class _HomePageBakState extends State<HomePageBak> with TrayListener, WindowList
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
 
-  DetailProjectResponse? selectedProject;
-  DetailTaskResponse? selectedTask;
+  DetailProjectResponseBak? selectedProject;
+  DetailTaskResponseBak? selectedTask;
   var isTimerStart = false;
   var isWindowVisible = true;
   Timer? timer;
@@ -364,7 +364,7 @@ class _HomePageBakState extends State<HomePageBak> with TrayListener, WindowList
                   builder: (context) => WidgetChooseProject(
                     defaultSelectedProjectId: selectedProjectId,
                   ),
-                ) as DetailProjectResponse?;
+                ) as DetailProjectResponseBak?;
                 if (chooseProject != null) {
                   selectedProject = chooseProject;
                   valueNotifierTotalTracked.value = selectedProject?.trackedInSeconds ?? 0;

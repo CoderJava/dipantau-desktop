@@ -3,10 +3,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'detail_task_response.g.dart';
+part 'detail_task_response_bak.g.dart';
 
+// TODO: Hapus file ini karena ini file fake json
 @JsonSerializable()
-class DetailTaskResponse extends Equatable {
+class DetailTaskResponseBak extends Equatable {
   @JsonKey(name: 'id')
   final int? id;
   @JsonKey(name: 'name')
@@ -14,15 +15,15 @@ class DetailTaskResponse extends Equatable {
   @JsonKey(name: 'tracked_in_seconds')
   int? trackedInSeconds;
 
-  DetailTaskResponse({
+  DetailTaskResponseBak({
     required this.id,
     required this.name,
     required this.trackedInSeconds,
   });
 
-  factory DetailTaskResponse.fromJson(Map<String, dynamic> json) => _$DetailTaskResponseFromJson(json);
+  factory DetailTaskResponseBak.fromJson(Map<String, dynamic> json) => _$DetailTaskResponseBakFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DetailTaskResponseToJson(this);
+  Map<String, dynamic> toJson() => _$DetailTaskResponseBakToJson(this);
 
   @override
   List<Object?> get props => [
@@ -33,6 +34,6 @@ class DetailTaskResponse extends Equatable {
 
   @override
   String toString() {
-    return 'DetailTaskResponse{id: $id, name: $name, trackedInSeconds: $trackedInSeconds}';
+    return 'DetailTaskResponseBak{id: $id, name: $name, trackedInSeconds: $trackedInSeconds}';
   }
 }

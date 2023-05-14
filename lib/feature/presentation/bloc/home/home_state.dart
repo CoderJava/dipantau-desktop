@@ -44,7 +44,7 @@ class SuccessPrepareDataHomeState extends HomeState {
 }
 
 class SuccessLoadDataProjectHomeState extends HomeState {
-  final ProjectResponse project;
+  final ProjectResponseBak project;
 
   SuccessLoadDataProjectHomeState({required this.project});
 

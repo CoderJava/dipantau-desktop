@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/data/model/tracking_data/tracking_data_body.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -39,7 +39,7 @@ void main() {
   group('getProject', () {
     const tPathResponse = 'project_response.json';
     const tEmail = 'testEmail';
-    final tResponse = ProjectResponse.fromJson(
+    final tResponse = ProjectResponseBak.fromJson(
       json.decode(
         fixture(tPathResponse),
       ),

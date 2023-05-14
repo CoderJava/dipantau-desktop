@@ -5,7 +5,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/usecase/usecase.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';

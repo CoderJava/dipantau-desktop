@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -25,7 +25,7 @@ void main() {
     'pastikan objek repository berhasil menerima respon sukses atau gagal dari endpoint getProject',
     () async {
       // arrange
-      final tResponse = ProjectResponse.fromJson(
+      final tResponse = ProjectResponseBak.fromJson(
         json.decode(
           fixture('project_response.json'),
         ),

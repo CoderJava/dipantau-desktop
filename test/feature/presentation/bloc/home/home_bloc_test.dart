@@ -5,7 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/usecase/usecase.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
@@ -50,7 +50,7 @@ void main() {
   group('load data project', () {
     const tEmail = 'testEmail';
     final tParams = ParamsGetProject(email: tEmail);
-    final tResponse = ProjectResponse.fromJson(
+    final tResponse = ProjectResponseBak.fromJson(
       json.decode(
         fixture('project_response.json'),
       ),

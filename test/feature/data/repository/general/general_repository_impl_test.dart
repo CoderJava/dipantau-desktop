@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/data/model/tracking_data/tracking_data_body.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/general/general_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,7 +104,7 @@ void main() {
 
   group('getProject', () {
     const tEmail = 'testEmail';
-    final tResponse = ProjectResponse.fromJson(
+    final tResponse = ProjectResponseBak.fromJson(
       json.decode(
         fixture('project_response.json'),
       ),

@@ -4,7 +4,7 @@ import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/network/network_info.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/data/model/tracking_data/tracking_data_body.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
 
@@ -28,7 +28,7 @@ class GeneralRepositoryImpl implements GeneralRepository {
   }
 
   @override
-  Future<Either<Failure, ProjectResponse>> getProject(String email) async {
+  Future<Either<Failure, ProjectResponseBak>> getProject(String email) async {
     final isConnected = await networkInfo.isConnected;
     if (isConnected) {
       try {

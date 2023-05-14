@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/data/model/tracking_data/tracking_data_body.dart';
 import 'package:flutter/services.dart';
 
@@ -15,7 +15,7 @@ abstract class GeneralRemoteDataSource {
   /// Throws [DioError] untuk semua error kode
   late String pathGetProject;
 
-  Future<ProjectResponse> getProject(String email);
+  Future<ProjectResponseBak> getProject(String email);
 
   /// Panggil endpoint [host]/api/tracking
   ///
@@ -38,11 +38,11 @@ class GeneralRemoteDataSourceImpl implements GeneralRemoteDataSource {
   String pathGetProject = '';
 
   @override
-  Future<ProjectResponse> getProject(String email) async {
+  Future<ProjectResponseBak> getProject(String email) async {
     // TODO: Masih pakai fake json
     await Future.delayed(const Duration(seconds: 1));
     final jsonString = await rootBundle.loadString('assets/fake_json/get_project.json');
-    final response = ProjectResponse.fromJson(json.decode(jsonString));
+    final response = ProjectResponseBak.fromJson(json.decode(jsonString));
     return response;
     /*pathGetProject = '$baseUrl/api/projects';
     final response = await dio.get(

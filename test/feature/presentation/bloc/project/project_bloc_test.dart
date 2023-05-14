@@ -4,7 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,7 +45,7 @@ void main() {
     const tEmail = 'testEmail';
     final tParams = ParamsGetProject(email: tEmail);
     final tEvent = LoadDataProjectEvent();
-    final tResponse = ProjectResponse.fromJson(
+    final tResponse = ProjectResponseBak.fromJson(
       json.decode(
         fixture('project_response.json'),
       ),

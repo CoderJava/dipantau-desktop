@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -70,7 +70,7 @@ void main() {
   });
 
   group('SuccessLoadDataProjectHomeState', () {
-    final tResponse = ProjectResponse.fromJson(
+    final tResponse = ProjectResponseBak.fromJson(
       json.decode(
         fixture('project_response.json'),
       ),

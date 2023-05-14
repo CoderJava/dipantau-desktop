@@ -127,6 +127,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     return Column(
       children: [
         buildWidgetHeader(),
+        // TODO: lanjutkan di sini untuk membuat tampilan content-nya
       ],
     );
   }

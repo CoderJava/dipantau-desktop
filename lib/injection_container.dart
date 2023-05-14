@@ -7,16 +7,20 @@ import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/general/general_repository_impl.dart';
+import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
@@ -72,6 +76,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignUp(repository: sl()));
   sl.registerLazySingleton(() => GetProfile(repository: sl()));
   sl.registerLazySingleton(() => RefreshToken(repository: sl()));
+  sl.registerLazySingleton(() => GetTrackUserLite(repository: sl()));
 
   // repository
   sl.registerLazySingleton<GeneralRepository>(
@@ -92,13 +97,34 @@ Future<void> init() async {
       networkInfo: sl(),
     ),
   );
+  sl.registerLazySingleton<TrackRepository>(
+    () => TrackRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
 
   // data source
   sl.registerLazySingleton<GeneralRemoteDataSource>(
-      () => GeneralRemoteDataSourceImpl(dio: sl(instanceName: dioRefreshToken)));
-  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(dio: sl(instanceName: dioLogging)));
+    () => GeneralRemoteDataSourceImpl(
+      dio: sl(instanceName: dioRefreshToken),
+    ),
+  );
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(
+      dio: sl(instanceName: dioLogging),
+    ),
+  );
   sl.registerLazySingleton<UserRemoteDataSource>(
-      () => UserRemoteDataSourceImpl(dio: sl(instanceName: dioRefreshToken)));
+    () => UserRemoteDataSourceImpl(
+      dio: sl(instanceName: dioRefreshToken),
+    ),
+  );
+  sl.registerLazySingleton<TrackRemoteDataSource>(
+    () => TrackRemoteDataSourceImpl(
+      dio: sl(instanceName: dioRefreshToken),
+    ),
+  );
 
   // core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));

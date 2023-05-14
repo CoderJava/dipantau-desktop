@@ -1,6 +1,6 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
-import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response_bak.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
@@ -25,7 +25,7 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
   final helper = sl<Helper>();
   final projectBloc = sl<ProjectBloc>();
 
-  ProjectResponse? projectResponse;
+  ProjectResponseBak? projectResponse;
 
   @override
   void setState(VoidCallback fn) {
@@ -102,7 +102,7 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
   }
 
   Widget buildWidgetData() {
-    final listProjects = projectResponse?.data ?? <DetailProjectResponse>[];
+    final listProjects = projectResponse?.data ?? <DetailProjectResponseBak>[];
     if (listProjects.isEmpty) {
       return WidgetError(message: 'no_data_to_display'.tr());
     }

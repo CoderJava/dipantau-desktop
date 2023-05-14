@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/detail_project/detail_project_response_bak.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../fixture/fixture_reader.dart';
 
 void main() {
   const tPathJson = 'detail_project_response.json';
-  final tModel = DetailProjectResponse.fromJson(
+  final tModel = DetailProjectResponseBak.fromJson(
     json.decode(
       fixture(tPathJson),
     ),
@@ -48,7 +48,7 @@ void main() {
       final jsonData = json.decode(fixture(tPathJson));
 
       // act
-      final actualModel = DetailProjectResponse.fromJson(jsonData);
+      final actualModel = DetailProjectResponseBak.fromJson(jsonData);
 
       // assert
       expect(actualModel, tModel);
@@ -59,7 +59,7 @@ void main() {
     'pastikan fungsi toJson bisa mengembalikan objek map',
     () async {
       // arrange
-      final model = DetailProjectResponse.fromJson(
+      final model = DetailProjectResponseBak.fromJson(
         json.decode(
           fixture(tPathJson),
         ),

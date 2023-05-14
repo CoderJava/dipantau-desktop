@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,7 +37,7 @@ void main() {
 
   group('SuccessLoadDataProjectState', () {
     final tState = SuccessLoadDataProjectState(
-      project: ProjectResponse.fromJson(
+      project: ProjectResponseBak.fromJson(
         json.decode(
           fixture('project_response.json'),
         ),
