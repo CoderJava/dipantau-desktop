@@ -49,7 +49,7 @@ void main() {
 
   group('load data project', () {
     const tEmail = 'testEmail';
-    final tParams = ParamsGetProject(email: tEmail);
+    final tParams = ParamsGetProject(userId: tEmail);
     final tResponse = ProjectResponseBak.fromJson(
       json.decode(
         fixture('project_response.json'),

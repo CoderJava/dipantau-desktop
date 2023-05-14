@@ -43,7 +43,7 @@ void main() {
 
   group('load data project', () {
     const tEmail = 'testEmail';
-    final tParams = ParamsGetProject(email: tEmail);
+    final tParams = ParamsGetProject(userId: tEmail);
     final tEvent = LoadDataProjectEvent();
     final tResponse = ProjectResponseBak.fromJson(
       json.decode(

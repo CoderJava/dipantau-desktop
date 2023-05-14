@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/usecase/usecase.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
@@ -12,7 +11,6 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_p
 import 'package:equatable/equatable.dart';
 
 part 'home_event.dart';
-
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
@@ -48,13 +46,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onLoadDataProjectHomeEvent(LoadDataProjectHomeEvent event, Emitter<HomeState> emit) async {
-    emit(LoadingHomeState());
+    /*emit(LoadingHomeState());
     final email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail);
     if (email == null || email.isEmpty) {
       emit(FailureHomeState(errorMessage: 'Error: Invalid email. Please relogin to fix it.'));
       return;
     }
-    final result = await getProject(ParamsGetProject(email: email));
+    final result = await getProject(ParamsGetProject(userId: email));
     emit(
       result.fold(
         (failure) {
@@ -70,6 +68,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         },
         (response) => SuccessLoadDataProjectHomeState(project: response),
       ),
-    );
+    );*/
   }
 }

@@ -70,7 +70,7 @@ Future<void> init() async {
   );
 
   // use case
-  sl.registerLazySingleton(() => GetProject(generalRepository: sl()));
+  sl.registerLazySingleton(() => GetProject(repository: sl()));
   sl.registerLazySingleton(() => CreateTrackingData(generalRepository: sl()));
   sl.registerLazySingleton(() => Login(repository: sl()));
   sl.registerLazySingleton(() => SignUp(repository: sl()));
