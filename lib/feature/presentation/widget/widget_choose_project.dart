@@ -81,7 +81,10 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
                         return const WidgetCustomCircularProgressIndicator();
                       } else if (state is FailureProjectState) {
                         final errorMessage = state.errorMessage;
-                        return WidgetError(message: errorMessage);
+                        return WidgetError(
+                          title: '',
+                          message: errorMessage,
+                        );
                       } else if (state is SuccessLoadDataProjectState) {
                         return buildWidgetData();
                       }
@@ -104,7 +107,10 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
   Widget buildWidgetData() {
     final listProjects = projectResponse?.data ?? <DetailProjectResponseBak>[];
     if (listProjects.isEmpty) {
-      return WidgetError(message: 'no_data_to_display'.tr());
+      return WidgetError(
+        title: '',
+        message: 'no_data_to_display'.tr(),
+      );
     }
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),

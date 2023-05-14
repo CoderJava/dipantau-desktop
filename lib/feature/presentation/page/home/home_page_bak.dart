@@ -178,7 +178,10 @@ class _HomePageBakState extends State<HomePageBak> with TrayListener, WindowList
                   final errorMessage = state.errorMessage;
                   return Padding(
                     padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-                    child: WidgetError(message: errorMessage),
+                    child: WidgetError(
+                      title: '',
+                      message: errorMessage,
+                    ),
                   );
                 } else if (state is SuccessLoadDataProjectHomeState) {
                   return Column(
@@ -510,7 +513,10 @@ class _HomePageBakState extends State<HomePageBak> with TrayListener, WindowList
     final formattedNow = helper.setDateFormat('EEE, dd MMM yyyy').format(now);
     final listTasks = selectedProject?.listTasks ?? [];
     if (listTasks.isEmpty) {
-      return WidgetError(message: 'no_data_to_display'.tr());
+      return WidgetError(
+        title: '',
+        message: 'no_data_to_display'.tr(),
+      );
     }
     return Column(
       children: [
