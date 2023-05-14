@@ -1,33 +1,33 @@
 import 'package:dartz/dartz.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/usecase/usecase.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
-import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
 import 'package:equatable/equatable.dart';
 
-class GetProject implements UseCase<ProjectResponseBak, ParamsGetProject> {
-  final GeneralRepository generalRepository;
+class GetProject implements UseCase<ProjectResponse, ParamsGetProject> {
+  final ProjectRepository repository;
 
-  GetProject({required this.generalRepository});
+  GetProject({required this.repository});
 
   @override
-  Future<Either<Failure, ProjectResponseBak>> call(ParamsGetProject params) {
-    return generalRepository.getProject(params.email);
+  Future<Either<Failure, ProjectResponse>> call(ParamsGetProject params) {
+    return repository.getProject(params.userId);
   }
 }
 
 class ParamsGetProject extends Equatable {
-  final String email;
+  final String userId;
 
-  ParamsGetProject({required this.email});
+  ParamsGetProject({required this.userId});
 
   @override
   List<Object?> get props => [
-    email,
+    userId,
   ];
 
   @override
   String toString() {
-    return 'ParamsGetProject{email: $email}';
+    return 'ParamsGetProject{userId: $userId}';
   }
 }
