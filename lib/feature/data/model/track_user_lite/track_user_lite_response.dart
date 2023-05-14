@@ -12,7 +12,7 @@ class TrackUserLiteResponse extends Equatable {
   @JsonKey(name: 'tracked_in_seconds')
   final int? trackedInSeconds;
   @JsonKey(name: 'list_tracks')
-  final List<ItemTrackUserLiteResponse> listTracks;
+  final List<ItemTrackUserLiteResponse>? listTracks;
 
   TrackUserLiteResponse({
     required this.projectId,
