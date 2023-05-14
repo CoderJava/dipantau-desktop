@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
-import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
-import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/repository/project/project_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -12,14 +12,14 @@ import '../../../../fixture/fixture_reader.dart';
 import '../../../../helper/mock_helper.mocks.dart';
 
 void main() {
-  late TrackRepositoryImpl repository;
-  late MockTrackRemoteDataSource mockRemoteDataSource;
+  late ProjectRepositoryImpl repository;
+  late MockProjectRemoteDataSource mockRemoteDataSource;
   late MockNetworkInfo mockNetworkInfo;
 
   setUp(() {
-    mockRemoteDataSource = MockTrackRemoteDataSource();
+    mockRemoteDataSource = MockProjectRemoteDataSource();
     mockNetworkInfo = MockNetworkInfo();
-    repository = TrackRepositoryImpl(
+    repository = ProjectRepositoryImpl(
       remoteDataSource: mockRemoteDataSource,
       networkInfo: mockNetworkInfo,
     );
@@ -100,28 +100,27 @@ void main() {
     );
   }
 
-  group('getTrackUserLite', () {
-    const tDate = 'testDate';
-    const tProjectId = 'testProjectId';
-    final tResponse = TrackUserLiteResponse.fromJson(
+  group('getProject', () {
+    const tUserId = 'testUserId';
+    final tResponse = ProjectResponse.fromJson(
       json.decode(
-        fixture('track_user_lite_response.json'),
+        fixture('project_response.json'),
       ),
     );
 
     test(
-      'pastikan mengembalikan objek model TrackUserLiteResponse ketika RemoteDataSource berhasil menerima '
+      'pastikan mengembalikan objek model ProjectResponse ketika RemoteDataSource berhasil menerima '
       'respon sukses dari endpoint',
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.getTrackUserLite(any, any)).thenAnswer((_) async => tResponse);
+        when(mockRemoteDataSource.getProject(any)).thenAnswer((_) async => tResponse);
 
         // act
-        final result = await repository.getTrackUserLite(tDate, tProjectId);
+        final result = await repository.getProject(tUserId);
 
         // assert
-        verify(mockRemoteDataSource.getTrackUserLite(tDate, tProjectId));
+        verify(mockRemoteDataSource.getProject(tUserId));
         expect(result, Right(tResponse));
       },
     );
@@ -132,14 +131,14 @@ void main() {
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.getTrackUserLite(any, any))
+        when(mockRemoteDataSource.getProject(any))
             .thenThrow(DioError(requestOptions: tRequestOptions, error: 'testError'));
 
         // act
-        final result = await repository.getTrackUserLite(tDate, tProjectId);
+        final result = await repository.getProject(tUserId);
 
         // assert
-        verify(mockRemoteDataSource.getTrackUserLite(tDate, tProjectId));
+        verify(mockRemoteDataSource.getProject(tUserId));
         expect(result, Left(ServerFailure('testError')));
       },
     );
@@ -150,7 +149,7 @@ void main() {
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.getTrackUserLite(any, any)).thenThrow(
+        when(mockRemoteDataSource.getProject(any)).thenThrow(
           DioError(
             requestOptions: tRequestOptions,
             error: 'testError',
@@ -166,26 +165,26 @@ void main() {
         );
 
         // act
-        final result = await repository.getTrackUserLite(tDate, tProjectId);
+        final result = await repository.getProject(tUserId);
 
         // assert
-        verify(mockRemoteDataSource.getTrackUserLite(tDate, tProjectId));
+        verify(mockRemoteDataSource.getProject(tUserId));
         expect(result, Left(ServerFailure('400 testMessageError')));
       },
     );
 
     testServerFailureString(
-      () => mockRemoteDataSource.getTrackUserLite(any, any),
-      () => repository.getTrackUserLite(tDate, tProjectId),
-      () => mockRemoteDataSource.getTrackUserLite(tDate, tProjectId),
+      () => mockRemoteDataSource.getProject(any),
+      () => repository.getProject(tUserId),
+      () => mockRemoteDataSource.getProject(tUserId),
     );
 
     testParsingFailure(
-      () => mockRemoteDataSource.getTrackUserLite(any, any),
-      () => repository.getTrackUserLite(tDate, tProjectId),
-      () => mockRemoteDataSource.getTrackUserLite(tDate, tProjectId),
+      () => mockRemoteDataSource.getProject(any),
+      () => repository.getProject(tUserId),
+      () => mockRemoteDataSource.getProject(tUserId),
     );
 
-    testDisconnected(() => repository.getTrackUserLite(tDate, tProjectId));
+    testDisconnected(() => repository.getProject(tUserId));
   });
 }

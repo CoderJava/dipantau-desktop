@@ -5,6 +5,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
@@ -33,6 +34,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   AuthRemoteDataSource,
   UserRemoteDataSource,
   TrackRemoteDataSource,
+  ProjectRemoteDataSource,
   GeneralRepository,
   AuthRepository,
   UserRepository,
