@@ -9,6 +9,7 @@ import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remo
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
@@ -34,6 +35,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   GeneralRepository,
   AuthRepository,
   UserRepository,
+  TrackRepository,
   GetProject,
   CreateTrackingData,
   Login,
