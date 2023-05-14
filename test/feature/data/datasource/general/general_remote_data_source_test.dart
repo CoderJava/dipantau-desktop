@@ -25,6 +25,7 @@ void main() {
         baseUrl: baseUrl,
         baseUrlAuth: '$baseUrl/auth',
         baseUrlUser: '',
+        baseUrlTrack: '',
       ),
     );
     mockDio = MockDio();

@@ -28,6 +28,7 @@ void main() {
         baseUrl: '',
         baseUrlAuth: baseUrl,
         baseUrlUser: '',
+        baseUrlTrack: '',
       ),
     );
     mockDio = MockDio();

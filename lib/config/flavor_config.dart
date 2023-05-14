@@ -2,11 +2,13 @@ class FlavorValues {
   String baseUrl;
   String baseUrlAuth;
   String baseUrlUser;
+  String baseUrlTrack;
 
   FlavorValues({
     required this.baseUrl,
     required this.baseUrlAuth,
     required this.baseUrlUser,
+    required this.baseUrlTrack,
   });
 }
 

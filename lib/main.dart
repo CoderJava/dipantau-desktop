@@ -2,7 +2,6 @@ import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
-import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page_bak.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
@@ -63,6 +62,7 @@ void main() async {
       baseUrl: baseUrl,
       baseUrlAuth: '$baseUrl/auth',
       baseUrlUser: '$baseUrl/user',
+      baseUrlTrack: '$baseUrl/track',
     ),
   );
 
