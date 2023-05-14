@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
-import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
-import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
+import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -11,35 +11,28 @@ import '../../../../fixture/fixture_reader.dart';
 import '../../../../helper/mock_helper.mocks.dart';
 
 void main() {
-  late TrackRemoteDataSource remoteDataSource;
+  late ProjectRemoteDataSource remoteDataSource;
   late MockDio mockDio;
   late MockHttpClientAdapter mockDioAdapter;
 
-  const baseUrl = 'https://example.com/track';
+  const baseUrl = 'https://example.com/project';
 
   setUp(() {
     FlavorConfig(
-      values: FlavorValues(
-        baseUrl: '',
-        baseUrlAuth: '',
-        baseUrlUser: '',
-        baseUrlTrack: baseUrl,
-        baseUrlProject: '',
-      ),
+      values: FlavorValues(baseUrl: '', baseUrlAuth: '', baseUrlUser: '', baseUrlTrack: '', baseUrlProject: baseUrl),
     );
     mockDio = MockDio();
     mockDioAdapter = MockHttpClientAdapter();
     mockDio.httpClientAdapter = mockDioAdapter;
-    remoteDataSource = TrackRemoteDataSourceImpl(dio: mockDio);
+    remoteDataSource = ProjectRemoteDataSourceImpl(dio: mockDio);
   });
 
   final tRequestOptions = RequestOptions(path: '');
 
-  group('getTrackUserLite', () {
-    const tDate = 'testDate';
-    const tProjectId = 'testProjectId';
-    const tPathResponse = 'track_user_lite_response.json';
-    final tResponse = TrackUserLiteResponse.fromJson(
+  group('getProject', () {
+    const tUserId = 'testUserId';
+    const tPathResponse = 'project_response.json';
+    final tResponse = ProjectResponse.fromJson(
       json.decode(
         fixture(tPathResponse),
       ),
@@ -59,28 +52,28 @@ void main() {
     }
 
     test(
-      'pastikan endpoint getTrackUserLite benar-benar terpanggil dengan method GET',
+      'pastikan endpoint getProject benar-benar terpanggil dengan method GET',
       () async {
         // arrange
         setUpMockDioSuccess();
 
         // act
-        await remoteDataSource.getTrackUserLite(tDate, tProjectId);
+        await remoteDataSource.getProject(tUserId);
 
         // assert
-        verify(mockDio.get('$baseUrl/track/user/lite', options: anyNamed('options')));
+        verify(mockDio.get('$baseUrl/project/user/$tUserId', options: anyNamed('options')));
       },
     );
 
     test(
-      'pastikan mengembalikan objek class model TrackUserLiteResponse ketika menerima respon sukses '
+      'pastikan mengembalikan objek class model ProjectResponse ketika menerima respon sukses '
       'dari endpoint',
       () async {
         // arrange
         setUpMockDioSuccess();
 
         // act
-        final result = await remoteDataSource.getTrackUserLite(tDate, tProjectId);
+        final result = await remoteDataSource.getProject(tUserId);
 
         // assert
         expect(result, tResponse);
@@ -99,7 +92,7 @@ void main() {
         when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
 
         // act
-        final call = remoteDataSource.getTrackUserLite(tDate, tProjectId);
+        final call = remoteDataSource.getProject(tUserId);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioError>()));

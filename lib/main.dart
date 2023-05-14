@@ -63,6 +63,7 @@ void main() async {
       baseUrlAuth: '$baseUrl/auth',
       baseUrlUser: '$baseUrl/user',
       baseUrlTrack: '$baseUrl/track',
+      baseUrlProject: '$baseUrl/project',
     ),
   );
 
