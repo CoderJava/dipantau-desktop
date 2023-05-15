@@ -26,4 +26,22 @@ void main() {
       },
     );
   });
+
+  group('LoadDataTrackingEvent', () {
+    final tEvent = LoadDataTrackingEvent(
+      date: 'testDate',
+      projectId: 'testProjectId',
+    );
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tEvent.toString(),
+          'LoadDataTrackingEvent{date: ${tEvent.date}, projectId: ${tEvent.projectId}}',
+        );
+      },
+    );
+  });
 }

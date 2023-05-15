@@ -14,3 +14,18 @@ class CreateTimeTrackingEvent extends TrackingEvent {
     return 'CreateTimeTrackingEvent{body: $body}';
   }
 }
+
+class LoadDataTrackingEvent extends TrackingEvent {
+  final String date;
+  final String projectId;
+
+  LoadDataTrackingEvent({
+    required this.date,
+    required this.projectId,
+  });
+
+  @override
+  String toString() {
+    return 'LoadDataTrackingEvent{date: $date, projectId: $projectId}';
+  }
+}
