@@ -7,14 +7,17 @@ import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/general/general_repository_impl.dart';
+import 'package:dipantau_desktop_client/feature/data/repository/project/project_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
@@ -55,6 +58,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => TrackingBloc(
       createTrackingData: sl(),
+      getTrackUserLite: sl(),
     ),
   );
   sl.registerFactory(
@@ -103,6 +107,12 @@ Future<void> init() async {
       networkInfo: sl(),
     ),
   );
+  sl.registerLazySingleton<ProjectRepository>(
+    () => ProjectRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
 
   // data source
   sl.registerLazySingleton<GeneralRemoteDataSource>(
@@ -122,6 +132,11 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<TrackRemoteDataSource>(
     () => TrackRemoteDataSourceImpl(
+      dio: sl(instanceName: dioRefreshToken),
+    ),
+  );
+  sl.registerLazySingleton<ProjectRemoteDataSource>(
+    () => ProjectRemoteDataSourceImpl(
       dio: sl(instanceName: dioRefreshToken),
     ),
   );
