@@ -1,20 +1,26 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
+import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_task/track_task.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -34,17 +40,30 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final homeBloc = sl<HomeBloc>();
   final helper = sl<Helper>();
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
+  final listTrackTask = <TrackTask>[];
   final widgetHelper = WidgetHelper();
   final keyTrayShowTimer = 'tray-show-timer';
   final keyTrayHideTimer = 'tray-hide-timer';
   final keyTrayQuitApp = 'tray-quit-app';
   final platformChannelHelper = PlatformChannelHelper();
+  final valueNotifierTotalTracked = ValueNotifier<int>(0);
+  final valueNotifierTaskTracked = ValueNotifier<int>(0);
+  final flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
+  final notificationHelper = sl<NotificationHelper>();
+  final intervalScreensot = 60 * 5; // 300 detik (5 menit)
 
-  var isPrepareDataSuccess = false;
   var isWindowVisible = true;
-
   var email = '';
-  UserRole? userRole;
+  TrackUserLiteResponse? trackUserLite;
+  var isTimerStart = false;
+  ItemProjectResponse? selectedProject;
+  TrackTask? selectedTask;
+  Timer? timer;
+  var countTimerInSeconds = 0;
+  var isHaveActivity = false;
+  var counterActivity = 0;
+  DateTime? startTime;
+  DateTime? endTime;
 
   @override
   void setState(VoidCallback fn) {
@@ -56,10 +75,26 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   @override
   void initState() {
     email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail) ?? '';
+    initDefaultSelectedProject();
     setupWindow();
     setupTray();
-    doPrepareData();
+    doStartActivityListener();
+    notificationHelper.requestPermissionNotification();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      doLoadData();
+    });
     super.initState();
+  }
+
+  void initDefaultSelectedProject() {
+    final selectedProjectId = sharedPreferencesManager.getInt(SharedPreferencesManager.keySelectedProjectId);
+    final selectedProjectName = sharedPreferencesManager.getString(SharedPreferencesManager.keySelectedProjectName);
+    if (selectedProjectId != null &&
+        selectedProjectId != 0 &&
+        selectedProjectName != null &&
+        selectedProjectName.isNotEmpty) {
+      selectedProject = ItemProjectResponse(id: selectedProjectId, name: selectedProjectName);
+    }
   }
 
   @override
@@ -87,36 +122,53 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         create: (context) => homeBloc,
         child: BlocListener<HomeBloc, HomeState>(
           listener: (context, state) {
-            if (state is SuccessPrepareDataHomeState) {
-              isPrepareDataSuccess = true;
-              final user = state.user;
-              if (user != null) {
-                email = user.username ?? '';
-                userRole = user.role;
+            if (state is FailureHomeState) {
+              final errorMessage = state.errorMessage;
+              if (errorMessage.contains('401')) {
+                widgetHelper.showDialog401(context);
+                return;
+              }
+            } else if (state is SuccessLoadDataHomeState) {
+              trackUserLite = state.trackUserLiteResponse;
+              valueNotifierTotalTracked.value = trackUserLite?.trackedInSeconds ?? 0;
+              final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
+              setTrayTitle(title: strTotalTrackingTime);
+
+              final listTasks = trackUserLite?.listTasks ?? [];
+              if (listTasks.isNotEmpty) {
+                listTrackTask.clear();
+                listTrackTask.addAll(
+                  listTasks.where((element) {
+                    return element.id != null && element.name != null;
+                  }).map(
+                    (e) {
+                      return TrackTask(
+                        id: e.id!,
+                        name: e.name!,
+                        trackedInSeconds: 0,
+                      );
+                    },
+                  ),
+                );
+              }
+
+              final listTracks = trackUserLite?.listTracks ?? [];
+              if (listTracks.isNotEmpty && listTrackTask.isNotEmpty) {
+                for (var index = 0; index < listTrackTask.length; index++) {
+                  final element = listTrackTask[index];
+                  var totalTrackedInSeconds = element.trackedInSeconds;
+                  final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == element.id);
+                  for (var itemFilteredTrack in filteredTracks) {
+                    totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
+                  }
+                  listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
+                }
               }
             }
           },
           child: SizedBox(
             width: double.infinity,
-            child: BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                if (state is LoadingHomeState) {
-                  return const WidgetCustomCircularProgressIndicator();
-                } else if (state is FailureHomeState) {
-                  final errorMessage = state.errorMessage;
-                  return Padding(
-                    padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-                    child: WidgetError(
-                      message: errorMessage.hideResponseCode(),
-                      onTryAgain: isPrepareDataSuccess ? doLoadData : doPrepareData,
-                    ),
-                  );
-                } else if (state is SuccessPrepareDataHomeState) {
-                  return buildWidgetBody();
-                }
-                return Container();
-              },
-            ),
+            child: buildWidgetBody(),
           ),
         ),
       ),
@@ -127,8 +179,260 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     return Column(
       children: [
         buildWidgetHeader(),
-        // TODO: lanjutkan di sini untuk membuat tampilan content-nya
+        Expanded(
+          child: buildWidgetContent(),
+        ),
       ],
+    );
+  }
+
+  Widget buildWidgetContent() {
+    return Padding(
+      padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          buildWidgetFieldProject(),
+          const SizedBox(height: 24),
+          Expanded(
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is LoadingHomeState) {
+                  return const WidgetCustomCircularProgressIndicator();
+                } else if (state is FailureHomeState) {
+                  final errorMessage = state.errorMessage;
+                  return WidgetError(
+                    title: 'oops'.tr(),
+                    message: errorMessage.hideResponseCode(),
+                    onTryAgain: doLoadData,
+                  );
+                }
+                return buildWidgetListTrack();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildWidgetListTrack() {
+    if (trackUserLite == null) {
+      return WidgetError(
+        title: 'first_time_huh'.tr(),
+        message: 'please_choose_a_project_2'.tr(),
+      );
+    }
+
+    if (listTrackTask.isEmpty) {
+      return WidgetError(
+        title: 'you_dont_have_any_tasks'.tr(),
+        message: 'create_task_to_start_working'.tr(),
+      );
+    }
+
+    final now = DateTime.now();
+    final formattedNow = helper.setDateFormat('EEE, dd MMM yyyy').format(now);
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'tasks'.plural(
+                listTrackTask.length,
+                args: listTrackTask.isEmpty
+                    ? []
+                    : [
+                        listTrackTask.length.toString(),
+                      ],
+              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey,
+                  ),
+            ),
+            Text(
+              formattedNow,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey,
+                  ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: ListView.separated(
+              itemBuilder: (context, index) {
+                final itemTask = listTrackTask[index];
+                final strTrackingTime = helper.convertTrackingTimeToString(itemTask.trackedInSeconds);
+                final isStart = itemTask.id == selectedTask?.id;
+                final activeColor = Theme.of(context).primaryColor;
+
+                return InkWell(
+                  onTap: () {
+                    if (selectedTask != itemTask) {
+                      if (selectedTask != null) {
+                        selectedTask!.trackedInSeconds = valueNotifierTotalTracked.value;
+                        doTakeScreenshot();
+                        endTime = DateTime.now();
+                      }
+                      selectedTask = itemTask;
+                      isTimerStart = true;
+                      valueNotifierTaskTracked.value = itemTask.trackedInSeconds;
+                      startTime = DateTime.now();
+                      resetCountTimer();
+                      startTimer();
+                    } else {
+                      selectedTask = null;
+                      isTimerStart = false;
+                      itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
+                      doTakeScreenshot();
+                      endTime = DateTime.now();
+                      stopTimer();
+                    }
+                    setState(() {});
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            itemTask.name,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: isStart ? activeColor : Colors.grey[900],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        ValueListenableBuilder(
+                          valueListenable: valueNotifierTaskTracked,
+                          builder: (BuildContext context, int value, Widget? child) {
+                            if (!isStart) {
+                              return child ?? Container();
+                            }
+                            final strTrackingTimeTask =
+                                helper.convertTrackingTimeToString(valueNotifierTaskTracked.value);
+                            return Text(
+                              strTrackingTimeTask,
+                              style: TextStyle(
+                                color: activeColor,
+                              ),
+                            );
+                          },
+                          child: Text(
+                            strTrackingTime,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          isStart ? Icons.pause_circle : Icons.play_circle,
+                          color: isStart ? activeColor : Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemCount: listTrackTask.length,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetFieldProject() {
+    return Material(
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: isTimerStart
+            ? null
+            : () async {
+                final selectedProjectTemp = await showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  enableDrag: false,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  builder: (context) {
+                    return WidgetChooseProject(
+                      defaultSelectedProjectId: selectedProject?.id,
+                    );
+                  },
+                ) as ItemProjectResponse?;
+                if (selectedProjectTemp != null) {
+                  selectedProject = selectedProjectTemp;
+                  final selectedProjectId = selectedProject?.id;
+                  final selectedProjectName = selectedProject?.name;
+                  if (selectedProjectId != null && selectedProjectName != null) {
+                    await sharedPreferencesManager.putInt(
+                      SharedPreferencesManager.keySelectedProjectId,
+                      selectedProjectId,
+                    );
+                    await sharedPreferencesManager.putString(
+                      SharedPreferencesManager.keySelectedProjectName,
+                      selectedProjectName,
+                    );
+                  }
+                  valueNotifierTotalTracked.value = 0;
+                  doLoadData();
+                }
+              },
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(),
+          ),
+          padding: const EdgeInsets.symmetric(
+            vertical: 4,
+            horizontal: 8,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isTimerStart ? Colors.green : Colors.grey,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) {
+                    return Text(
+                      trackUserLite?.projectName ?? 'choose_project'.tr(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+              isTimerStart
+                  ? Container()
+                  : const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 20,
+                    ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -161,7 +465,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       color: Colors.white,
                       size: 14,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 8),
                     buildWidgetTextEmail(),
                   ],
                 ),
@@ -240,12 +544,20 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
-  void doPrepareData() {
-    homeBloc.add(PrepareDataHomeEvent());
-  }
-
   void doLoadData() {
-    homeBloc.add(LoadDataProjectHomeEvent());
+    final now = DateTime.now();
+    final formattedNow = helper.setDateFormat('yyyy-MM-dd').format(now);
+    final selectedProjectId = selectedProject?.id;
+    if (selectedProjectId == null) {
+      return;
+    }
+
+    homeBloc.add(
+      LoadDataHomeEvent(
+        date: formattedNow,
+        projectId: selectedProjectId.toString(),
+      ),
+    );
   }
 
   void setTrayIcon() {
@@ -346,5 +658,64 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             fontWeight: FontWeight.bold,
           ),
     );
+  }
+
+  void doStartActivityListener() {
+    platformChannelHelper.setActivityListener();
+    platformChannelHelper.startEventChannel().listen((Object? event) {
+      if (event != null) {
+        if (event is String) {
+          isHaveActivity = true;
+        }
+      }
+    });
+  }
+
+  void doTakeScreenshot() {
+    platformChannelHelper.doTakeScreenshot();
+    notificationHelper.showScreenshotTakenNotification();
+    var percentActivity = 0.0;
+    if (counterActivity > 0) {
+      // percentActivity = (counterActivity / intervalScreenshot) * 100;
+      percentActivity = (counterActivity / countTimerInSeconds) * 100;
+    }
+    counterActivity = 0;
+    // TODO: do something in here
+  }
+
+  void resetCountTimer() {
+    countTimerInSeconds = 0;
+  }
+
+  void startTimer() {
+    stopTimer();
+    increaseTimerTray();
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      increaseTimerTray();
+    });
+  }
+
+  void stopTimer() {
+    if (timer != null && timer!.isActive) {
+      timer!.cancel();
+    }
+  }
+
+  void increaseTimerTray() {
+    if (isHaveActivity) {
+      counterActivity += 1;
+    }
+    isHaveActivity = false;
+    valueNotifierTotalTracked.value += 1;
+    countTimerInSeconds += 1;
+    if (selectedTask != null) {
+      valueNotifierTaskTracked.value += 1;
+    }
+    if (countTimerInSeconds == intervalScreensot) {
+      resetCountTimer();
+      doTakeScreenshot();
+    }
+    final strTrackingTimeTemp = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
+    setTrayTitle(title: strTrackingTimeTemp);
   }
 }

@@ -55,7 +55,8 @@ void main() {
           Headers.contentTypeHeader: [Headers.jsonContentType],
         }),
       );
-      when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+      when(mockDio.get(any, queryParameters: anyNamed('queryParameters'), options: anyNamed('options')))
+          .thenAnswer((_) async => response);
     }
 
     test(
@@ -68,7 +69,8 @@ void main() {
         await remoteDataSource.getTrackUserLite(tDate, tProjectId);
 
         // assert
-        verify(mockDio.get('$baseUrl/track/user/lite', options: anyNamed('options')));
+        verify(mockDio.get('$baseUrl/user/lite',
+            queryParameters: anyNamed('queryParameters'), options: anyNamed('options')));
       },
     );
 
@@ -96,7 +98,8 @@ void main() {
           data: 'Bad Request',
           statusCode: 400,
         );
-        when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+        when(mockDio.get(any, queryParameters: anyNamed('queryParameters'), options: anyNamed('options')))
+            .thenAnswer((_) async => response);
 
         // act
         final call = remoteDataSource.getTrackUserLite(tDate, tProjectId);

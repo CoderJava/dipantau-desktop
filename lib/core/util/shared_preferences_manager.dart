@@ -9,6 +9,9 @@ class SharedPreferencesManager {
   static const keyAccessToken = 'access_token';
   static const keyRefreshToken = 'refresh_token';
   static const keyUserRole = 'user_role';
+  static const keyUserId = 'user_id';
+  static const keySelectedProjectId = 'selected_project_id';
+  static const keySelectedProjectName = 'selected_project_name';
 
   SharedPreferencesManager();
 

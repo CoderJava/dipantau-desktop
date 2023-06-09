@@ -1,5 +1,4 @@
 {
   "access_token": "testAccessToken",
-  "refresh_token": "testRefreshToken",
-  "role": "admin"
+  "refresh_token": "testRefreshToken"
 }

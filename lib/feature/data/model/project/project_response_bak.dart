@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'project_response_bak.g.dart';
 
+// TODO: hapus file ini
 @JsonSerializable()
 class ProjectResponseBak extends Equatable {
   @JsonKey(name: 'data')

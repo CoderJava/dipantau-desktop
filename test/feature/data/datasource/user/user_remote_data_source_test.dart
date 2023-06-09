@@ -53,7 +53,7 @@ void main() {
           Headers.contentTypeHeader: [Headers.jsonContentType],
         }),
       );
-      when(mockDio.get(any)).thenAnswer((_) async => response);
+      when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
     }
 
     test(
@@ -66,7 +66,7 @@ void main() {
         await remoteDataSource.getProfile();
 
         // assert
-        verify(mockDio.get('$baseUrl/profile'));
+        verify(mockDio.get('$baseUrl/profile', options: anyNamed('options')));
       },
     );
 
@@ -94,7 +94,7 @@ void main() {
           data: 'Bad Request',
           statusCode: 400,
         );
-        when(mockDio.get(any)).thenAnswer((_) async => response);
+        when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
 
         // act
         final call = remoteDataSource.getProfile();

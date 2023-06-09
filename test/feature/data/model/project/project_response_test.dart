@@ -20,8 +20,7 @@ void main() {
       expect(
         tModel.props,
         [
-          tModel.id,
-          tModel.name,
+          tModel.data,
         ],
       );
     },
@@ -33,7 +32,7 @@ void main() {
       // assert
       expect(
         tModel.toString(),
-        'ProjectResponse{id: ${tModel.id}, name: ${tModel.name}}',
+        'ProjectResponse{data: ${tModel.data}}',
       );
     },
   );

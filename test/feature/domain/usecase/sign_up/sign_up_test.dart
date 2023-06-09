@@ -66,7 +66,7 @@ void main() {
       // assert
       expect(
         tParams.toString(),
-        'ParamsSignUp{body: ${tParams.body}}',
+        'SignUpParams{body: ${tParams.body}}',
       );
     },
   );

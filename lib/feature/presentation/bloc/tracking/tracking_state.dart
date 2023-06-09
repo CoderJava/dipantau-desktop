@@ -20,14 +20,3 @@ class FailureTrackingState extends TrackingState {
 }
 
 class SuccessCreateTimeTrackingState extends TrackingState {}
-
-class SuccessLoadDataTrackingState extends TrackingState {
-  final TrackUserLiteResponse trackUserLite;
-
-  SuccessLoadDataTrackingState({required this.trackUserLite});
-
-  @override
-  String toString() {
-    return 'SuccessLoadDataTrackingState{trackUserLite: $trackUserLite}';
-  }
-}

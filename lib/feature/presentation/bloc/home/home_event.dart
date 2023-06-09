@@ -4,12 +4,23 @@ abstract class HomeEvent extends Equatable {
   const HomeEvent();
 }
 
-class PrepareDataHomeEvent extends HomeEvent {
-  @override
-  List<Object?> get props => [];
-}
+class LoadDataHomeEvent extends HomeEvent {
+  final String date;
+  final String projectId;
 
-class LoadDataProjectHomeEvent extends HomeEvent {
+  LoadDataHomeEvent({
+    required this.date,
+    required this.projectId,
+  });
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [
+    date,
+    projectId,
+  ];
+
+  @override
+  String toString() {
+    return 'LoadDataHomeEvent{date: $date, projectId: $projectId}';
+  }
 }

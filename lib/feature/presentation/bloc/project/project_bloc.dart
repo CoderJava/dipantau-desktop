@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/feature/data/model/project/project_response_bak.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:equatable/equatable.dart';
 
 part 'project_event.dart';
+
 part 'project_state.dart';
 
 class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
@@ -25,28 +27,33 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     LoadDataProjectEvent event,
     Emitter<ProjectState> emit,
   ) async {
-    /*emit(LoadingProjectState());
-    final email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail);
-    if (email == null || email.isEmpty) {
-      emit(FailureProjectState(errorMessage: 'Error: Invalid email. Please relogin to fix it.'));
+    emit(LoadingProjectState());
+    final userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId);
+    if (userId == null || userId == '-1') {
+      emit(FailureProjectState(errorMessage: 'invalid_user_id'));
       return;
     }
-    final result = await getProject(ParamsGetProject(userId: email));
+
+    final result = await getProject(
+      ParamsGetProject(
+        userId: userId,
+      ),
+    );
     emit(
       result.fold(
         (failure) {
-          var errorMessage = ConstantErrorMessage().failureUnknown;
+          var errorMessage = '';
           if (failure is ServerFailure) {
             errorMessage = failure.errorMessage;
           } else if (failure is ConnectionFailure) {
             errorMessage = failure.errorMessage;
           } else if (failure is ParsingFailure) {
-            errorMessage = failure.errorMessage;
+            errorMessage = failure.defaultErrorMessage;
           }
           return FailureProjectState(errorMessage: errorMessage);
         },
         (response) => SuccessLoadDataProjectState(project: response),
       ),
-    );*/
+    );
   }
 }

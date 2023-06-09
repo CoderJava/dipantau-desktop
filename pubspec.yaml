@@ -111,6 +111,9 @@ dependencies:
   # in your apps.
   font_awesome_flutter: ^10.4.0
 
+  # An SVG rendering and widget library for Flutter, which allows painting and displaying Scalable Vector Graphics 1.1 files.
+  flutter_svg: ^2.0.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

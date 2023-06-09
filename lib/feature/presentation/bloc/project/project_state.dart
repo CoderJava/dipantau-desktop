@@ -28,7 +28,7 @@ class FailureProjectState extends ProjectState {
 }
 
 class SuccessLoadDataProjectState extends ProjectState {
-  final ProjectResponseBak project;
+  final ProjectResponse project;
 
   SuccessLoadDataProjectState({required this.project});
 

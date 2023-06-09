@@ -25,13 +25,14 @@ class WidgetError extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 0),
           Text(
             message,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[700],
             ),
           ),
+          const SizedBox(height: 16),
           onTryAgain == null
               ? Container()
               : WidgetPrimaryButton(

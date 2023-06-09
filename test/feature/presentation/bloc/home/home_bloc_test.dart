@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
-import 'package:dipantau_desktop_client/core/usecase/usecase.dart';
-import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -15,24 +14,18 @@ import '../../../../helper/mock_helper.mocks.dart';
 
 void main() {
   late HomeBloc bloc;
-  late MockSharedPreferencesManager mockSharedPreferencesManager;
-  late MockGetProject mockGetProject;
-  late MockGetProfile mockGetProfile;
+  late MockGetTrackUserLite mockGetTrackUserLite;
 
   setUp(() {
-    mockSharedPreferencesManager = MockSharedPreferencesManager();
-    mockGetProject = MockGetProject();
-    mockGetProfile = MockGetProfile();
+    mockGetTrackUserLite = MockGetTrackUserLite();
     bloc = HomeBloc(
-      sharedPreferencesManager: mockSharedPreferencesManager,
-      getProject: mockGetProject,
-      getProfile: mockGetProfile,
+      getTrackUserLite: mockGetTrackUserLite,
     );
   });
 
   const errorMessage = 'testErrorMessage';
   final connectionError = ConstantErrorMessage().connectionError;
-  final tParsingError = ConstantErrorMessage().parsingError;
+  final parsingError = ConstantErrorMessage().parsingError;
 
   test(
     'pastikan output dari initialState',
@@ -45,24 +38,25 @@ void main() {
     },
   );
 
-  group('prepare data', () {
-    final tParams = NoParams();
-    final tResponse = UserProfileResponse.fromJson(
+  group('load data', () {
+    const tDate = 'testDate';
+    const tProjectId = 'testProjectId';
+    final tParams = ParamsGetTrackUserLite(
+      date: tDate,
+      projectId: tProjectId,
+    );
+    final tEvent = LoadDataHomeEvent(date: tDate, projectId: tProjectId);
+    final tResponse = TrackUserLiteResponse.fromJson(
       json.decode(
-        fixture('user_profile_super_admin_response.json'),
+        fixture('track_user_lite_response.json'),
       ),
     );
-    final tEvent = PrepareDataHomeEvent();
 
     blocTest(
-      'pastikan emit [LoadingHomeState, SuccessPrepareDataHomeState] ketika terima event '
-      'PrepareDataHomeEvent dengan proses berhasil',
+      'pastikan emit [LoadingHomeState, SuccessLoadDataHomeState] ketika terima event '
+      'LoadDataHomeEvent dengan proses berhasil',
       build: () {
-        when(mockGetProfile(any)).thenAnswer((_) async => Right(tResponse));
-        when(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyFullName, tResponse.name))
-            .thenAnswer((_) async => true);
-        when(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyUserRole, tResponse.role!.name))
-            .thenAnswer((_) async => true);
+        when(mockGetTrackUserLite(any)).thenAnswer((_) async => Right(tResponse));
         return bloc;
       },
       act: (HomeBloc bloc) {
@@ -70,20 +64,18 @@ void main() {
       },
       expect: () => [
         LoadingHomeState(),
-        SuccessPrepareDataHomeState(user: tResponse),
+        SuccessLoadDataHomeState(trackUserLiteResponse: tResponse),
       ],
       verify: (_) {
-        verify(mockGetProfile(tParams));
-        verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyFullName, tResponse.name));
-        verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyUserRole, tResponse.role!.name));
+        verify(mockGetTrackUserLite(tParams));
       },
     );
 
     blocTest(
-      'pastikan emit [LoadingHomeState, SuccessPrepareDataHomeState] ketika terima event '
-      'PrepareDataHomeEvent dengan proses gagal',
+      'pastikan emit [LoadingHomeState, FailureHomeState] ketika terima event '
+      'LoadDataHomeEvent dengan proses gagal dari endpoint',
       build: () {
-        when(mockGetProfile(any)).thenAnswer((_) async => Left(ServerFailure(errorMessage)));
+        when(mockGetTrackUserLite(any)).thenAnswer((_) async => Left(ServerFailure(errorMessage)));
         return bloc;
       },
       act: (HomeBloc bloc) {
@@ -91,10 +83,48 @@ void main() {
       },
       expect: () => [
         LoadingHomeState(),
-        SuccessPrepareDataHomeState(user: null),
+        FailureHomeState(errorMessage: errorMessage),
       ],
       verify: (_) {
-        verify(mockGetProfile(tParams));
+        verify(mockGetTrackUserLite(tParams));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingHomeState, FailureHomeState] ketika terima event '
+      'LoadDataHomeEvent dengan kondisi internet tidak terhubung ketika hit endpoint',
+      build: () {
+        when(mockGetTrackUserLite(any)).thenAnswer((_) async => Left(ConnectionFailure()));
+        return bloc;
+      },
+      act: (HomeBloc bloc) {
+        return bloc.add(tEvent);
+      },
+      expect: () => [
+        LoadingHomeState(),
+        FailureHomeState(errorMessage: connectionError),
+      ],
+      verify: (_) {
+        verify(mockGetTrackUserLite(tParams));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingHomeState, FailureHomeState] ketika terima event '
+      'LoadDataHomeEvent dengan proses gagal parsing respon dari endpoint',
+      build: () {
+        when(mockGetTrackUserLite(any)).thenAnswer((_) async => Left(ParsingFailure(errorMessage)));
+        return bloc;
+      },
+      act: (HomeBloc bloc) {
+        return bloc.add(tEvent);
+      },
+      expect: () => [
+        LoadingHomeState(),
+        FailureHomeState(errorMessage: parsingError),
+      ],
+      verify: (_) {
+        verify(mockGetTrackUserLite(tParams));
       },
     );
   });

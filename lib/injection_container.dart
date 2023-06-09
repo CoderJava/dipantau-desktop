@@ -44,9 +44,7 @@ Future<void> init() async {
   // bloc
   sl.registerFactory(
     () => HomeBloc(
-      sharedPreferencesManager: sl(),
-      getProject: sl(),
-      getProfile: sl(),
+      getTrackUserLite: sl(),
     ),
   );
   sl.registerFactory(
@@ -58,13 +56,13 @@ Future<void> init() async {
   sl.registerFactory(
     () => TrackingBloc(
       createTrackingData: sl(),
-      getTrackUserLite: sl(),
     ),
   );
   sl.registerFactory(
     () => LoginBloc(
       login: sl(),
       sharedPreferencesManager: sl(),
+      getProfile: sl(),
     ),
   );
   sl.registerFactory(

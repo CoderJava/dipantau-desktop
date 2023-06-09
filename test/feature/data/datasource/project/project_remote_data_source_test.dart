@@ -19,7 +19,13 @@ void main() {
 
   setUp(() {
     FlavorConfig(
-      values: FlavorValues(baseUrl: '', baseUrlAuth: '', baseUrlUser: '', baseUrlTrack: '', baseUrlProject: baseUrl),
+      values: FlavorValues(
+        baseUrl: '',
+        baseUrlAuth: '',
+        baseUrlUser: '',
+        baseUrlTrack: '',
+        baseUrlProject: baseUrl,
+      ),
     );
     mockDio = MockDio();
     mockDioAdapter = MockHttpClientAdapter();
@@ -61,7 +67,7 @@ void main() {
         await remoteDataSource.getProject(tUserId);
 
         // assert
-        verify(mockDio.get('$baseUrl/project/user/$tUserId', options: anyNamed('options')));
+        verify(mockDio.get('$baseUrl/user/$tUserId', options: anyNamed('options')));
       },
     );
 

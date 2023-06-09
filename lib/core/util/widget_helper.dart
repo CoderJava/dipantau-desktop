@@ -1,5 +1,9 @@
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
+import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class WidgetHelper {
   void showSnackBar(BuildContext context, String message) {
@@ -39,7 +43,9 @@ class WidgetHelper {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                final sharedPreferencesManager = sl<SharedPreferencesManager>();
+                sharedPreferencesManager.clearAll();
+                context.goNamed(SplashPage.routeName);
               },
               child: Text('ok'.tr()),
             ),

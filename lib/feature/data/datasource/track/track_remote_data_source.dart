@@ -27,9 +27,13 @@ class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
 
   @override
   Future<TrackUserLiteResponse> getTrackUserLite(String date, String projectId) async {
-    pathGetTrackUserLite = '$baseUrl/track/user/lite';
+    pathGetTrackUserLite = '$baseUrl/user/lite';
     final response = await dio.get(
       pathGetTrackUserLite,
+      queryParameters: {
+        'date': date,
+        'project_id': projectId,
+      },
       options: Options(
         headers: {
           baseUrlConfig.requiredToken: true,

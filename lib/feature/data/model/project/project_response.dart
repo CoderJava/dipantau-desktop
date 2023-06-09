@@ -5,19 +5,43 @@ part 'project_response.g.dart';
 
 @JsonSerializable()
 class ProjectResponse extends Equatable {
-  @JsonKey(name: 'id')
-  final int? id;
-  @JsonKey(name: 'name')
-  final String? name;
+  @JsonKey(name: 'data')
+  final List<ItemProjectResponse>? data;
 
   ProjectResponse({
-    required this.id,
-    required this.name,
+    required this.data,
   });
 
   factory ProjectResponse.fromJson(Map<String, dynamic> json) => _$ProjectResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProjectResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        data,
+      ];
+
+  @override
+  String toString() {
+    return 'ProjectResponse{data: $data}';
+  }
+}
+
+@JsonSerializable()
+class ItemProjectResponse extends Equatable {
+  @JsonKey(name: 'id')
+  final int? id;
+  @JsonKey(name: 'name')
+  final String? name;
+
+  ItemProjectResponse({
+    required this.id,
+    required this.name,
+  });
+
+  factory ItemProjectResponse.fromJson(Map<String, dynamic> json) => _$ItemProjectResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ItemProjectResponseToJson(this);
 
   @override
   List<Object?> get props => [
@@ -27,6 +51,6 @@ class ProjectResponse extends Equatable {
 
   @override
   String toString() {
-    return 'ProjectResponse{id: $id, name: $name}';
+    return 'ItemProjectResponse{id: $id, name: $name}';
   }
 }

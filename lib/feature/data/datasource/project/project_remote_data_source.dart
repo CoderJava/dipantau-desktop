@@ -29,7 +29,7 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
 
   @override
   Future<ProjectResponse> getProject(String userId) async {
-    pathGetProject = '$baseUrl/project/user/$userId';
+    pathGetProject = '$baseUrl/user/$userId';
     final response = await dio.get(
       pathGetProject,
       options: Options(

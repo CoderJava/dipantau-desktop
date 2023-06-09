@@ -91,10 +91,6 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
         final newRefreshToken = resultFoldRefreshToken.refreshToken!;
         await sharedPreferencesManager.putString(SharedPreferencesManager.keyAccessToken, newAccessToken);
         await sharedPreferencesManager.putString(SharedPreferencesManager.keyRefreshToken, newRefreshToken);
-        await sharedPreferencesManager.putString(
-          SharedPreferencesManager.keyUserRole,
-          resultFoldRefreshToken.role?.name ?? '',
-        );
         isRefreshTokenProcessing = false;
         final options = err.response!.requestOptions;
         options.headers.remove(baseUrlConfig.requiredToken);

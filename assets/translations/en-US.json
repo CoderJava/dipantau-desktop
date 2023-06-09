@@ -60,5 +60,16 @@
   "server_busy": "Server is busy. Please try again later.",
   "oops_body": "There's a problem on our end. Please refresh again in a minute.",
   "this_feature_is_available_soon": "This feature will be available soon.",
-  "invalid_user_role": "Invalid user role"
+  "invalid_user_role": "Invalid user role",
+  "info": "Info",
+  "session_expired": "Your session has expired. You will be redirected to login page.",
+  "ok": "OK",
+  "you_dont_have_any_tasks": "You don't have any tasks",
+  "first_time_huh": "First time, huh?",
+  "please_choose_a_project_2": "Please choose a project to see your tasks.",
+  "oops": "Oops",
+  "create_task_to_start_working": "Create task and you're ready to start working.",
+  "you_have_not_selected_the_project": "You have not selected the project",
+  "invalid_user_id": "Invalid user ID. Please relogin to fix it.",
+  "try_again": "Try Again"
 }

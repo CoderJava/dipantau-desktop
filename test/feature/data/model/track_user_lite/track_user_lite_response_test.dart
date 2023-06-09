@@ -24,6 +24,7 @@ void main() {
           tModel.projectName,
           tModel.trackedInSeconds,
           tModel.listTracks,
+          tModel.listTasks,
         ],
       );
     },
@@ -36,7 +37,8 @@ void main() {
       expect(
         tModel.toString(),
         'TrackUserLiteResponse{projectId: ${tModel.projectId}, projectName: ${tModel.projectName}, '
-        'trackedInSeconds: ${tModel.trackedInSeconds}, listTracks: ${tModel.listTracks}}',
+        'trackedInSeconds: ${tModel.trackedInSeconds}, listTracks: ${tModel.listTracks}, '
+        'listTasks: ${tModel.listTasks}}',
       );
     },
   );

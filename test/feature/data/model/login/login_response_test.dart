@@ -34,7 +34,6 @@ void main() {
         [
           tModel.accessToken,
           tModel.refreshToken,
-          tModel.role,
         ],
       );
     },
@@ -46,7 +45,7 @@ void main() {
       // assert
       expect(
         tModel.toString(),
-        'LoginResponse{accessToken: ${tModel.accessToken}, refreshToken: ${tModel.refreshToken}, role: ${tModel.role}}',
+        'LoginResponse{accessToken: ${tModel.accessToken}, refreshToken: ${tModel.refreshToken}}',
       );
     },
   );

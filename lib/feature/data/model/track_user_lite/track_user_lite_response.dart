@@ -13,12 +13,15 @@ class TrackUserLiteResponse extends Equatable {
   final int? trackedInSeconds;
   @JsonKey(name: 'list_tracks')
   final List<ItemTrackUserLiteResponse>? listTracks;
+  @JsonKey(name: 'list_tasks')
+  final List<ItemTaskUserLiteResponse>? listTasks;
 
   TrackUserLiteResponse({
     required this.projectId,
     required this.projectName,
     required this.trackedInSeconds,
     required this.listTracks,
+    required this.listTasks,
   });
 
   factory TrackUserLiteResponse.fromJson(Map<String, dynamic> json) => _$TrackUserLiteResponseFromJson(json);
@@ -31,12 +34,13 @@ class TrackUserLiteResponse extends Equatable {
         projectName,
         trackedInSeconds,
         listTracks,
+        listTasks,
       ];
 
   @override
   String toString() {
     return 'TrackUserLiteResponse{projectId: $projectId, projectName: $projectName, trackedInSeconds: $trackedInSeconds, '
-        'listTracks: $listTracks}';
+        'listTracks: $listTracks, listTasks: $listTasks}';
   }
 }
 
@@ -69,5 +73,33 @@ class ItemTrackUserLiteResponse extends Equatable {
   @override
   String toString() {
     return 'ItemTrackUserLiteResponse{taskId: $taskId, taskName: $taskName, trackedInSeconds: $trackedInSeconds}';
+  }
+}
+
+@JsonSerializable()
+class ItemTaskUserLiteResponse extends Equatable {
+  @JsonKey(name: 'id')
+  final int? id;
+  @JsonKey(name: 'name')
+  final String? name;
+
+  ItemTaskUserLiteResponse({
+    required this.id,
+    required this.name,
+  });
+
+  factory ItemTaskUserLiteResponse.fromJson(Map<String, dynamic> json) => _$ItemTaskUserLiteResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ItemTaskUserLiteResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+  ];
+
+  @override
+  String toString() {
+    return 'ItemTaskUserLiteResponse{id: $id, name: $name}';
   }
 }

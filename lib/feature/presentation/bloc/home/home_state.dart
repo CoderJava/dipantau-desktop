@@ -18,8 +18,8 @@ class FailureHomeState extends HomeState {
 
   @override
   List<Object?> get props => [
-    errorMessage,
-  ];
+        errorMessage,
+      ];
 
   @override
   String toString() {
@@ -27,34 +27,20 @@ class FailureHomeState extends HomeState {
   }
 }
 
-class SuccessPrepareDataHomeState extends HomeState {
-  final UserProfileResponse? user;
+class SuccessLoadDataHomeState extends HomeState {
+  final TrackUserLiteResponse trackUserLiteResponse;
 
-  SuccessPrepareDataHomeState({required this.user});
+  SuccessLoadDataHomeState({
+    required this.trackUserLiteResponse,
+  });
 
   @override
   List<Object?> get props => [
-    user,
+    trackUserLiteResponse,
   ];
 
   @override
   String toString() {
-    return 'SuccessPrepareDataHomeState{user: $user}';
-  }
-}
-
-class SuccessLoadDataProjectHomeState extends HomeState {
-  final ProjectResponseBak project;
-
-  SuccessLoadDataProjectHomeState({required this.project});
-
-  @override
-  List<Object?> get props => [
-    project,
-  ];
-
-  @override
-  String toString() {
-    return 'SuccessLoadDataProjectHomeState{project: $project}';
+    return 'SuccessLoadDataHomeState{trackUserLiteResponse: $trackUserLiteResponse}';
   }
 }
