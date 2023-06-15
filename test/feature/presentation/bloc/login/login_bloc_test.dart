@@ -45,12 +45,6 @@ void main() {
   );
 
   group('submit login', () {
-    // TODO: lanjutkan di sini
-    // Untuk fitur-nya yang sudah selesai adalah sebagai berikut:
-    // 1. Fitur start/stop task
-    // 2. Fitur screenshot
-    // 3. Fitur activity
-    // Fitur selanjutnya adalah simpan dan kirimkan data-data pada poin diatas ke server
     final tBody = LoginBody.fromJson(
       json.decode(
         fixture('login_body.json'),

@@ -8,11 +8,9 @@ import 'package:dipantau_desktop_client/feature/presentation/page/register_succe
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
-import 'package:dipantau_desktop_client/firebase_options.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,11 +21,6 @@ void main() async {
 
   // Easy localization
   await EasyLocalization.ensureInitialized();
-
-  // Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   // Service locator
   await di.init();
