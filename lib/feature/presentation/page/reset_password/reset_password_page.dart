@@ -1,9 +1,7 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
-import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -142,6 +140,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   }
   
   Future<void> doResetPassword() async {
+/*
     if (formState.currentState!.validate()) {
       setState(() => isLoading = true);
       final email = controllerEmail.text.trim();
@@ -178,5 +177,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         setState(() => isLoading = false);
       }
     }
+*/
   }
 }
