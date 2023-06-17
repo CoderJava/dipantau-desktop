@@ -11,7 +11,7 @@ import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repo
 import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
-import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
@@ -38,7 +38,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<TrackRepository>(),
   MockSpec<ProjectRepository>(),
   MockSpec<GetProject>(),
-  MockSpec<CreateTrackingData>(),
+  MockSpec<CreateTrack>(),
   MockSpec<Login>(),
   MockSpec<SignUp>(),
   MockSpec<GetProfile>(),
