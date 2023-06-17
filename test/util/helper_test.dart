@@ -1,5 +1,4 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
-import 'package:dipantau_desktop_client/feature/data/model/tracking_time/tracking_time.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -57,17 +56,17 @@ void main() {
   );
 
   test(
-    'pastikan fungsi convertSecondToTrackingTime bisa mengembalikan waktu dalam satuan jam, menit, dan detik',
+    'pastikan fungsi convertSecondToHms bisa mengembalikan waktu dalam satuan jam, menit, dan detik',
     () async {
       // act
-      final result = helper.convertSecondToTrackingTime(34);
-      final result2 = helper.convertSecondToTrackingTime(95);
-      final result3 = helper.convertSecondToTrackingTime(3666);
+      final result = helper.convertSecondToHms(34);
+      final result2 = helper.convertSecondToHms(95);
+      final result3 = helper.convertSecondToHms(3666);
 
       // assert
-      expect(result, TrackingTime(hour: 0, minute: 0, second: 34));
-      expect(result2, TrackingTime(hour: 0, minute: 1, second: 35));
-      expect(result3, TrackingTime(hour: 1, minute: 1, second: 6));
+      expect(result, (hour: 0, minute: 0, second: 34));
+      expect(result2, (hour: 0, minute: 1, second: 35));
+      expect(result3, (hour: 1, minute: 1, second: 6));
     },
   );
 

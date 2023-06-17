@@ -1,4 +1,3 @@
-import 'package:dipantau_desktop_client/feature/data/model/tracking_time/tracking_time.dart';
 import 'package:intl/intl.dart';
 
 class Helper {
@@ -20,7 +19,7 @@ class Helper {
     return DateFormat(pattern, 'en');
   }
 
-  TrackingTime convertSecondToTrackingTime(int durationInSecond) {
+  ({int hour, int minute, int second}) convertSecondToHms(int durationInSecond) {
     var hour = 0;
     var minute = 0;
     var second = 0;
@@ -37,7 +36,7 @@ class Helper {
     } else {
       second = durationInSecond;
     }
-    return TrackingTime(
+    return (
       hour: hour,
       minute: minute,
       second: second,
@@ -45,10 +44,7 @@ class Helper {
   }
 
   String convertTrackingTimeToString(int durationInSecond) {
-    final trackingTime = convertSecondToTrackingTime(durationInSecond);
-    final hour = trackingTime.hour;
-    final minute = trackingTime.minute;
-    final second = trackingTime.second;
+    final (:hour, :minute, :second) = convertSecondToHms(durationInSecond);
     final strHour = hour < 10 ? '0$hour' : hour.toString();
     final strMinute = minute < 10 ? '0$minute' : minute.toString();
     final strSecond = second < 10 ? '0$second' : second.toString();
