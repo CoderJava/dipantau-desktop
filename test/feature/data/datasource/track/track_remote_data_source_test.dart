@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -103,6 +105,93 @@ void main() {
 
         // act
         final call = remoteDataSource.getTrackUserLite(tDate, tProjectId);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioError>()));
+      },
+    );
+  });
+
+  group('createTrack', () {
+    const tPathBody = 'create_track_body.json';
+    const tPathResponse = 'general_response.json';
+    final jsonBody = json.decode(fixture(tPathBody));
+    late CreateTrackBody body;
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    setUp(() {
+      final files = <String>[];
+      jsonBody['files'].map((element) => files.add(fromFile(element).path)).toList();
+      body = CreateTrackBody(
+        userId: jsonBody['user_id'],
+        taskId: jsonBody['task_id'],
+        startDate: jsonBody['start_date'],
+        finishDate: jsonBody['finish_date'],
+        activity: jsonBody['activity'],
+        duration: jsonBody['duration'],
+        files: files,
+      );
+    });
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.post(any, data: anyNamed('data'), options: anyNamed('options'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint createTrack benar-benar terpanggil dengan method POST',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.createTrack(body);
+
+        // assert
+        verify(mockDio.post(baseUrl, data: anyNamed('data'), options: anyNamed('options')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model GeneralResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.createTrack(body);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioError ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.post(any, data: anyNamed('data'), options: anyNamed('options'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.createTrack(body);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioError>()));
