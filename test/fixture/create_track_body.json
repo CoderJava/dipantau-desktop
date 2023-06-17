@@ -1,0 +1,11 @@
+{
+  "user_id": "testUseId",
+  "task_id": 0,
+  "start_date": "testStartDate",
+  "finish_date": "testFinishDate",
+  "activity": 0,
+  "duration": 0,
+  "files": [
+    "testFiles"
+  ]
+}
