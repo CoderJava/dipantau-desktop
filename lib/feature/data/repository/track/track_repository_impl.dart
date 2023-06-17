@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/network/network_info.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 
@@ -49,5 +51,34 @@ class TrackRepositoryImpl implements TrackRepository {
     } else {
       return Left(ConnectionFailure());
     }
+  }
+
+  @override
+  Future<({Failure? failure, GeneralResponse? response})> createTrack(CreateTrackBody body) async {
+    Failure? failure;
+    GeneralResponse? response;
+    final isConnected = await networkInfo.isConnected;
+    if (isConnected) {
+      try {
+        response = await remoteDataSource.createTrack(body);
+      } on DioError catch (error) {
+        if (error.response == null) {
+          failure = ServerFailure(error.message);
+        } else {
+          final errorMessage = getErrorMessageFromEndpoint(
+            error.response?.data,
+            error.message,
+            error.response?.statusCode,
+          );
+          failure = ServerFailure(errorMessage);
+        }
+      } on TypeError catch (error) {
+        final errorMessage = error.toString();
+        failure = ParsingFailure(errorMessage);
+      }
+    } else {
+      failure = ConnectionFailure();
+    }
+    return (failure: failure, response: response);
   }
 }
