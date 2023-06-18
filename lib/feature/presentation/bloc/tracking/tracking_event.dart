@@ -5,7 +5,7 @@ abstract class TrackingEvent {
 }
 
 class CreateTimeTrackingEvent extends TrackingEvent {
-  final TrackingDataBody body;
+  final CreateTrackBody body;
 
   CreateTimeTrackingEvent({required this.body});
 

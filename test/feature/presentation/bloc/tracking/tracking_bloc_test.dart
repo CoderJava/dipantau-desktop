@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
-import 'package:dipantau_desktop_client/feature/data/model/tracking_data/tracking_data_body.dart';
-import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -15,12 +14,12 @@ import '../../../../helper/mock_helper.mocks.dart';
 
 void main() {
   late TrackingBloc bloc;
-  late MockCreateTrackingData mockCreateTrackingData;
+  late MockCreateTrack mockCreateTrack;
 
   setUp(() {
-    mockCreateTrackingData = MockCreateTrackingData();
+    mockCreateTrack = MockCreateTrack();
     bloc = TrackingBloc(
-      createTrackingData: mockCreateTrackingData,
+      createTrack: mockCreateTrack,
     );
   });
 
@@ -38,12 +37,12 @@ void main() {
   );
 
   group('create time tracking', () {
-    final tBody = TrackingDataBody.fromJson(
+    final tBody = CreateTrackBody.fromJson(
       json.decode(
-        fixture('tracking_data_body.json'),
+        fixture('create_track_body.json'),
       ),
     );
-    final tParams = ParamsCreateTrackingData(body: tBody);
+    final tParams = ParamsCreateTrack(body: tBody);
     final tEvent = CreateTimeTrackingEvent(body: tBody);
 
     blocTest(
@@ -55,7 +54,8 @@ void main() {
             fixture('general_response.json'),
           ),
         );
-        when(mockCreateTrackingData(any)).thenAnswer((_) async => Right(tResponse));
+        final result = (failure: null, response: tResponse);
+        when(mockCreateTrack(any)).thenAnswer((_) async => result);
         return bloc;
       },
       act: (TrackingBloc bloc) {
@@ -66,7 +66,7 @@ void main() {
         isA<SuccessCreateTimeTrackingState>(),
       ],
       verify: (_) {
-        verify(mockCreateTrackingData(tParams));
+        verify(mockCreateTrack(tParams));
       },
     );
 
@@ -74,7 +74,8 @@ void main() {
       'pastikan emit [LoadingTrackingState, FailureTrackingState] ketika terima event '
       'CreateTimeTrackingEvent dengan proses gagal dari endpoint',
       build: () {
-        when(mockCreateTrackingData(any)).thenAnswer((_) async => Left(ServerFailure(tErrorMessage)));
+        final result = (failure: ServerFailure(tErrorMessage), response: null);
+        when(mockCreateTrack(any)).thenAnswer((_) async => result);
         return bloc;
       },
       act: (TrackingBloc bloc) {
@@ -85,7 +86,7 @@ void main() {
         isA<FailureTrackingState>(),
       ],
       verify: (_) {
-        verify(mockCreateTrackingData(tParams));
+        verify(mockCreateTrack(tParams));
       },
     );
 
@@ -93,7 +94,8 @@ void main() {
       'pastikan emit [LoadingTrackingState, FailureTrackingState] ketika terima event '
       'CreateTimeTrackingEvent dengan kondisi internet tidak terhubung',
       build: () {
-        when(mockCreateTrackingData(any)).thenAnswer((_) async => Left(ConnectionFailure()));
+        final result = (failure: ConnectionFailure(), response: null);
+        when(mockCreateTrack(any)).thenAnswer((_) async => result);
         return bloc;
       },
       act: (TrackingBloc bloc) {
@@ -104,7 +106,7 @@ void main() {
         isA<FailureTrackingState>(),
       ],
       verify: (_) {
-        verify(mockCreateTrackingData(tParams));
+        verify(mockCreateTrack(tParams));
       },
     );
 
@@ -112,7 +114,8 @@ void main() {
       'pastikan emit [LoadingTrackingState, FailureTrackingState] ketika terima event '
       'CreateTimeTrackingEvent dengan proses gagal parsing respon JSON dari endpoint',
       build: () {
-        when(mockCreateTrackingData(any)).thenAnswer((_) async => Left(ParsingFailure(tErrorMessage)));
+        final result = (failure: ParsingFailure(tErrorMessage), response: null);
+        when(mockCreateTrack(any)).thenAnswer((_) async => result);
         return bloc;
       },
       act: (TrackingBloc bloc) {
@@ -123,7 +126,7 @@ void main() {
         isA<FailureTrackingState>(),
       ],
       verify: (_) {
-        verify(mockCreateTrackingData(tParams));
+        verify(mockCreateTrack(tParams));
       },
     );
   });
