@@ -11,4 +11,7 @@ abstract class TrackDao {
 
   @Query('DELETE FROM track WHERE id = :id')
   Future<void> deleteTrackById(int id);
+
+  @Query('DELETE FROM track')
+  Future<void> deleteAllTrack();
 }
