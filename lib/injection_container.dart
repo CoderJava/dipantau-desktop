@@ -6,21 +6,19 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
-import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
-import 'package:dipantau_desktop_client/feature/data/repository/general/general_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/project/project_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
+import 'package:dipantau_desktop_client/feature/database/app_database.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
-import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
-import 'package:dipantau_desktop_client/feature/domain/usecase/create_tracking_data/create_tracking_data.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
@@ -55,7 +53,7 @@ Future<void> init() async {
   );
   sl.registerFactory(
     () => TrackingBloc(
-      createTrackingData: sl(),
+      createTrack: sl(),
     ),
   );
   sl.registerFactory(
@@ -73,20 +71,14 @@ Future<void> init() async {
 
   // use case
   sl.registerLazySingleton(() => GetProject(repository: sl()));
-  sl.registerLazySingleton(() => CreateTrackingData(generalRepository: sl()));
   sl.registerLazySingleton(() => Login(repository: sl()));
   sl.registerLazySingleton(() => SignUp(repository: sl()));
   sl.registerLazySingleton(() => GetProfile(repository: sl()));
   sl.registerLazySingleton(() => RefreshToken(repository: sl()));
   sl.registerLazySingleton(() => GetTrackUserLite(repository: sl()));
+  sl.registerLazySingleton(() => CreateTrack(repository: sl()));
 
   // repository
-  sl.registerLazySingleton<GeneralRepository>(
-    () => GeneralRepositoryImpl(
-      generalRemoteDataSource: sl(),
-      networkInfo: sl(),
-    ),
-  );
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: sl(),
@@ -113,11 +105,6 @@ Future<void> init() async {
   );
 
   // data source
-  sl.registerLazySingleton<GeneralRemoteDataSource>(
-    () => GeneralRemoteDataSourceImpl(
-      dio: sl(instanceName: dioRefreshToken),
-    ),
-  );
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(
       dio: sl(instanceName: dioLogging),
@@ -175,4 +162,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => Helper());
   sl.registerLazySingleton(() => NotificationHelper());
+
+  // database
+  final database = await $FloorAppDatabase.databaseBuilder('dipantau.db').build();
+  sl.registerLazySingleton(() => database.trackDao);
 }
