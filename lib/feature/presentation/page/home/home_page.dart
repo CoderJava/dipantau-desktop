@@ -8,10 +8,14 @@ import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_task/track_task.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
+import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dart';
+import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
@@ -38,6 +42,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final homeBloc = sl<HomeBloc>();
+  final trackingBloc = sl<TrackingBloc>();
   final helper = sl<Helper>();
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final listTrackTask = <TrackTask>[];
@@ -50,9 +55,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final valueNotifierTaskTracked = ValueNotifier<int>(0);
   final flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
   final notificationHelper = sl<NotificationHelper>();
-  final intervalScreensot = 60 * 5; // 300 detik (5 menit)
+  final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
+  final trackDao = sl<TrackDao>();
 
   var isWindowVisible = true;
+  var userId = '';
   var email = '';
   TrackUserLiteResponse? trackUserLite;
   var isTimerStart = false;
@@ -63,7 +70,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var isHaveActivity = false;
   var counterActivity = 0;
   DateTime? startTime;
-  DateTime? endTime;
+  DateTime? finishTime;
+  Track? trackEntity;
 
   @override
   void setState(VoidCallback fn) {
@@ -74,6 +82,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   @override
   void initState() {
+    userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
     email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail) ?? '';
     initDefaultSelectedProject();
     setupWindow();
@@ -118,54 +127,72 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider<HomeBloc>(
-        create: (context) => homeBloc,
-        child: BlocListener<HomeBloc, HomeState>(
-          listener: (context, state) {
-            if (state is FailureHomeState) {
-              final errorMessage = state.errorMessage;
-              if (errorMessage.contains('401')) {
-                widgetHelper.showDialog401(context);
-                return;
-              }
-            } else if (state is SuccessLoadDataHomeState) {
-              trackUserLite = state.trackUserLiteResponse;
-              valueNotifierTotalTracked.value = trackUserLite?.trackedInSeconds ?? 0;
-              final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
-              setTrayTitle(title: strTotalTrackingTime);
-
-              final listTasks = trackUserLite?.listTasks ?? [];
-              if (listTasks.isNotEmpty) {
-                listTrackTask.clear();
-                listTrackTask.addAll(
-                  listTasks.where((element) {
-                    return element.id != null && element.name != null;
-                  }).map(
-                    (e) {
-                      return TrackTask(
-                        id: e.id!,
-                        name: e.name!,
-                        trackedInSeconds: 0,
-                      );
-                    },
-                  ),
-                );
-              }
-
-              final listTracks = trackUserLite?.listTracks ?? [];
-              if (listTracks.isNotEmpty && listTrackTask.isNotEmpty) {
-                for (var index = 0; index < listTrackTask.length; index++) {
-                  final element = listTrackTask[index];
-                  var totalTrackedInSeconds = element.trackedInSeconds;
-                  final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == element.id);
-                  for (var itemFilteredTrack in filteredTracks) {
-                    totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<HomeBloc>(
+            create: (context) => homeBloc,
+          ),
+          BlocProvider<TrackingBloc>(
+            create: (context) => trackingBloc,
+          ),
+        ],
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<HomeBloc, HomeState>(
+              listener: (context, state) {
+                if (state is FailureHomeState) {
+                  final errorMessage = state.errorMessage;
+                  if (errorMessage.contains('401')) {
+                    widgetHelper.showDialog401(context);
+                    return;
                   }
-                  listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
+                } else if (state is SuccessLoadDataHomeState) {
+                  trackUserLite = state.trackUserLiteResponse;
+                  valueNotifierTotalTracked.value = trackUserLite?.trackedInSeconds ?? 0;
+                  final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
+                  setTrayTitle(title: strTotalTrackingTime);
+
+                  final listTasks = trackUserLite?.listTasks ?? [];
+                  if (listTasks.isNotEmpty) {
+                    listTrackTask.clear();
+                    listTrackTask.addAll(
+                      listTasks.where((element) {
+                        return element.id != null && element.name != null;
+                      }).map((e) {
+                        return TrackTask(
+                          id: e.id!,
+                          name: e.name!,
+                          trackedInSeconds: 0,
+                        );
+                      }),
+                    );
+                  }
+
+                  final listTracks = trackUserLite?.listTracks ?? [];
+                  if (listTracks.isNotEmpty && listTrackTask.isNotEmpty) {
+                    for (var index = 0; index < listTrackTask.length; index++) {
+                      final element = listTrackTask[index];
+                      var totalTrackedInSeconds = element.trackedInSeconds;
+                      final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == element.id);
+                      for (var itemFilteredTrack in filteredTracks) {
+                        totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
+                      }
+                      listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
+                    }
+                  }
                 }
-              }
-            }
-          },
+              },
+            ),
+            BlocListener<TrackingBloc, TrackingState>(
+              listener: (context, state) {
+                if (state is FailureTrackingState) {
+                  if (trackEntity != null) {
+                    trackDao.insertTrack(trackEntity!);
+                  }
+                }
+              },
+            ),
+          ],
           child: SizedBox(
             width: double.infinity,
             child: buildWidgetBody(),
@@ -193,6 +220,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           buildWidgetFieldProject(),
+          const SizedBox(height: 24),
+          buildWidgetTimer(),
           const SizedBox(height: 24),
           Expanded(
             child: BlocBuilder<HomeBloc, HomeState>(
@@ -271,12 +300,12 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 final activeColor = Theme.of(context).primaryColor;
 
                 return InkWell(
-                  onTap: () {
+                  onTap: () async {
                     if (selectedTask != itemTask) {
                       if (selectedTask != null) {
                         selectedTask!.trackedInSeconds = valueNotifierTotalTracked.value;
-                        doTakeScreenshot();
-                        endTime = DateTime.now();
+                        finishTime = DateTime.now();
+                        await doTakeScreenshot();
                       }
                       selectedTask = itemTask;
                       isTimerStart = true;
@@ -285,12 +314,12 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       resetCountTimer();
                       startTimer();
                     } else {
-                      selectedTask = null;
                       isTimerStart = false;
                       itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
-                      doTakeScreenshot();
-                      endTime = DateTime.now();
+                      finishTime = DateTime.now();
+                      await doTakeScreenshot();
                       stopTimer();
+                      selectedTask = null;
                     }
                     setState(() {});
                   },
@@ -671,16 +700,76 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     });
   }
 
-  void doTakeScreenshot() {
-    platformChannelHelper.doTakeScreenshot();
+  Future<void> doTakeScreenshot() async {
+    final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
+    if (listPathScreenshots.isEmpty) {
+      return;
+    }
+    listPathScreenshots.removeWhere((element) => element == null || element.isEmpty);
+    final files = listPathScreenshots.join(',');
+
     notificationHelper.showScreenshotTakenNotification();
     var percentActivity = 0.0;
-    if (counterActivity > 0) {
-      // percentActivity = (counterActivity / intervalScreenshot) * 100;
+    if (counterActivity > 0 && countTimerInSeconds > 0) {
       percentActivity = (counterActivity / countTimerInSeconds) * 100;
     }
     counterActivity = 0;
-    // TODO: do something in here
+
+    if (selectedTask == null) {
+      return;
+    }
+
+    final taskId = selectedTask?.id;
+
+    if (startTime == null || finishTime == null) {
+      return;
+    }
+
+    final timezoneOffsetInSeconds = startTime!.timeZoneOffset.inSeconds;
+    final timezoneOffset = helper.convertSecondToHms(timezoneOffsetInSeconds);
+    var strTimezoneOffset = timezoneOffsetInSeconds >= 0 ? '+' : '-';
+    strTimezoneOffset += timezoneOffset.hour < 10 ? '0${timezoneOffset.hour}' : timezoneOffset.hour.toString();
+    strTimezoneOffset += ':';
+    strTimezoneOffset += timezoneOffset.minute < 10 ? '0${timezoneOffset.minute}' : timezoneOffset.minute.toString();
+
+    const datePattern = 'yyyy-MM-dd';
+    const timePattern = 'HH:mm:ss';
+
+    final strStartDate = helper.setDateFormat(datePattern).format(startTime!);
+    final strStartTime = helper.setDateFormat(timePattern).format(startTime!);
+    final formattedStartDateTime = '${strStartDate}T$strStartTime$strTimezoneOffset';
+
+    final strFinishDate = helper.setDateFormat(datePattern).format(finishTime!);
+    final strFinishTime = helper.setDateFormat(timePattern).format(finishTime!);
+    final formattedFinishDateTime = '${strFinishDate}T$strFinishTime$strTimezoneOffset';
+
+    final durationInSeconds = finishTime!.difference(startTime!).inSeconds.abs();
+
+    final activity = percentActivity.round();
+
+    trackEntity = Track(
+      id: 0,
+      userId: userId,
+      taskId: taskId!,
+      startDate: formattedStartDateTime,
+      finishDate: formattedFinishDateTime,
+      activity: activity,
+      files: files,
+      duration: durationInSeconds,
+    );
+    trackingBloc.add(
+      CreateTimeTrackingEvent(
+        body: CreateTrackBody(
+          userId: userId,
+          taskId: taskId,
+          startDate: formattedStartDateTime,
+          finishDate: formattedFinishDateTime,
+          activity: activity,
+          duration: durationInSeconds,
+          files: files.split(','),
+        ),
+      ),
+    );
   }
 
   void resetCountTimer() {
@@ -701,7 +790,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     }
   }
 
-  void increaseTimerTray() {
+  Future<void> increaseTimerTray() async {
     if (isHaveActivity) {
       counterActivity += 1;
     }
@@ -711,11 +800,28 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     if (selectedTask != null) {
       valueNotifierTaskTracked.value += 1;
     }
-    if (countTimerInSeconds == intervalScreensot) {
+    if (countTimerInSeconds == intervalScreenshot) {
+      finishTime = DateTime.now();
+      await doTakeScreenshot();
       resetCountTimer();
-      doTakeScreenshot();
+      startTime = DateTime.now();
+      finishTime = null;
     }
     final strTrackingTimeTemp = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
     setTrayTitle(title: strTrackingTimeTemp);
+  }
+
+  Widget buildWidgetTimer() {
+    return ValueListenableBuilder(
+      valueListenable: valueNotifierTotalTracked,
+      builder: (BuildContext context, int value, _) {
+        final strTotalTrackingTime = helper.convertTrackingTimeToString(value);
+        return Text(
+          strTotalTrackingTime,
+          style: Theme.of(context).textTheme.displayMedium,
+          textAlign: TextAlign.center,
+        );
+      },
+    );
   }
 }
