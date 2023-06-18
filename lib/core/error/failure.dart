@@ -9,7 +9,7 @@ class ConstantErrorMessage {
   final testErrorMessage = 'testErrorMessage';
 }
 
-abstract class Failure extends Equatable {}
+sealed class Failure extends Equatable {}
 
 class ServerFailure extends Failure {
   final String errorMessage;
