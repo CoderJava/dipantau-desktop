@@ -57,6 +57,13 @@ class PlatformChannelHelper {
                 strValue = strValue.substring(startIndex);
               }
             }
+
+            if (!strValue.startsWith('/')) {
+              strValue = '/$strValue';
+            }
+            if (strValue.endsWith('/')) {
+              strValue = strValue.substring(0, strValue.length - 1);
+            }
             return strValue;
           }).toList());
         }
