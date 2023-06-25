@@ -62,11 +62,10 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
                       borderRadius: BorderRadius.circular(999),
                       onTap: () => Navigator.pop(context),
                       child: const Icon(
-                        Icons.arrow_back,
-                        size: 28,
+                        Icons.arrow_back_ios,
                       ),
                     ),
-                    const SizedBox(width: 24),
+                    const SizedBox(width: 16),
                     Text(
                       'choose_project'.tr(),
                       style: Theme.of(context).textTheme.headlineSmall,
