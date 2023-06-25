@@ -160,7 +160,7 @@ Future<void> init() async {
     instanceName: dioLogging,
   );
   sl.registerLazySingleton(() => Connectivity());
-  sl.registerLazySingleton(() => Helper());
+  sl.registerLazySingleton(() => Helper(sharedPreferencesManager: sl()));
   sl.registerLazySingleton(() => NotificationHelper());
 
   // database
