@@ -4,7 +4,7 @@ import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
-import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 24),
                       buildWidgetTextFieldPassword(),
                       const SizedBox(height: 8),
-                      buildWidgetResetPassword(),
+                      // buildWidgetResetPassword(),
                       const SizedBox(height: 24),
                       buildWidgetButtonSignIn(),
                       const SizedBox(height: 24),
@@ -85,14 +85,14 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'dont_have_an_account'.tr(),
+                            'hostname_isnt_right'.tr(),
                           ),
                           InkWell(
                             onTap: () {
-                              context.push(RegisterPage.routePath);
+                              context.push(SetupCredentialPage.routePath);
                             },
                             child: Text(
-                              'Register now for free',
+                              ' ${'try_changing_it'.tr()}',
                               style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                               ),
