@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
@@ -158,21 +160,35 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final window = View.of(context);
+      updateAppearanceMode(window);
       window.platformDispatcher.onPlatformBrightnessChanged = () {
         WidgetsBinding.instance.handlePlatformBrightnessChanged();
 
         // Callback ini akan selalu terpanggil ketika host system mengalami perubahan theme
         // Callback ini akan diimplementasikan jika si user pilih pengaturan appearance di app-nya ialah system
-        final strAppearanceMode =
-            sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
-        final appearanceMode = strAppearanceMode.fromString;
-        if (appearanceMode != null && appearanceMode == AppearanceMode.system) {
-          final brightness = window.platformDispatcher.platformBrightness;
-          appearanceBloc.add(UpdateAppearanceEvent(isDarkMode: brightness == Brightness.dark));
-        }
+        updateAppearanceMode(window);
       };
     });
     super.initState();
+  }
+
+  void updateAppearanceMode(FlutterView window) {
+    final strAppearanceMode =
+        sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
+    final appearanceMode = strAppearanceMode.fromString;
+    if (appearanceMode != null) {
+      switch (appearanceMode) {
+        case AppearanceMode.light:
+          appearanceBloc.add(UpdateAppearanceEvent(isDarkMode: false));
+          break;
+        case AppearanceMode.dark:
+          appearanceBloc.add(UpdateAppearanceEvent(isDarkMode: true));
+          break;
+        case AppearanceMode.system:
+          final brightness = window.platformDispatcher.platformBrightness;
+          appearanceBloc.add(UpdateAppearanceEvent(isDarkMode: brightness == Brightness.dark));
+      }
+    }
   }
 
   @override
