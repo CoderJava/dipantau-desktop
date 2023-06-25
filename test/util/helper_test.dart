@@ -115,14 +115,18 @@ void main() {
     () async {
       // arrange
       const domainApi = 'https://example.com';
+      const appearanceMode = 'testAppearanceMode';
       when(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi)).thenReturn(domainApi);
+      when(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode)).thenReturn(appearanceMode);
 
       // act
       await helper.setLogout();
 
       // assert
       verify(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi));
+      verify(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode));
       verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, domainApi));
+      verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, appearanceMode));
     },
   );
 }

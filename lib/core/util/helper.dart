@@ -1,4 +1,5 @@
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:intl/intl.dart';
 
@@ -71,9 +72,14 @@ class Helper {
 
   Future<void> setLogout() async {
     final domainApi = sharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi) ?? '';
+    final appearanceMode =
+        sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
     sharedPreferencesManager.clearAll();
     if (domainApi.isNotEmpty) {
       sharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, domainApi);
+    }
+    if (appearanceMode.isNotEmpty) {
+      sharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, appearanceMode);
     }
   }
 }
