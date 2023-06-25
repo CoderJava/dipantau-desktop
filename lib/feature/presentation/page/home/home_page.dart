@@ -152,9 +152,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
                   setTrayTitle(title: strTotalTrackingTime);
 
+                  listTrackTask.clear();
                   final listTasks = trackUserLite?.listTasks ?? [];
                   if (listTasks.isNotEmpty) {
-                    listTrackTask.clear();
                     listTrackTask.addAll(
                       listTasks.where((element) {
                         return element.id != null && element.name != null;
@@ -307,18 +307,18 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                         finishTime = DateTime.now();
                         await doTakeScreenshot();
                       }
+                      startTime = DateTime.now();
                       selectedTask = itemTask;
                       isTimerStart = true;
                       valueNotifierTaskTracked.value = itemTask.trackedInSeconds;
-                      startTime = DateTime.now();
                       resetCountTimer();
                       startTimer();
                     } else {
                       isTimerStart = false;
                       itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
                       finishTime = DateTime.now();
-                      await doTakeScreenshot();
                       stopTimer();
+                      await doTakeScreenshot();
                       selectedTask = null;
                     }
                     setState(() {});
@@ -510,9 +510,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               borderRadius: BorderRadius.circular(999),
               onTap: () {
                 // TODO: Buat fitur sync
+                widgetHelper.showSnackBar(context, 'coming_soon'.tr());
               },
               child: const Padding(
-                padding: EdgeInsets.all(4.0),
+                padding: EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 6,
+                ),
                 child: Icon(
                   Icons.sync,
                   size: 16,
@@ -525,43 +529,17 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(999),
-              onTap: () async {
-                final isLogout = await showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text(
-                        'confirm_logout'.tr(),
-                      ),
-                      content: Text(
-                        'description_logout'.tr(),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('cancel'.tr()),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                          },
-                          child: Text('yes'.tr()),
-                        ),
-                      ],
-                    );
-                  },
-                ) as bool?;
-                if (isLogout != null && mounted) {
-                  sharedPreferencesManager.clearAll();
-                  context.goNamed(SplashPage.routeName);
-                }
+              onTap: () {
+                // TODO: Arahkan ke halaman settings_page.dart
+                widgetHelper.showSnackBar(context, 'coming_soon'.tr());
               },
               child: const Padding(
-                padding: EdgeInsets.all(4.0),
+                padding: EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 6,
+                ),
                 child: Icon(
-                  Icons.logout,
+                  Icons.settings,
                   size: 16,
                   color: Colors.white,
                 ),
@@ -573,7 +551,45 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
+  // TODO: Pindahkan function ini ke halaman settings
+  Future<void> doLogout() async {
+    final isLogout = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'confirm_logout'.tr(),
+          ),
+          content: Text(
+            'description_logout'.tr(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('cancel'.tr()),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: Text('yes'.tr()),
+            ),
+          ],
+        );
+      },
+    ) as bool?;
+    if (isLogout != null && mounted) {
+      await helper.setLogout();
+      if (mounted) {
+        context.goNamed(SplashPage.routeName);
+      }
+    }
+  }
+
   void doLoadData() {
+    listTrackTask.clear();
     final now = DateTime.now();
     final formattedNow = helper.setDateFormat('yyyy-MM-dd').format(now);
     final selectedProjectId = selectedProject?.id;
