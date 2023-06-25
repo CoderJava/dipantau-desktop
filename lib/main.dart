@@ -1,5 +1,5 @@
-import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
@@ -7,9 +7,9 @@ import 'package:dipantau_desktop_client/feature/presentation/page/register/regis
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
-import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,10 +23,11 @@ void main() async {
   await EasyLocalization.ensureInitialized();
 
   // Service locator
+  di.sl.allowReassignment = true;
   await di.init();
 
   // Window manager
-  final helper = sl<Helper>();
+  final helper = di.sl<Helper>();
   final defaultWindowSize = helper.getDefaultWindowSize;
   await windowManager.ensureInitialized();
   final windowSize = Size(defaultWindowSize, defaultWindowSize);
@@ -35,10 +36,11 @@ void main() async {
     center: true,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.normal,
+    title: 'Dipantau',
   );
   windowManager.setMinimumSize(windowSize);
   windowManager.setMaximumSize(windowSize);
-  // windowManager.setPosition(const Offset(0, 0)); // Comment jika mode production
+  windowManager.setPosition(const Offset(0, 0));
   windowManager.waitUntilReadyToShow(
     windowOptions,
     () async {
@@ -47,18 +49,14 @@ void main() async {
     },
   );
 
-  const baseUrl = 'http://localhost:8080';
-
-  // Flavor config
-  FlavorConfig(
-    values: FlavorValues(
-      baseUrl: baseUrl,
-      baseUrlAuth: '$baseUrl/auth',
-      baseUrlUser: '$baseUrl/user',
-      baseUrlTrack: '$baseUrl/track',
-      baseUrlProject: '$baseUrl/project',
-    ),
-  );
+  final sharedPreferencesManager = di.sl<SharedPreferencesManager>();
+  if (sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyDomainApi)) {
+    // const baseUrl = 'http://localhost:8080';
+    final domainApi = sharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi) ?? '';
+    if (domainApi.isNotEmpty) {
+      helper.setDomainApiToFlavor(domainApi);
+    }
+  }
 
   runApp(
     EasyLocalization(
@@ -115,6 +113,20 @@ class MyApp extends StatelessWidget {
         builder: (context, state) => ResetPasswordSuccessPage(
           email: state.queryParams['email'] ?? '',
         ),
+      ),
+      GoRoute(
+        path: SetupCredentialPage.routePath,
+        name: SetupCredentialPage.routeName,
+        builder: (context, state) {
+          final arguments = state.extra as Map<String, dynamic>?;
+          final isFromSplashScreen =
+              arguments != null && arguments.containsKey(SetupCredentialPage.parameterIsFromSplashScreen)
+                  ? arguments[SetupCredentialPage.parameterIsFromSplashScreen] as bool
+                  : false;
+          return SetupCredentialPage(
+            isFromSplashScreen: isFromSplashScreen,
+          );
+        },
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
