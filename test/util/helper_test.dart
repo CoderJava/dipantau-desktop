@@ -1,14 +1,21 @@
+import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:mockito/mockito.dart';
+
+import '../helper/mock_helper.mocks.dart';
 
 void main() {
   late Helper helper;
+  late MockSharedPreferencesManager mockSharedPreferencesManager;
 
   setUp(() {
     initializeDateFormatting('en', '');
-    helper = Helper();
+    mockSharedPreferencesManager = MockSharedPreferencesManager();
+    helper = Helper(sharedPreferencesManager: mockSharedPreferencesManager);
   });
 
   test(
@@ -78,6 +85,44 @@ void main() {
 
       // assert
       expect(result, '01:01:06');
+    },
+  );
+
+  test(
+    'pastikan fungsi setDomainApiToFlavor bisa set nilai FlavorConfig',
+    () async {
+      // arrange
+      const baseUrl = 'https://example.com';
+      const baseUrlAuth = '$baseUrl/auth';
+      const baseUrlUser = '$baseUrl/user';
+      const baseUrlTrack = '$baseUrl/track';
+      const baseUrlProject = '$baseUrl/project';
+
+      // act
+      helper.setDomainApiToFlavor('https://example.com');
+
+      // assert
+      expect(FlavorConfig.instance.values.baseUrl, baseUrl);
+      expect(FlavorConfig.instance.values.baseUrlAuth, baseUrlAuth);
+      expect(FlavorConfig.instance.values.baseUrlUser, baseUrlUser);
+      expect(FlavorConfig.instance.values.baseUrlTrack, baseUrlTrack);
+      expect(FlavorConfig.instance.values.baseUrlProject, baseUrlProject);
+    },
+  );
+
+  test(
+    'pastikan function setLogout bisa menghapus semua value didalam SharedPreferences',
+    () async {
+      // arrange
+      const domainApi = 'https://example.com';
+      when(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi)).thenReturn(domainApi);
+
+      // act
+      await helper.setLogout();
+
+      // assert
+      verify(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi));
+      verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, domainApi));
     },
   );
 }

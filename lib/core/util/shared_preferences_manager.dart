@@ -12,6 +12,7 @@ class SharedPreferencesManager {
   static const keyUserId = 'user_id';
   static const keySelectedProjectId = 'selected_project_id';
   static const keySelectedProjectName = 'selected_project_name';
+  static const keyDomainApi = 'domain_api';
 
   SharedPreferencesManager();
 
