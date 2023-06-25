@@ -25,6 +25,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_li
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
@@ -67,6 +68,9 @@ Future<void> init() async {
     () => SignUpBloc(
       signUp: sl(),
     ),
+  );
+  sl.registerFactory(
+    () => AppearanceBloc(),
   );
 
   // use case
