@@ -82,5 +82,16 @@
   "change_hostname": "Change Hostname",
   "hostname_isnt_right": "Hostname isn't right?",
   "try_changing_it": "Try changing it",
-  "example_hostname": "e.g. https://dipantau.id"
+  "example_hostname": "e.g. https://dipantau.id",
+  "screenshot_notification": "Screenshot Notification",
+  "subtitle_screenshot_notification": "Show notification while capture screenshot",
+  "setting": "Setting",
+  "current": "Current",
+  "warning_change_hostname": "Make sure your data has been synced. This change requires restarting the app.",
+  "warning": "Warning",
+  "restart_app": "Restart App",
+  "appearance": "Appearance",
+  "light": "Light",
+  "dark": "Dark",
+  "system": "System"
 }
