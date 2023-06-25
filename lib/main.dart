@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/register/regis
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
@@ -127,6 +128,11 @@ class MyApp extends StatelessWidget {
             isFromSplashScreen: isFromSplashScreen,
           );
         },
+      ),
+      GoRoute(
+        path: SettingPage.routePath,
+        name: SettingPage.routeName,
+        builder: (context, state) => const SettingPage(),
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),

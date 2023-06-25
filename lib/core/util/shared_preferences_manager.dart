@@ -13,6 +13,8 @@ class SharedPreferencesManager {
   static const keySelectedProjectId = 'selected_project_id';
   static const keySelectedProjectName = 'selected_project_name';
   static const keyDomainApi = 'domain_api';
+  static const keyIsEnableScreenshotNotification = 'is_enable_screenshot_notification';
+  static const keyAppearanceMode = 'appearance_mode';
 
   SharedPreferencesManager();
 
