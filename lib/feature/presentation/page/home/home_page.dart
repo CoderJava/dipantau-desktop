@@ -84,6 +84,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   void initState() {
     userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
     email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail) ?? '';
+    if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIsEnableScreenshotNotification)) {
+      sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsEnableScreenshotNotification, true);
+    }
     initDefaultSelectedProject();
     setupWindow();
     setupTray();
@@ -724,7 +727,12 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     listPathScreenshots.removeWhere((element) => element == null || element.isEmpty);
     final files = listPathScreenshots.join(',');
 
-    notificationHelper.showScreenshotTakenNotification();
+    final isShowScreenshotNotification =
+        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
+    if (isShowScreenshotNotification) {
+      notificationHelper.showScreenshotTakenNotification();
+    }
+
     var percentActivity = 0.0;
     if (counterActivity > 0 && countTimerInSeconds > 0) {
       percentActivity = (counterActivity / countTimerInSeconds) * 100;
