@@ -111,6 +111,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // TODO: Buat fitur forgot password
   Row buildWidgetResetPassword() {
     return Row(
       mainAxisSize: MainAxisSize.max,
@@ -125,7 +126,6 @@ class _LoginPageState extends State<LoginPage> {
                 'email': email,
               },
             );*/
-            // TODO: Buat fitur forgot password
             widgetHelper.showSnackBar(context, 'coming_soon'.tr());
           },
           child: Text(
