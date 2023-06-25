@@ -12,12 +12,15 @@ class SetupCredentialPage extends StatefulWidget {
   static const routePath = '/setup-credential';
   static const routeName = 'setup-credential';
   static const parameterIsFromSplashScreen = 'is_from_splash_screen';
+  static const parameterIsShowWarning = 'is_show_warning';
 
   final bool isFromSplashScreen;
+  final bool isShowWarning;
 
   const SetupCredentialPage({
     Key? key,
     this.isFromSplashScreen = false,
+    this.isShowWarning = false,
   }) : super(key: key);
 
   @override
@@ -107,10 +110,8 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
     return TextFormField(
       autofocus: true,
       controller: controllerHostname,
-      decoration: widgetHelper.setDefaultTextFieldDecoration(
-        labelText: 'hostname'.tr(),
-        hintText: 'example_hostname'.tr()
-      ),
+      decoration:
+          widgetHelper.setDefaultTextFieldDecoration(labelText: 'hostname'.tr(), hintText: 'example_hostname'.tr()),
       keyboardType: TextInputType.url,
       textInputAction: TextInputAction.go,
       onFieldSubmitted: (_) {
@@ -127,15 +128,43 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
 
   Future<void> saveHostname() async {
     if (formState.currentState!.validate()) {
-      final hostname = controllerHostname.text.trim();
-      await sharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, hostname);
-      helper.setDomainApiToFlavor(hostname);
-      await di.init();
-      if (mounted) {
-        if (isLogin) {
-          context.go(HomePage.routePath);
-        } else {
-          context.go('/');
+      bool? isContinue = true;
+      if (widget.isShowWarning) {
+        isContinue = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                'warning'.tr(),
+              ),
+              content: Text(
+                'warning_change_hostname'.tr(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text('cancel'.tr()),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: Text('restart_app'.tr()),
+                ),
+              ],
+            );
+          },
+        ) as bool?;
+      }
+      if (isContinue != null && isContinue) {
+        final hostname = controllerHostname.text.trim();
+        await sharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, hostname);
+        helper.setDomainApiToFlavor(hostname);
+        await di.init();
+        if (mounted) {
+          if (isLogin) {
+            context.go(HomePage.routePath);
+          } else {
+            context.go('/');
+          }
         }
       }
     }

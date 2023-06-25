@@ -1,3 +1,4 @@
+import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
@@ -23,6 +24,9 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+    if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyAppearanceMode)) {
+      sharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, AppearanceMode.light.name);
+    }
     Future.delayed(const Duration(seconds: 1)).then((_) {
       final domainApi = sharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi) ?? '';
       if (domainApi.isEmpty) {

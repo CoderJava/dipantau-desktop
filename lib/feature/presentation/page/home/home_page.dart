@@ -16,7 +16,7 @@ import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dar
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
-import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
@@ -300,7 +300,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 final itemTask = listTrackTask[index];
                 final strTrackingTime = helper.convertTrackingTimeToString(itemTask.trackedInSeconds);
                 final isStart = itemTask.id == selectedTask?.id;
-                final activeColor = Theme.of(context).primaryColor;
+                final activeColor = Theme.of(context).colorScheme.primary;
 
                 return InkWell(
                   onTap: () async {
@@ -336,7 +336,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(
-                              color: isStart ? activeColor : Colors.grey[900],
+                              color: isStart ? activeColor : null,
                             ),
                           ),
                         ),
@@ -358,7 +358,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                           },
                           child: Text(
                             strTrackingTime,
-                            style: const TextStyle(
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.grey,
                             ),
                           ),
@@ -425,7 +425,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(),
+            border: Border.all(color: Theme.of(context).colorScheme.secondary),
           ),
           padding: const EdgeInsets.symmetric(
             vertical: 4,
@@ -470,11 +470,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   Widget buildWidgetHeader() {
     return Container(
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context).colorScheme.primary,
       padding: const EdgeInsets.only(
-        left: 12,
+        left: 16,
         top: 8,
-        right: 12,
+        right: 16,
         bottom: 8,
       ),
       child: Row(
@@ -492,9 +492,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 padding: const EdgeInsets.all(4.0),
                 child: Row(
                   children: [
-                    const FaIcon(
+                    FaIcon(
                       FontAwesomeIcons.solidCircleUser,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       size: 14,
                     ),
                     const SizedBox(width: 8),
@@ -515,15 +515,15 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 // TODO: Buat fitur sync
                 widgetHelper.showSnackBar(context, 'coming_soon'.tr());
               },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
                   vertical: 4,
                   horizontal: 6,
                 ),
                 child: Icon(
                   Icons.sync,
                   size: 16,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                 ),
               ),
             ),
@@ -533,18 +533,17 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             child: InkWell(
               borderRadius: BorderRadius.circular(999),
               onTap: () {
-                // TODO: Arahkan ke halaman settings_page.dart
-                widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+                context.pushNamed(SettingPage.routeName);
               },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
                   vertical: 4,
                   horizontal: 6,
                 ),
                 child: Icon(
                   Icons.settings,
                   size: 16,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                 ),
               ),
             ),
@@ -552,43 +551,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         ],
       ),
     );
-  }
-
-  // TODO: Pindahkan function ini ke halaman settings
-  Future<void> doLogout() async {
-    final isLogout = await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'confirm_logout'.tr(),
-          ),
-          content: Text(
-            'description_logout'.tr(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('cancel'.tr()),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-              child: Text('yes'.tr()),
-            ),
-          ],
-        );
-      },
-    ) as bool?;
-    if (isLogout != null && mounted) {
-      await helper.setLogout();
-      if (mounted) {
-        context.goNamed(SplashPage.routeName);
-      }
-    }
   }
 
   void doLoadData() {
@@ -702,7 +664,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     return Text(
       strEmail,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.primaryContainer,
             fontWeight: FontWeight.bold,
           ),
     );

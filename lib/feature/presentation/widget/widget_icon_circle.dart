@@ -17,12 +17,12 @@ class WidgetIconCircle extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).primaryColor),
+        border: Border.all(color: Theme.of(context).colorScheme.primary),
         shape: BoxShape.circle,
       ),
       child: Icon(
         iconData,
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).colorScheme.primary,
         size: size,
       ),
     );

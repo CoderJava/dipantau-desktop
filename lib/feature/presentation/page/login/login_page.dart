@@ -93,9 +93,9 @@ class _LoginPageState extends State<LoginPage> {
                             },
                             child: Text(
                               ' ${'try_changing_it'.tr()}',
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
                             ),
                           ),
                         ],
@@ -130,7 +130,9 @@ class _LoginPageState extends State<LoginPage> {
           },
           child: Text(
             'forgot_password'.tr(),
-            style: TextStyle(color: Theme.of(context).primaryColor),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
           ),
         ),
       ],

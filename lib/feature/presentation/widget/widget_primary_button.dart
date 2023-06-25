@@ -5,12 +5,14 @@ class WidgetPrimaryButton extends StatelessWidget {
   final Function()? onPressed;
   final Widget child;
   final bool? isLoading;
+  final ButtonStyle? buttonStyle;
 
   const WidgetPrimaryButton({
     Key? key,
     required this.onPressed,
     required this.child,
     this.isLoading,
+    this.buttonStyle,
   }) : super(key: key);
 
   @override
@@ -19,6 +21,7 @@ class WidgetPrimaryButton extends StatelessWidget {
       height: 40,
       child: ElevatedButton(
         onPressed: onPressed,
+        style: buttonStyle,
         child: isLoading != null && isLoading! ? buildWidgetLoading() : child,
       ),
     );

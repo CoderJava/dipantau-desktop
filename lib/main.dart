@@ -1,5 +1,7 @@
+import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
@@ -13,6 +15,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
@@ -71,7 +74,16 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final appearanceBloc = di.sl<AppearanceBloc>();
+  final sharedPreferencesManager = di.sl<SharedPreferencesManager>();
   final router = GoRouter(
     routes: [
       GoRoute(
@@ -124,8 +136,12 @@ class MyApp extends StatelessWidget {
               arguments != null && arguments.containsKey(SetupCredentialPage.parameterIsFromSplashScreen)
                   ? arguments[SetupCredentialPage.parameterIsFromSplashScreen] as bool
                   : false;
+          final isShowWarning = arguments != null && arguments.containsKey(SetupCredentialPage.parameterIsShowWarning)
+              ? arguments[SetupCredentialPage.parameterIsShowWarning] as bool
+              : false;
           return SetupCredentialPage(
             isFromSplashScreen: isFromSplashScreen,
+            isShowWarning: isShowWarning,
           );
         },
       ),
@@ -138,29 +154,83 @@ class MyApp extends StatelessWidget {
     errorBuilder: (context, state) => const ErrorPage(),
   );
 
-  MyApp({super.key});
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final window = View.of(context);
+      window.platformDispatcher.onPlatformBrightnessChanged = () {
+        WidgetsBinding.instance.handlePlatformBrightnessChanged();
+
+        // Callback ini akan selalu terpanggil ketika host system mengalami perubahan theme
+        // Callback ini akan diimplementasikan jika si user pilih pengaturan appearance di app-nya ialah system
+        final strAppearanceMode =
+            sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
+        final appearanceMode = strAppearanceMode.fromString;
+        if (appearanceMode != null && appearanceMode == AppearanceMode.system) {
+          final brightness = window.platformDispatcher.platformBrightness;
+          appearanceBloc.add(UpdateAppearanceEvent(isDarkMode: brightness == Brightness.dark));
+        }
+      };
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Dipantau',
-      theme: buildTheme(),
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
-      routerConfig: router,
-      debugShowCheckedModeBanner: false,
+    return BlocProvider<AppearanceBloc>(
+      create: (context) => appearanceBloc,
+      child: BlocBuilder<AppearanceBloc, AppearanceState>(
+        builder: (context, state) {
+          var isDarkMode = false;
+          if (state is UpdatedAppearanceState) {
+            isDarkMode = state.isDarkMode;
+          }
+
+          return MaterialApp.router(
+            title: 'Dipantau',
+            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            theme: lightTheme(),
+            darkTheme: darkTheme(),
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            routerConfig: router,
+            debugShowCheckedModeBanner: false,
+          );
+        },
+      ),
     );
   }
 
-  ThemeData buildTheme() {
+  ThemeData lightTheme() {
     final baseTheme = ThemeData(
+      brightness: Brightness.light,
       primarySwatch: Colors.blue,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       useMaterial3: true,
     );
     return baseTheme.copyWith(
       textTheme: GoogleFonts.ubuntuTextTheme(baseTheme.textTheme),
+      /*colorScheme: const ColorScheme.light(
+        primary: Color(0xff6750a4),
+        secondary: Color(0xff625b71),
+      ),*/
+    );
+  }
+
+  ThemeData darkTheme() {
+    final baseTheme = ThemeData(
+      brightness: Brightness.dark,
+      primarySwatch: Colors.blue,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      useMaterial3: true,
+    );
+    return baseTheme.copyWith(
+      textTheme: GoogleFonts.ubuntuTextTheme(baseTheme.textTheme),
+      /*colorScheme: const ColorScheme.dark(
+        primary: Color(0xff6750a4),
+        secondary: Color(0xffccc2dc),
+      ),*/
     );
   }
 }

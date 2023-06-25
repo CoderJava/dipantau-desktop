@@ -24,13 +24,15 @@ class WidgetError extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.titleLarge,
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 0),
+          const SizedBox(height: 4),
           Text(
             message,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[700],
+              color: Theme.of(context).colorScheme.onBackground,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           onTryAgain == null

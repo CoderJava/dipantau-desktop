@@ -49,14 +49,14 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
             projectResponse = state.project;
           }
         },
-        child: Padding(
-          padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Row(
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
+                child: Row(
                   children: [
                     InkWell(
                       borderRadius: BorderRadius.circular(999),
@@ -72,26 +72,29 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
                     ),
                   ],
                 ),
-                Expanded(
-                  child: BlocBuilder<ProjectBloc, ProjectState>(
-                    builder: (context, state) {
-                      if (state is LoadingProjectState) {
-                        return const WidgetCustomCircularProgressIndicator();
-                      } else if (state is FailureProjectState) {
-                        final errorMessage = state.errorMessage;
-                        return WidgetError(
-                          title: '',
+              ),
+              Expanded(
+                child: BlocBuilder<ProjectBloc, ProjectState>(
+                  builder: (context, state) {
+                    if (state is LoadingProjectState) {
+                      return const WidgetCustomCircularProgressIndicator();
+                    } else if (state is FailureProjectState) {
+                      final errorMessage = state.errorMessage;
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
+                        child: WidgetError(
+                          title: 'info'.tr(),
                           message: errorMessage,
-                        );
-                      } else if (state is SuccessLoadDataProjectState) {
-                        return buildWidgetData();
-                      }
-                      return Container();
-                    },
-                  ),
+                        ),
+                      );
+                    } else if (state is SuccessLoadDataProjectState) {
+                      return buildWidgetData();
+                    }
+                    return Container();
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -113,9 +116,7 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
       child: ListView.separated(
-        padding: const EdgeInsets.only(
-          top: 24,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
         itemBuilder: (context, index) {
           final project = listProjects[index];
           final projectId = project.id;
@@ -136,16 +137,13 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
                       project.name ?? '-',
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
-                      style: TextStyle(
-                        color: Colors.grey[900],
-                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   widget.defaultSelectedProjectId == projectId
                       ? Icon(
                           Icons.check_circle,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         )
                       : Container(),
                 ],
