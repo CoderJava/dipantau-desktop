@@ -1,4 +1,4 @@
-import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -20,12 +20,14 @@ class WidgetHelper {
   InputDecoration setDefaultTextFieldDecoration({
     String? labelText,
     Widget? suffixIcon,
+    String? hintText,
   }) {
     return InputDecoration(
       labelText: labelText,
       isDense: true,
       border: const OutlineInputBorder(),
       suffixIcon: suffixIcon,
+      hintText: hintText,
     );
   }
 
@@ -43,9 +45,8 @@ class WidgetHelper {
           actions: [
             TextButton(
               onPressed: () {
-                final sharedPreferencesManager = sl<SharedPreferencesManager>();
-                sharedPreferencesManager.clearAll();
-                context.goNamed(SplashPage.routeName);
+                final helper = sl<Helper>();
+                helper.setLogout().then((_) => context.goNamed(SplashPage.routeName));
               },
               child: Text('ok'.tr()),
             ),
