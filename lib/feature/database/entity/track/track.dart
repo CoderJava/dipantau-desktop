@@ -3,7 +3,7 @@ import 'package:floor/floor.dart';
 @Entity(tableName: 'track')
 class Track {
   @PrimaryKey(autoGenerate: true)
-  final int id;
+  final int? id;
   @ColumnInfo(name: 'user_id')
   final String userId;
   @ColumnInfo(name: 'task_id')
@@ -20,7 +20,7 @@ class Track {
   final int duration;
 
   Track({
-    required this.id,
+    this.id,
     required this.userId,
     required this.taskId,
     required this.startDate,

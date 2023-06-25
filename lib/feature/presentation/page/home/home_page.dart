@@ -764,7 +764,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     final activity = percentActivity.round();
 
     trackEntity = Track(
-      id: 0,
       userId: userId,
       taskId: taskId!,
       startDate: formattedStartDateTime,
