@@ -41,7 +41,7 @@ dependencies:
 
   # A powerful HTTP client for Dart, which supports interceptors, form-data, request cancellation
   # file downloading, timeout, etc.
-  dio: ^4.0.6
+  dio: ^5.2.1+1
 
   # Flutter widget that make it easy to implement the BLoC design pattern.
   flutter_bloc: ^8.1.1

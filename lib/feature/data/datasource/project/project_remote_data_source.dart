@@ -8,7 +8,7 @@ abstract class ProjectRemoteDataSource {
   /// path parameter
   /// id - nilai ID user
   ///
-  /// Throws [DioError] untuk semua error kode
+  /// Throws [DioException] untuk semua error kode
   late String pathGetProject;
 
   Future<ProjectResponse> getProject(String userId);
@@ -41,7 +41,7 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
     if (response.statusCode.toString().startsWith('2')) {
       return ProjectResponse.fromJson(response.data);
     } else {
-      throw DioError(requestOptions: RequestOptions(path: pathGetProject));
+      throw DioException(requestOptions: RequestOptions(path: pathGetProject));
     }
   }
 }

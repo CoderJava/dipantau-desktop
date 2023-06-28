@@ -22,6 +22,29 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
+// TODO: perbaikan refresh token yang tidak jalan di endpoint post track
+
+// TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
+/**
+ * 1. CRUD user
+ * 2. CRUD projek
+ * 3. CRUD task
+ * 4. CRUD track
+ * 5. Report track
+ */
+
+// TODO: buat fitur khusus untuk admin. Admin memiliki fitur berikut:
+/**
+ * 1. CRUD projek
+ * 2. CRUD task
+ * 3. CRUD track
+ * 4. Report track
+ */
+
+// TODO: buat fitur khusus untuk employee. Employee memiliki fitur berikut:
+/// 1. CRUD task hanya untuk diri dia sendiri
+/// 2. CRUD track hanya untuk diri dia sendiri
+/// 3. Report track khusus untuk diri dia sendiri
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

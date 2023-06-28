@@ -60,9 +60,9 @@ void main() {
         // arrange
         setUpMockNetworkConnected();
         when(whenInvoke.call()).thenThrow(
-          DioError(
+          DioException(
             requestOptions: tRequestOptions,
-            error: 'testError',
+            message: 'testError',
             response: Response(
               requestOptions: tRequestOptions,
               data: 'testDataError',
@@ -132,7 +132,7 @@ void main() {
         // arrange
         setUpMockNetworkConnected();
         when(mockRemoteDataSource.getProject(any))
-            .thenThrow(DioError(requestOptions: tRequestOptions, error: 'testError'));
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
 
         // act
         final result = await repository.getProject(tUserId);
@@ -150,9 +150,9 @@ void main() {
         // arrange
         setUpMockNetworkConnected();
         when(mockRemoteDataSource.getProject(any)).thenThrow(
-          DioError(
+          DioException(
             requestOptions: tRequestOptions,
-            error: 'testError',
+            message: 'testError',
             response: Response(
               requestOptions: tRequestOptions,
               data: {

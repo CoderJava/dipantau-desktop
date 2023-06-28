@@ -32,13 +32,14 @@ class UserRepositoryImpl implements UserRepository {
       try {
         final response = await remoteDataSource.getProfile();
         return Right(response);
-      } on DioError catch (error) {
+      } on DioException catch (error) {
+        final message = error.message ?? error.toString();
         if (error.response == null) {
-          return Left(ServerFailure(error.message));
+          return Left(ServerFailure(message));
         }
         final errorMessage = getErrorMessageFromEndpoint(
           error.response?.data,
-          error.message,
+          message,
           error.response?.statusCode,
         );
         return Left(ServerFailure(errorMessage));

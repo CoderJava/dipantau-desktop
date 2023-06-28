@@ -6,7 +6,7 @@ import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_pro
 abstract class UserRemoteDataSource {
   /// Panggil endpoint [host]/profile
   ///
-  /// Throws [DioError] untuk semua error kode
+  /// Throws [DioException] untuk semua error kode
   late String pathGetProfile;
 
   Future<UserProfileResponse> getProfile();
@@ -39,7 +39,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     if (response.statusCode.toString().startsWith('2')) {
       return UserProfileResponse.fromJson(response.data);
     } else {
-      throw DioError(requestOptions: RequestOptions(path: pathGetProfile));
+      throw DioException(requestOptions: RequestOptions(path: pathGetProfile));
     }
   }
 }

@@ -86,7 +86,7 @@ void main() {
     );
 
     test(
-      'pastikan akan menerima exception DioError ketika menerima respon kegagalan dari endpoint',
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
       () async {
         // arrange
         final response = Response(
@@ -100,7 +100,7 @@ void main() {
         final call = remoteDataSource.getProfile();
 
         // assert
-        expect(() => call, throwsA(const TypeMatcher<DioError>()));
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
       },
     );
   });

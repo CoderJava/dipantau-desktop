@@ -27,7 +27,7 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     final responseCode = err.response?.statusCode;
     final accessToken = sharedPreferencesManager.getString(SharedPreferencesManager.keyAccessToken) ?? '';
 
@@ -54,7 +54,7 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
 
     if (accessToken.isEmpty) {
       return handler.reject(
-        DioError(
+        DioException(
           requestOptions: err.requestOptions,
           response: Response(
             requestOptions: err.requestOptions,

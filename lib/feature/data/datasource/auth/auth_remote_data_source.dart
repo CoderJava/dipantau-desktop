@@ -10,21 +10,21 @@ import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_respo
 abstract class AuthRemoteDataSource {
   /// Panggil endpoint [host]/auth/login
   ///
-  /// Throws [DioError] untuk semua error kode
+  /// Throws [DioException] untuk semua error kode
   late String pathLogin;
 
   Future<LoginResponse> login(LoginBody body);
 
   /// Panggil endpoint [host]/auth/signup
   ///
-  /// Throws [DioError] untuk semua error kode
+  /// Throws [DioException] untuk semua error kode
   late String pathSignUp;
 
   Future<SignUpResponse> signUp(SignUpBody body);
 
   /// Panggil endpoint [host]/auth/refresh
   ///
-  /// Throws [DioError] untuk semua error kode
+  /// Throws [DioException] untuk semua error kode
   late String pathRefreshToken;
 
   Future<LoginResponse> refreshToken(RefreshTokenBody body);
@@ -52,7 +52,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     if (response.statusCode.toString().startsWith('2')) {
       return LoginResponse.fromJson(response.data);
     } else {
-      throw DioError(requestOptions: RequestOptions(path: pathLogin));
+      throw DioException(requestOptions: RequestOptions(path: pathLogin));
     }
   }
 
@@ -83,7 +83,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     if (response.statusCode.toString().startsWith('2')) {
       return SignUpResponse.fromJson(response.data);
     } else {
-      throw DioError(requestOptions: RequestOptions(path: pathSignUp));
+      throw DioException(requestOptions: RequestOptions(path: pathSignUp));
     }
   }
 
@@ -100,7 +100,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     if (response.statusCode.toString().startsWith('2')) {
       return LoginResponse.fromJson(response.data);
     } else {
-      throw DioError(requestOptions: RequestOptions(path: pathRefreshToken));
+      throw DioException(requestOptions: RequestOptions(path: pathRefreshToken));
     }
   }
 }

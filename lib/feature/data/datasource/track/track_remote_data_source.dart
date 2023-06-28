@@ -8,14 +8,14 @@ import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track
 abstract class TrackRemoteDataSource {
   /// Panggil endpoint [host]/track/user/lite
   ///
-  /// Throws [DioError] untuk semua error kode
+  /// Throws [DioException] untuk semua error kode
   late String pathGetTrackUserLite;
 
   Future<TrackUserLiteResponse> getTrackUserLite(String date, String projectId);
 
   /// Panggil endpoint [host]/track
   ///
-  /// Throws [DioError] untuk semua error kode
+  /// Throws [DioException] untuk semua error kode
   late String pathCreateTrack;
 
   Future<GeneralResponse> createTrack(CreateTrackBody body);
@@ -52,7 +52,7 @@ class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
     if (response.statusCode.toString().startsWith('2')) {
       return TrackUserLiteResponse.fromJson(response.data);
     } else {
-      throw DioError(requestOptions: RequestOptions(path: pathGetTrackUserLite));
+      throw DioException(requestOptions: RequestOptions(path: pathGetTrackUserLite));
     }
   }
 
@@ -89,7 +89,7 @@ class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
     if (response.statusCode.toString().startsWith('2')) {
       return GeneralResponse.fromJson(response.data);
     } else {
-      throw DioError(requestOptions: RequestOptions(path: pathCreateTrack));
+      throw DioException(requestOptions: RequestOptions(path: pathCreateTrack));
     }
   }
 }
