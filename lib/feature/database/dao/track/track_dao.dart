@@ -14,4 +14,7 @@ abstract class TrackDao {
 
   @Query('DELETE FROM track')
   Future<void> deleteAllTrack();
+
+  @Query('SELECT * FROM track WHERE start_date LIKE :date OR finish_date LIKE :date')
+  Future<List<Track>> findAllTrackLikeDate(String date);
 }

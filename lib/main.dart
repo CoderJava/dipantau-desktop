@@ -23,6 +23,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
 // TODO: perbaikan refresh token yang tidak jalan di endpoint post track karena nilai status code-nya null
+// TODO: buat fitur sync manual
 
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
 /**

@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final notificationHelper = sl<NotificationHelper>();
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
   final trackDao = sl<TrackDao>();
+  final listTrackLocal = <Track>[];
 
   var isWindowVisible = true;
   var userId = '';
@@ -142,7 +143,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         child: MultiBlocListener(
           listeners: [
             BlocListener<HomeBloc, HomeState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 if (state is FailureHomeState) {
                   final errorMessage = state.errorMessage;
                   if (errorMessage.contains('401')) {
@@ -152,6 +153,15 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 } else if (state is SuccessLoadDataHomeState) {
                   trackUserLite = state.trackUserLiteResponse;
                   valueNotifierTotalTracked.value = trackUserLite?.trackedInSeconds ?? 0;
+
+                  if (listTrackLocal.isNotEmpty) {
+                    var totalTrackedFromLocal = 0;
+                    for (final element in listTrackLocal) {
+                      totalTrackedFromLocal += element.duration;
+                    }
+                    valueNotifierTotalTracked.value += totalTrackedFromLocal;
+                  }
+
                   final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
                   setTrayTitle(title: strTotalTrackingTime);
 
@@ -179,6 +189,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == element.id);
                       for (var itemFilteredTrack in filteredTracks) {
                         totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
+                      }
+                      final filteredTracksLocal = listTrackLocal.where((e) => e.taskId == element.id);
+                      for (var itemFilteredTrackLocal in filteredTracksLocal) {
+                        totalTrackedInSeconds += itemFilteredTrackLocal.duration;
                       }
                       listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
                     }
@@ -561,7 +575,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
-  void doLoadData() {
+  Future<void> doLoadData() async {
     listTrackTask.clear();
     final now = DateTime.now();
     final formattedNow = helper.setDateFormat('yyyy-MM-dd').format(now);
@@ -569,6 +583,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     if (selectedProjectId == null) {
       return;
     }
+
+    listTrackLocal.clear();
+    final newListTrackLocal = await trackDao.findAllTrackLikeDate('$formattedNow%');
+    listTrackLocal.addAll(newListTrackLocal);
 
     homeBloc.add(
       LoadDataHomeEvent(
