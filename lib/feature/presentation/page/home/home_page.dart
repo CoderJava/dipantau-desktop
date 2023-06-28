@@ -192,6 +192,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   if (trackEntity != null) {
                     trackDao.insertTrack(trackEntity!);
                   }
+                } else if (state is SuccessCreateTimeTrackingState) {
+                  final files = state.files;
+                  for (final path in files) {
+                    final file = File(path);
+                    if (file.existsSync()) {
+                      file.deleteSync();
+                    }
+                  }
                 }
               },
             ),

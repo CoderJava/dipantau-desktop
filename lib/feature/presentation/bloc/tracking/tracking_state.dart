@@ -19,4 +19,15 @@ class FailureTrackingState extends TrackingState {
   }
 }
 
-class SuccessCreateTimeTrackingState extends TrackingState {}
+class SuccessCreateTimeTrackingState extends TrackingState {
+  final List<String> files;
+
+  SuccessCreateTimeTrackingState({
+    required this.files,
+  });
+
+  @override
+  String toString() {
+    return 'SuccessCreateTimeTrackingState{files: $files}';
+  }
+}

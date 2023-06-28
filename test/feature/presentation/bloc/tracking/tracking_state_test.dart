@@ -16,4 +16,19 @@ void main() {
       },
     );
   });
+
+  group('SuccessCreateTimeTrackingState', () {
+    final tState = SuccessCreateTimeTrackingState(files: ['1', '2']);
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tState.toString(),
+          'SuccessCreateTimeTrackingState{files: ${tState.files}}',
+        );
+      },
+    );
+  });
 }
