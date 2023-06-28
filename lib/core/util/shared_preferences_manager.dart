@@ -15,6 +15,7 @@ class SharedPreferencesManager {
   static const keyDomainApi = 'domain_api';
   static const keyIsEnableScreenshotNotification = 'is_enable_screenshot_notification';
   static const keyAppearanceMode = 'appearance_mode';
+  static const keyBaseFilePathScreenshot = 'base_file_path_screenshot';
 
   SharedPreferencesManager();
 

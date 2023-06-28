@@ -367,8 +367,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                           child: Text(
                             strTrackingTime,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey,
-                            ),
+                                  color: Colors.grey,
+                                ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -695,6 +695,23 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       return;
     }
     listPathScreenshots.removeWhere((element) => element == null || element.isEmpty);
+    if (listPathScreenshots.isNotEmpty) {
+      final firstElement = listPathScreenshots.first ?? '';
+      final splitBySlash = firstElement.split('/');
+      var baseFilePath = '';
+      if (splitBySlash.isNotEmpty) {
+        for (var index = 0; index < splitBySlash.length - 1; index++) {
+          final element = splitBySlash[index];
+          baseFilePath += '/$element';
+        }
+      }
+      if (baseFilePath.isNotEmpty) {
+        await sharedPreferencesManager.putString(
+          SharedPreferencesManager.keyBaseFilePathScreenshot,
+          baseFilePath,
+        );
+      }
+    }
     final files = listPathScreenshots.join(',');
 
     final isShowScreenshotNotification =

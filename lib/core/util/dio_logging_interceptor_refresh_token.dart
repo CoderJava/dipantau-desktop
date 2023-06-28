@@ -5,6 +5,7 @@ import 'package:dipantau_desktop_client/feature/data/model/login/login_response.
 import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
+import 'package:flutter/material.dart';
 
 class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
   final SharedPreferencesManager sharedPreferencesManager;
@@ -29,28 +30,12 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final responseCode = err.response?.statusCode;
+    final message = err.message;
+    final errMessage = err.error;
+    debugPrint('response code: $responseCode');
+    debugPrint('message: $message');
+    debugPrint('errMessage: $errMessage');
     final accessToken = sharedPreferencesManager.getString(SharedPreferencesManager.keyAccessToken) ?? '';
-
-    if (isRefreshTokenProcessing) {
-      await Future.delayed(const Duration(seconds: 2));
-      final newAccessToken = sharedPreferencesManager.getString(SharedPreferencesManager.keyAccessToken) ?? '';
-      final options = err.response!.requestOptions;
-      options.headers.addAll({'Authorization': 'Bearer $newAccessToken'});
-
-      try {
-        final response = await Dio().fetch(options);
-        final statusCode = response.statusCode;
-        if (statusCode != null) {
-          if (statusCode.toString().startsWith('2')) {
-            return handler.resolve(response);
-          }
-          return handler.reject(err);
-        }
-        return handler.reject(err);
-      } catch (_) {
-        return handler.reject(err);
-      }
-    }
 
     if (accessToken.isEmpty) {
       return handler.reject(
@@ -70,7 +55,7 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
       );
     }
 
-    if (responseCode == 401) {
+    if (responseCode == 401 || responseCode == null) {
       final strRefreshToken = sharedPreferencesManager.getString(SharedPreferencesManager.keyRefreshToken) ?? '';
       if (strRefreshToken.isEmpty) {
         return handler.next(err);
@@ -92,9 +77,37 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
         await sharedPreferencesManager.putString(SharedPreferencesManager.keyAccessToken, newAccessToken);
         await sharedPreferencesManager.putString(SharedPreferencesManager.keyRefreshToken, newRefreshToken);
         isRefreshTokenProcessing = false;
-        final options = err.response!.requestOptions;
+        final options = err.requestOptions;
         options.headers.remove(baseUrlConfig.requiredToken);
         options.headers.addAll({'Authorization': 'Bearer $newAccessToken'});
+        final data = options.data;
+        if (data is FormData) {
+          var baseFilePathScreenshot =
+              sharedPreferencesManager.getString(SharedPreferencesManager.keyBaseFilePathScreenshot) ?? '';
+          if (baseFilePathScreenshot.isEmpty) {
+            return handler.reject(err);
+          }
+          if (baseFilePathScreenshot.endsWith('/')) {
+            baseFilePathScreenshot = baseFilePathScreenshot.substring(0, baseFilePathScreenshot.length - 1);
+          }
+
+          final formData = FormData();
+          formData.fields.addAll(data.fields);
+
+          // ini solusinya https://github.com/cfug/dio/issues/482#issuecomment-1463310856
+          for (final mapFile in data.files) {
+            final value = mapFile.value;
+            final filename = value.filename ?? '';
+            final pathFile = '$baseFilePathScreenshot/$filename';
+            formData.files.add(
+              MapEntry(
+                mapFile.key,
+                await MultipartFile.fromFile(pathFile, filename: filename),
+              ),
+            );
+          }
+          options.data = formData;
+        }
 
         try {
           final response = await Dio().fetch(options);
@@ -103,7 +116,7 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
             return handler.resolve(response);
           }
           return handler.reject(err);
-        } catch (_) {
+        } catch (error) {
           return handler.reject(err);
         }
       } else {
