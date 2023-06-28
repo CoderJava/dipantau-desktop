@@ -169,5 +169,7 @@ Future<void> init() async {
 
   // database
   final database = await $FloorAppDatabase.databaseBuilder('dipantau.db').build();
+  /*final databasePath = await database.getDatabasePath();
+  debugPrint('database path: $databasePath');*/
   sl.registerLazySingleton(() => database.trackDao);
 }

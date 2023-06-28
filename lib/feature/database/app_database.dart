@@ -15,4 +15,8 @@ part 'app_database.g.dart';
 )
 abstract class AppDatabase extends FloorDatabase {
   TrackDao get trackDao;
+
+  Future<String> getDatabasePath() {
+    return sqfliteDatabaseFactory.getDatabasesPath();
+  }
 }
