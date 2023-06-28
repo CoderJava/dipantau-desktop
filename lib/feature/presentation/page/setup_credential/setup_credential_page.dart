@@ -50,49 +50,42 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: widget.isFromSplashScreen ? false : true,
+
+      ),
       body: Padding(
-        padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-        child: Stack(
-          children: [
-            widget.isFromSplashScreen
-                ? Container()
-                : Align(
-                    alignment: Alignment.topLeft,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(999),
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(
-                        Icons.arrow_back_ios,
+        padding: EdgeInsets.only(
+          left: helper.getDefaultPaddingLayout,
+          top: helper.getDefaultPaddingLayoutTop,
+          right: helper.getDefaultPaddingLayout,
+          bottom: helper.getDefaultPaddingLayout,
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: Form(
+            key: formState,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildWidgetTitle(),
+                const SizedBox(height: 8),
+                Text(
+                  'subtitle_set_hostname'.tr(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey,
                       ),
-                    ),
-                  ),
-            SizedBox(
-              width: double.infinity,
-              child: Form(
-                key: formState,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    buildWidgetTitle(),
-                    const SizedBox(height: 8),
-                    Text(
-                      'subtitle_set_hostname'.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    buildWidgetTextFieldHostname(),
-                    const SizedBox(height: 24),
-                    buildWidgetButtonSave(),
-                  ],
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                const SizedBox(height: 24),
+                buildWidgetTextFieldHostname(),
+                const SizedBox(height: 24),
+                buildWidgetButtonSave(),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

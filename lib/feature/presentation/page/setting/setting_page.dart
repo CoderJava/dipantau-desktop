@@ -69,46 +69,27 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('setting'.tr()),
+        centerTitle: false,
+
+      ),
       body: SizedBox(
         width: double.infinity,
-        child: Column(
+        child: ListView(
+          padding: EdgeInsets.only(
+            left: helper.getDefaultPaddingLayout,
+            top: helper.getDefaultPaddingLayoutTop,
+            right: helper.getDefaultPaddingLayout,
+          ),
           children: [
-            Padding(
-              padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-              child: Row(
-                children: [
-                  InkWell(
-                    borderRadius: BorderRadius.circular(999),
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    'setting'.tr(),
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.only(
-                  left: helper.getDefaultPaddingLayout,
-                  right: helper.getDefaultPaddingLayout,
-                ),
-                children: [
-                  buildWidgetScreenshotNotification(),
-                  const SizedBox(height: 16),
-                  buildWidgetSetHostName(),
-                  const SizedBox(height: 16),
-                  buildWidgetChooseAppearance(),
-                  const SizedBox(height: 24),
-                  buildWidgetButtonLogout(),
-                ],
-              ),
-            ),
+            buildWidgetScreenshotNotification(),
+            const SizedBox(height: 16),
+            buildWidgetSetHostName(),
+            const SizedBox(height: 16),
+            buildWidgetChooseAppearance(),
+            const SizedBox(height: 24),
+            buildWidgetButtonLogout(),
           ],
         ),
       ),

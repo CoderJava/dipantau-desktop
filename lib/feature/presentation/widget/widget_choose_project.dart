@@ -49,52 +49,34 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
             projectResponse = state.project;
           }
         },
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
-                child: Row(
-                  children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(999),
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                      ),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'choose_project'.tr(),
+            ),
+            centerTitle: false,
+          ),
+          body: SizedBox(
+            width: double.infinity,
+            child: BlocBuilder<ProjectBloc, ProjectState>(
+              builder: (context, state) {
+                if (state is LoadingProjectState) {
+                  return const WidgetCustomCircularProgressIndicator();
+                } else if (state is FailureProjectState) {
+                  final errorMessage = state.errorMessage;
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
+                    child: WidgetError(
+                      title: 'info'.tr(),
+                      message: errorMessage,
                     ),
-                    const SizedBox(width: 16),
-                    Text(
-                      'choose_project'.tr(),
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: BlocBuilder<ProjectBloc, ProjectState>(
-                  builder: (context, state) {
-                    if (state is LoadingProjectState) {
-                      return const WidgetCustomCircularProgressIndicator();
-                    } else if (state is FailureProjectState) {
-                      final errorMessage = state.errorMessage;
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
-                        child: WidgetError(
-                          title: 'info'.tr(),
-                          message: errorMessage,
-                        ),
-                      );
-                    } else if (state is SuccessLoadDataProjectState) {
-                      return buildWidgetData();
-                    }
-                    return Container();
-                  },
-                ),
-              ),
-            ],
+                  );
+                } else if (state is SuccessLoadDataProjectState) {
+                  return buildWidgetData();
+                }
+                return Container();
+              },
+            ),
           ),
         ),
       ),
@@ -116,7 +98,12 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
       child: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
+        padding: EdgeInsets.only(
+          left: helper.getDefaultPaddingLayout,
+          top: helper.getDefaultPaddingLayoutTop,
+          right: helper.getDefaultPaddingLayout,
+          bottom: helper.getDefaultPaddingLayout,
+        ),
         itemBuilder: (context, index) {
           final project = listProjects[index];
           final projectId = project.id;
