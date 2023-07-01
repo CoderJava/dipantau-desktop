@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 
 class ConstantErrorMessage {
   final connectionError = 'connectionError';
-  final connectionRefused = "'statusCode' was called on null";
-  final connectionTimedOut = 'Connection timed out';
   final parsingError = 'parsingError';
   final failureUnknown = 'Unknown';
   final testErrorMessage = 'testErrorMessage';
