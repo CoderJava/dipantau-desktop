@@ -6,7 +6,6 @@ import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
@@ -17,6 +16,7 @@ import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
@@ -182,20 +182,19 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   }
 
                   final listTracks = trackUserLite?.listTracks ?? [];
-                  if (listTracks.isNotEmpty && listTrackTask.isNotEmpty) {
-                    for (var index = 0; index < listTrackTask.length; index++) {
-                      final element = listTrackTask[index];
-                      var totalTrackedInSeconds = element.trackedInSeconds;
-                      final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == element.id);
-                      for (var itemFilteredTrack in filteredTracks) {
-                        totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
-                      }
-                      final filteredTracksLocal = listTrackLocal.where((e) => e.taskId == element.id);
-                      for (var itemFilteredTrackLocal in filteredTracksLocal) {
-                        totalTrackedInSeconds += itemFilteredTrackLocal.duration;
-                      }
-                      listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
+                  for (var index = 0; index < listTrackTask.length; index++) {
+                    final element = listTrackTask[index];
+                    final id = element.id;
+                    var totalTrackedInSeconds = 0;
+                    final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == id);
+                    for (final itemFilteredTrack in filteredTracks) {
+                      totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
                     }
+                    final filteredTracksLocal = listTrackLocal.where((e) => e.taskId == id);
+                    for (final itemFilteredTrackLocal in filteredTracksLocal) {
+                      totalTrackedInSeconds += itemFilteredTrackLocal.duration;
+                    }
+                    listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
                   }
                 }
               },
@@ -257,7 +256,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   final errorMessage = state.errorMessage;
                   return WidgetError(
                     title: 'oops'.tr(),
-                    message: errorMessage.hideResponseCode(),
+                    message: errorMessage,
                     onTryAgain: doLoadData,
                   );
                 }
@@ -509,6 +508,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               borderRadius: BorderRadius.circular(999),
               onTap: () {
                 // TODO: Buat fitur view profile
+                widgetHelper.showSnackBar(context, 'coming_soon'.tr());
               },
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -534,8 +534,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             child: InkWell(
               borderRadius: BorderRadius.circular(999),
               onTap: () {
-                // TODO: Buat fitur sync
-                widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+                context.pushNamed(SyncPage.routeName);
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -744,7 +743,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     }
     counterActivity = 0;
 
-    if (selectedTask == null) {
+    if (selectedProject == null || selectedTask == null) {
       return;
     }
 
@@ -754,6 +753,22 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       return;
     }
 
+    final startDateTime = DateTime(
+      startTime!.year,
+      startTime!.month,
+      startTime!.day,
+      startTime!.hour,
+      startTime!.minute,
+      startTime!.second,
+    );
+    final finishDateTime = DateTime(
+      finishTime!.year,
+      finishTime!.month,
+      finishTime!.day,
+      finishTime!.hour,
+      finishTime!.minute,
+      finishTime!.second,
+    );
     final timezoneOffsetInSeconds = startTime!.timeZoneOffset.inSeconds;
     final timezoneOffset = helper.convertSecondToHms(timezoneOffsetInSeconds);
     var strTimezoneOffset = timezoneOffsetInSeconds >= 0 ? '+' : '-';
@@ -764,15 +779,15 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     const datePattern = 'yyyy-MM-dd';
     const timePattern = 'HH:mm:ss';
 
-    final strStartDate = helper.setDateFormat(datePattern).format(startTime!);
-    final strStartTime = helper.setDateFormat(timePattern).format(startTime!);
+    final strStartDate = helper.setDateFormat(datePattern).format(startDateTime);
+    final strStartTime = helper.setDateFormat(timePattern).format(startDateTime);
     final formattedStartDateTime = '${strStartDate}T$strStartTime$strTimezoneOffset';
 
-    final strFinishDate = helper.setDateFormat(datePattern).format(finishTime!);
-    final strFinishTime = helper.setDateFormat(timePattern).format(finishTime!);
+    final strFinishDate = helper.setDateFormat(datePattern).format(finishDateTime);
+    final strFinishTime = helper.setDateFormat(timePattern).format(finishDateTime);
     final formattedFinishDateTime = '${strFinishDate}T$strFinishTime$strTimezoneOffset';
 
-    final durationInSeconds = finishTime!.difference(startTime!).inSeconds.abs();
+    final durationInSeconds = finishDateTime.difference(startDateTime).inSeconds.abs();
 
     final activity = percentActivity.round();
 
@@ -784,6 +799,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       activity: activity,
       files: files,
       duration: durationInSeconds,
+      projectName: selectedProject?.name ?? '',
+      taskName: selectedTask?.name ?? '',
     );
     trackingBloc.add(
       CreateTimeTrackingEvent(

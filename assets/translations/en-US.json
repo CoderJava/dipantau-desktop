@@ -93,5 +93,49 @@
   "appearance": "Appearance",
   "light": "Light",
   "dark": "Dark",
-  "system": "System"
+  "system": "System",
+  "track_not_sync": "Track Not Sync",
+  "title_connection_error": "Oops, No Internet Connection",
+  "subtitle_connection_error": "It seems there is something wrong with your internet connection. Please connect to the internet and try again.",
+  "title_parsing_failure": "Oops, Something's Not Right",
+  "subtitle_parsing_failure": "We are already working to fix this.",
+  "screen_n": {
+    "zero": "0 screen",
+    "one": "1 screen",
+    "two": "2 screens",
+    "many": "{} screens",
+    "other": "{} screens"
+  },
+  "invalid_time": "Invalid time",
+  "activity_percent": "{}% of {}",
+  "alias_hour_n": "{}h",
+  "alias_minute_n": "{}m",
+  "alias_second_n": "{}s",
+  "hour_n": {
+    "zero": "0 hour",
+    "one": "1 hour",
+    "two": "2 hours",
+    "many": "{} hours",
+    "other": "{} hours"
+  },
+  "minute_n": {
+    "zero": "0 minute",
+    "one": "1 minute",
+    "two": "2 minutes",
+    "many": "{} minutes",
+    "other": "{} minutes"
+  },
+  "second_n": {
+    "zero": "0 second",
+    "one": "1 second",
+    "two": "2 seconds",
+    "many": "{} seconds",
+    "other": "{} seconds"
+  },
+  "invalid_activity": "Invalid activity",
+  "title_delete_track": "Delete track?",
+  "content_delete_track": "Are you sure you want to delete? You can't undo this action.",
+  "delete": "Delete",
+  "invalid_id_track": "Error: Invalid ID track",
+  "track_data_deleted_successfully": "Track data deleted successfully"
 }

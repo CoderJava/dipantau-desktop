@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/app
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
@@ -14,6 +15,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/reset_password
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -22,15 +24,15 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
-// TODO: perbaikan refresh token yang tidak jalan di endpoint post track karena nilai status code-nya null
-// TODO: buat fitur sync manual
+// TODO: buat fitur sync manual (on progress)
+// TODO: buat cron yang jalan setiap menit untuk kirimkan data track yang belum sync
 
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
 /**
  * 1. CRUD user
  * 2. CRUD projek
  * 3. CRUD task
- * 4. CRUD track
+ * 4. CRUD track manual
  * 5. Report track
  */
 
@@ -38,13 +40,13 @@ import 'package:window_manager/window_manager.dart';
 /**
  * 1. CRUD projek
  * 2. CRUD task
- * 3. CRUD track
+ * 3. CRUD track manual
  * 4. Report track
  */
 
 // TODO: buat fitur khusus untuk employee. Employee memiliki fitur berikut:
 /// 1. CRUD task hanya untuk diri dia sendiri
-/// 2. CRUD track hanya untuk diri dia sendiri
+/// 2. CRUD track manual hanya untuk diri dia sendiri
 /// 3. Report track khusus untuk diri dia sendiri
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,7 +83,6 @@ void main() async {
 
   final sharedPreferencesManager = di.sl<SharedPreferencesManager>();
   if (sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyDomainApi)) {
-    // const baseUrl = 'http://localhost:8080';
     final domainApi = sharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi) ?? '';
     if (domainApi.isNotEmpty) {
       helper.setDomainApiToFlavor(domainApi);
@@ -175,6 +176,22 @@ class _MyAppState extends State<MyApp> {
         path: SettingPage.routePath,
         name: SettingPage.routeName,
         builder: (context, state) => const SettingPage(),
+      ),
+      GoRoute(
+        path: SyncPage.routePath,
+        name: SyncPage.routeName,
+        builder: (context, state) => const SyncPage(),
+      ),
+      GoRoute(
+        path: PhotoViewPage.routePath,
+        name: PhotoViewPage.routeName,
+        builder: (context, state) {
+          final arguments = state.extra as Map<String, dynamic>?;
+          final listPhotos = arguments != null && arguments.containsKey(PhotoViewPage.parameterListPhotos)
+              ? arguments[PhotoViewPage.parameterListPhotos] as List<String>?
+              : null;
+          return PhotoViewPage(listPhotos: listPhotos);
+        },
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
