@@ -11,6 +11,8 @@ void main() {
     activity: 0,
     files: "testFiles",
     duration: 0,
+    projectName: 'testProjectName',
+    taskName: 'testTaskName',
   );
 
   test(
@@ -21,7 +23,7 @@ void main() {
         tEntity.toString(),
         'Track{id: ${tEntity.id}, userId: ${tEntity.userId}, taskId: ${tEntity.taskId}, startDate: ${tEntity.startDate}, '
         'finishDate: ${tEntity.finishDate}, activity: ${tEntity.activity}, files: ${tEntity.files}, '
-        'duration: ${tEntity.duration}}',
+        'duration: ${tEntity.duration}, projectName: ${tEntity.projectName}, taskName: ${tEntity.taskName}}',
       );
     },
   );

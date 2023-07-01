@@ -18,6 +18,10 @@ class Track {
   final String files;
   @ColumnInfo(name: 'duration')
   final int duration;
+  @ColumnInfo(name: 'project_name')
+  final String projectName;
+  @ColumnInfo(name: 'task_name')
+  final String taskName;
 
   Track({
     this.id,
@@ -28,11 +32,13 @@ class Track {
     required this.activity,
     required this.files,
     required this.duration,
+    required this.projectName,
+    required this.taskName,
   });
 
   @override
   String toString() {
     return 'Track{id: $id, userId: $userId, taskId: $taskId, startDate: $startDate, finishDate: $finishDate, '
-        'activity: $activity, files: $files, duration: $duration}';
+        'activity: $activity, files: $files, duration: $duration, projectName: $projectName, taskName: $taskName}';
   }
 }
