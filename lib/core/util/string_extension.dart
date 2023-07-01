@@ -1,6 +1,32 @@
+import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 extension StringExtension on String {
+
+  String convertErrorMessageToHumanMessage() {
+    var string = replaceAll('null', '').trim();
+    final constantErrorMessage = ConstantErrorMessage();
+    if (string == constantErrorMessage.connectionError) {
+      return 'subtitle_connection_error'.tr();
+    } else if (string.contains(constantErrorMessage.parsingError)) {
+      return 'subtitle_parsing_failure'.tr();
+    } else {
+      return string;
+    }
+  }
+
+  String setTitleErrorMessage(String defaultValue) {
+    var string = replaceAll('null', '').trim();
+    final constantErrorMessage = ConstantErrorMessage();
+    if (string == constantErrorMessage.connectionError) {
+      return 'title_connection_error'.tr();
+    } else if (string.contains(constantErrorMessage.parsingError)) {
+      return 'title_parsing_failure'.tr();
+    } else {
+      return defaultValue;
+    }
+  }
+
   String hideResponseCode() {
     final string = trim();
     final listResponseCode = <String>[
