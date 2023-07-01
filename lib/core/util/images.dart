@@ -5,3 +5,8 @@ class BaseIconTray {
   static const iconOriginalIco = '$_iconPath/tray_icon_original.ico';
   static const iconOriginalPng = '$_iconPath/tray_icon_original.png';
 }
+
+class BaseImage {
+  static const _path = 'assets/images';
+  static const imagePlaceholder = '$_path/image_placeholder.jpeg';
+}
