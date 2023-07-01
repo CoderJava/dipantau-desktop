@@ -91,7 +91,7 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
     final listProjects = projectResponse?.data ?? <ItemProjectResponse>[];
     if (listProjects.isEmpty) {
       return WidgetError(
-        title: '',
+        title: 'info'.tr(),
         message: 'no_data_to_display'.tr(),
       );
     }
