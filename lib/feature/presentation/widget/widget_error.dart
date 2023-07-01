@@ -1,3 +1,4 @@
+import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +23,13 @@ class WidgetError extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge,
+            message.setTitleErrorMessage(title).hideResponseCode(),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           Text(
-            message,
+            message.convertErrorMessageToHumanMessage().hideResponseCode(),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onBackground,
             ),
