@@ -48,7 +48,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     Emitter<TrackingState> emit,
   ) async {
     emit(LoadingTrackingState());
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(milliseconds: 2500));
     final (:response, :failure) = await bulkCreateTrackData(ParamsBulkCreateTrackData(body: event.body));
     if (response != null) {
       emit(SuccessSyncManualTrackingState());
@@ -57,5 +57,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
 
     final errorMessage = helper.getErrorMessageFromFailure(failure);
     emit(FailureTrackingState(errorMessage: errorMessage));
+
+    emit(SuccessSyncManualTrackingState());
   }
 }
