@@ -10,3 +10,8 @@ class BaseImage {
   static const _path = 'assets/images';
   static const imagePlaceholder = '$_path/image_placeholder.jpeg';
 }
+
+class BaseAnimation {
+  static const _path = 'assets/animations';
+  static const animationUpload = '$_path/animation_upload.json';
+}
