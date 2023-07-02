@@ -14,4 +14,6 @@ class BaseImage {
 class BaseAnimation {
   static const _path = 'assets/animations';
   static const animationUpload = '$_path/animation_upload.json';
+  static const animationFailure = '$_path/animation_failure.json';
+  static const animationSuccess = '$_path/animation_success.json';
 }
