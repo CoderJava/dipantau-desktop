@@ -1,4 +1,5 @@
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:intl/intl.dart';
@@ -82,6 +83,19 @@ class Helper {
     }
     if (appearanceMode.isNotEmpty) {
       sharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, appearanceMode);
+    }
+  }
+
+  String getErrorMessageFromFailure(Failure? failure) {
+    switch (failure) {
+      case ServerFailure():
+        return failure.errorMessage;
+      case ConnectionFailure():
+        return failure.errorMessage;
+      case ParsingFailure():
+        return failure.defaultErrorMessage;
+      default:
+        return ConstantErrorMessage().failureUnknown;
     }
   }
 }

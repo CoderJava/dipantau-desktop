@@ -1,4 +1,5 @@
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,6 +39,14 @@ void main() {
     () async {
       // assert
       expect(helper.getDefaultPaddingLayout, 16.0);
+    },
+  );
+
+  test(
+    'pastikan output dari variable getDefaultPaddingLayoutTop',
+    () async {
+      // assert
+      expect(helper.getDefaultPaddingLayoutTop, 8.0);
     },
   );
 
@@ -117,7 +126,8 @@ void main() {
       const domainApi = 'https://example.com';
       const appearanceMode = 'testAppearanceMode';
       when(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi)).thenReturn(domainApi);
-      when(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode)).thenReturn(appearanceMode);
+      when(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode))
+          .thenReturn(appearanceMode);
 
       // act
       await helper.setLogout();
@@ -127,6 +137,27 @@ void main() {
       verify(mockSharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode));
       verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, domainApi));
       verify(mockSharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, appearanceMode));
+    },
+  );
+
+  test(
+    'pastikan function getErrorMessageFromFailure bisa mengembalikan pesan sesuai dengan class-nya',
+    () async {
+      // arrange
+      const message = 'testErrorMessage';
+      final constantErrorMessage = ConstantErrorMessage();
+
+      // act
+      final serverFailure = helper.getErrorMessageFromFailure(ServerFailure(message));
+      final connectionFailure = helper.getErrorMessageFromFailure(ConnectionFailure());
+      final parsingFailure = helper.getErrorMessageFromFailure(ParsingFailure(message));
+      final unknownFailure = helper.getErrorMessageFromFailure(null);
+
+      // assert
+      expect(serverFailure, message);
+      expect(connectionFailure, constantErrorMessage.connectionError);
+      expect(parsingFailure, constantErrorMessage.parsingError);
+      expect(unknownFailure, constantErrorMessage.failureUnknown);
     },
   );
 }
