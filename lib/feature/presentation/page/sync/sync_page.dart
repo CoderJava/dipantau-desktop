@@ -72,6 +72,11 @@ class _SyncPageState extends State<SyncPage> {
       create: (context) => trackingBloc,
       child: BlocListener<TrackingBloc, TrackingState>(
         listener: (context, state) {
+          if (state is! LoadingTrackingState) {
+            // untuk menutup dialog loading
+            Navigator.pop(context);
+          }
+
           if (state is FailureTrackingState) {
             final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
             if (errorMessage.contains('401')) {
@@ -81,109 +86,127 @@ class _SyncPageState extends State<SyncPage> {
             widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
           } else if (state is SuccessSyncManualTrackingState) {
             final ids = listTracks.where((element) => element.id != null).map((e) => e.id!).toList();
-            widgetHelper.showSnackBar(context, 'uploading_data_successfully'.tr());
             trackDao.deleteMultipleTrackByIds(ids).then((_) => doLoadData());
+            showDialogSuccessfully();
+          } else if (state is LoadingTrackingState) {
+            showDialogLoading();
           }
         },
         child: Scaffold(
-          body: Stack(
-            children: [
-              Scaffold(
-                appBar: AppBar(
-                  title: Text('track_not_sync'.tr()),
-                  centerTitle: false,
-                  actions: [
-                    listTracks.isEmpty
-                        ? Container()
-                        : Padding(
-                            padding: const EdgeInsets.only(right: 16.0),
-                            child: WidgetPrimaryButton(
-                              onPressed: () {
-                                final body = BulkCreateTrackDataBody(
-                                  data: listTracks.map((e) {
-                                    final files = e.files;
-                                    final listFileName = <String>[];
-                                    if (files.contains(',')) {
-                                      final splitFile = files.split(',');
-                                      for (final file in splitFile) {
-                                        final filename = file.split('/');
-                                        listFileName.add(filename.last);
-                                      }
-                                    } else {
-                                      final filename = files.split('/');
-                                      listFileName.add(filename.last);
-                                    }
-                                    return ItemBulkCreateTrackDataBody(
-                                      taskId: e.taskId,
-                                      startDate: e.startDate,
-                                      finishDate: e.finishDate,
-                                      activity: e.activity,
-                                      duration: e.duration,
-                                      listFileName: listFileName,
-                                    );
-                                  }).toList(),
-                                );
-                                trackingBloc.add(
-                                  SyncManualTrackingEvent(
-                                    body: body,
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                'sync_now'.tr(),
-                              ),
+          appBar: AppBar(
+            title: Text('track_not_sync'.tr()),
+            centerTitle: false,
+            actions: [
+              listTracks.isEmpty
+                  ? Container()
+                  : Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: WidgetPrimaryButton(
+                        onPressed: () {
+                          final body = BulkCreateTrackDataBody(
+                            data: listTracks.map((e) {
+                              final files = e.files;
+                              final listFileName = <String>[];
+                              if (files.contains(',')) {
+                                final splitFile = files.split(',');
+                                for (final file in splitFile) {
+                                  final filename = file.split('/');
+                                  listFileName.add(filename.last);
+                                }
+                              } else {
+                                final filename = files.split('/');
+                                listFileName.add(filename.last);
+                              }
+                              return ItemBulkCreateTrackDataBody(
+                                taskId: e.taskId,
+                                startDate: e.startDate,
+                                finishDate: e.finishDate,
+                                activity: e.activity,
+                                duration: e.duration,
+                                listFileName: listFileName,
+                              );
+                            }).toList(),
+                          );
+                          trackingBloc.add(
+                            SyncManualTrackingEvent(
+                              body: body,
                             ),
-                          ),
-                  ],
-                ),
-                body: buildWidgetBody(),
-              ),
-              BlocBuilder<TrackingBloc, TrackingState>(
-                builder: (context, state) {
-                  if (state is LoadingTrackingState) {
-                    return buildWidgetLoadingSync();
-                  }
-                  return Container();
-                },
-              ),
+                          );
+                        },
+                        child: Text(
+                          'sync_now'.tr(),
+                        ),
+                      ),
+                    ),
             ],
           ),
+          body: buildWidgetBody(),
         ),
       ),
     );
   }
 
-  Widget buildWidgetLoadingSync() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.grey[900]!.withOpacity(.7),
-      child: Center(
-        child: Container(
-          width: widthScreen / 2.5,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+  void showDialogLoading() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: LottieBuilder.asset(
+            BaseAnimation.animationUpload,
+            repeat: false,
+            width: 92,
+            height: 92,
           ),
-          // padding: const EdgeInsets.all(16),
-          child: Column(
+          content: Text(
+            'uploading_data'.tr(),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        );
+      },
+    );
+  }
+
+  void showDialogSuccessfully() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: LottieBuilder.asset(
+            BaseAnimation.animationSuccess,
+            repeat: false,
+            width: 64,
+            height: 64,
+          ),
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              LottieBuilder.asset(
-                BaseAnimation.animationUpload,
-                width: widthScreen / 6,
-              ),
               Text(
-                'uploading_data'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey,
-                ),
+                'uploading_data_successfully'.tr(),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const SizedBox(height: 16),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'note'.tr(),
+                    ),
+                    TextSpan(
+                      text: ' ${'screenshot_data_sync_background'.tr()}',
+                    ),
+                  ],
+                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
