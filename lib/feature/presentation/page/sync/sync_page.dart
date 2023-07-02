@@ -3,17 +3,23 @@ import 'dart:io';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
 import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
+import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
 class SyncPage extends StatefulWidget {
   static const routePath = '/sync';
@@ -26,6 +32,7 @@ class SyncPage extends StatefulWidget {
 }
 
 class _SyncPageState extends State<SyncPage> {
+  final trackingBloc = sl<TrackingBloc>();
   final trackDao = sl<TrackDao>();
   final listTracks = <Track>[];
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
@@ -34,6 +41,7 @@ class _SyncPageState extends State<SyncPage> {
 
   var userId = '';
   var isLoaded = false;
+  var widthScreen = 0.0;
 
   @override
   void setState(VoidCallback fn) {
@@ -45,22 +53,137 @@ class _SyncPageState extends State<SyncPage> {
   @override
   void initState() {
     userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      listTracks.addAll(await trackDao.findAllTrack(userId));
-      isLoaded = true;
-      setState(() {});
-    });
+    doLoadData();
     super.initState();
+  }
+
+  Future<void> doLoadData() async {
+    listTracks.clear();
+    listTracks.addAll(await trackDao.findAllTrack(userId));
+    isLoaded = true;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('track_not_sync'.tr()),
-        centerTitle: false,
+    final mediaQueryData = MediaQuery.of(context);
+    widthScreen = mediaQueryData.size.width;
+    return BlocProvider<TrackingBloc>(
+      create: (context) => trackingBloc,
+      child: BlocListener<TrackingBloc, TrackingState>(
+        listener: (context, state) {
+          if (state is FailureTrackingState) {
+            final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+            if (errorMessage.contains('401')) {
+              widgetHelper.showDialog401(context);
+              return;
+            }
+            widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
+          } else if (state is SuccessSyncManualTrackingState) {
+            final ids = listTracks.where((element) => element.id != null).map((e) => e.id!).toList();
+            widgetHelper.showSnackBar(context, 'uploading_data_successfully'.tr());
+            trackDao.deleteMultipleTrackByIds(ids).then((_) => doLoadData());
+          }
+        },
+        child: Scaffold(
+          body: Stack(
+            children: [
+              Scaffold(
+                appBar: AppBar(
+                  title: Text('track_not_sync'.tr()),
+                  centerTitle: false,
+                  actions: [
+                    listTracks.isEmpty
+                        ? Container()
+                        : Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: WidgetPrimaryButton(
+                              onPressed: () {
+                                final body = BulkCreateTrackDataBody(
+                                  data: listTracks.map((e) {
+                                    final files = e.files;
+                                    final listFileName = <String>[];
+                                    if (files.contains(',')) {
+                                      final splitFile = files.split(',');
+                                      for (final file in splitFile) {
+                                        final filename = file.split('/');
+                                        listFileName.add(filename.last);
+                                      }
+                                    } else {
+                                      final filename = files.split('/');
+                                      listFileName.add(filename.last);
+                                    }
+                                    return ItemBulkCreateTrackDataBody(
+                                      taskId: e.taskId,
+                                      startDate: e.startDate,
+                                      finishDate: e.finishDate,
+                                      activity: e.activity,
+                                      duration: e.duration,
+                                      listFileName: listFileName,
+                                    );
+                                  }).toList(),
+                                );
+                                trackingBloc.add(
+                                  SyncManualTrackingEvent(
+                                    body: body,
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'sync_now'.tr(),
+                              ),
+                            ),
+                          ),
+                  ],
+                ),
+                body: buildWidgetBody(),
+              ),
+              BlocBuilder<TrackingBloc, TrackingState>(
+                builder: (context, state) {
+                  if (state is LoadingTrackingState) {
+                    return buildWidgetLoadingSync();
+                  }
+                  return Container();
+                },
+              ),
+            ],
+          ),
+        ),
       ),
-      body: buildWidgetBody(),
+    );
+  }
+
+  Widget buildWidgetLoadingSync() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.grey[900]!.withOpacity(.7),
+      child: Center(
+        child: Container(
+          width: widthScreen / 2.5,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          // padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              LottieBuilder.asset(
+                BaseAnimation.animationUpload,
+                width: widthScreen / 6,
+              ),
+              Text(
+                'uploading_data'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -74,7 +197,7 @@ class _SyncPageState extends State<SyncPage> {
         padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
         child: WidgetError(
           title: 'info'.tr(),
-          message: 'no_data_to_display'.tr(),
+          message: 'your_data_is_already_synced'.tr(),
         ),
       );
     }

@@ -118,6 +118,10 @@ dependencies:
   # interactive images and other stuff such as SVG.
   photo_view: ^0.14.0
 
+  # Render After Effects animations natively on Flutter. This package is a pure Dart implementation
+  # of a Lottie player.
+  lottie: ^2.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -166,6 +170,7 @@ flutter:
     - assets/translations/
     - assets/fake_json/
     - assets/images/
+    - assets/animations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
