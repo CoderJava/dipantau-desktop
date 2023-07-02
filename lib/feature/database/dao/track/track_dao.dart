@@ -17,4 +17,7 @@ abstract class TrackDao {
 
   @Query('SELECT * FROM track WHERE start_date LIKE :date OR finish_date LIKE :date')
   Future<List<Track>> findAllTrackLikeDate(String date);
+
+  @Query('DELETE FROM track WHERE id IN (:ids)')
+  Future<void> deleteMultipleTrackByIds(List<int> ids);
 }
