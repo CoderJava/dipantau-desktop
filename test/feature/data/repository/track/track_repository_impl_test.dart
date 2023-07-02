@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
@@ -346,5 +348,189 @@ void main() {
     );
 
     testDisconnected2(() => repository.createTrack(tBody));
+  });
+
+  group('bulkCreateTrackData', () {
+    final tBody = BulkCreateTrackDataBody.fromJson(
+      json.decode(
+        fixture('bulk_create_track_data_body.json'),
+      ),
+    );
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.bulkCreateTrackData(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.bulkCreateTrackData(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.bulkCreateTrackData(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.bulkCreateTrackData(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.bulkCreateTrackData(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.bulkCreateTrackData(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.bulkCreateTrackData(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.bulkCreateTrackData(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.bulkCreateTrackData(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.bulkCreateTrackData(any),
+      () => repository.bulkCreateTrackData(tBody),
+      () => mockRemoteDataSource.bulkCreateTrackData(tBody),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.bulkCreateTrackData(any),
+      () => repository.bulkCreateTrackData(tBody),
+      () => mockRemoteDataSource.bulkCreateTrackData(tBody),
+    );
+
+    testDisconnected2(() => repository.bulkCreateTrackData(tBody));
+  });
+
+  group('bulkCreateTrackImage', () {
+    final tBody = BulkCreateTrackImageBody.fromJson(
+      json.decode(
+        fixture('bulk_create_track_image_body.json'),
+      ),
+    );
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.bulkCreateTrackImage(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.bulkCreateTrackImage(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.bulkCreateTrackImage(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.bulkCreateTrackImage(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.bulkCreateTrackImage(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.bulkCreateTrackImage(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.bulkCreateTrackImage(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.bulkCreateTrackImage(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.bulkCreateTrackImage(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.bulkCreateTrackImage(any),
+      () => repository.bulkCreateTrackImage(tBody),
+      () => mockRemoteDataSource.bulkCreateTrackImage(tBody),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.bulkCreateTrackImage(any),
+      () => repository.bulkCreateTrackImage(tBody),
+      () => mockRemoteDataSource.bulkCreateTrackImage(tBody),
+    );
+
+    testDisconnected2(() => repository.bulkCreateTrackImage(tBody));
   });
 }
