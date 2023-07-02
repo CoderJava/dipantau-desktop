@@ -64,14 +64,25 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
               ),
               Align(
                 alignment: Alignment.topLeft,
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.clear,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black.withOpacity(.5),
                   ),
-                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(
+                    left: 8,
+                    top: 8,
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Colors.white,
+                    ),
+                    padding: const EdgeInsets.all(8),
+                  ),
                 ),
               ),
               Align(
@@ -83,6 +94,10 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
   }
 
   Widget buildWidgetSliderPreviewPhoto() {
+    if (listPhotos.length == 1) {
+      return Container();
+    }
+
     const defaultSize = 64.0;
     return SizedBox(
       height: defaultSize,
