@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/base_url_config.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
@@ -19,6 +21,20 @@ abstract class TrackRemoteDataSource {
   late String pathCreateTrack;
 
   Future<GeneralResponse> createTrack(CreateTrackBody body);
+
+  /// Panggil endpoint [host]/track/bulk/data
+  ///
+  /// Throws [DioException] untuk semua error kode
+  late String pathBulkCreateTrackData;
+
+  Future<GeneralResponse> bulkCreateTrackData(BulkCreateTrackDataBody body);
+
+  /// Panggil endpoint [host]/track/bulk/image
+  ///
+  /// Throws [DioException] untuk semua error kode
+  late String pathBulkCreateTrackImage;
+
+  Future<GeneralResponse> bulkCreateTrackImage(BulkCreateTrackImageBody body);
 }
 
 class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
@@ -90,6 +106,59 @@ class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
       return GeneralResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathCreateTrack));
+    }
+  }
+
+  @override
+  String pathBulkCreateTrackData = '';
+
+  @override
+  Future<GeneralResponse> bulkCreateTrackData(BulkCreateTrackDataBody body) async {
+    pathBulkCreateTrackData = '$baseUrl/bulk/data';
+    final response = await dio.post(
+      pathBulkCreateTrackData,
+      data: body.toJson(),
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return GeneralResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathBulkCreateTrackData));
+    }
+  }
+
+  @override
+  String pathBulkCreateTrackImage = '';
+
+  @override
+  Future<GeneralResponse> bulkCreateTrackImage(BulkCreateTrackImageBody body) async {
+    final listMultipartFiles = <MultipartFile>[];
+    for (final itemFile in body.files) {
+      final file = await MultipartFile.fromFile(itemFile);
+      listMultipartFiles.add(file);
+    }
+    final formDataMap = <String, dynamic>{
+      'files[]': listMultipartFiles,
+    };
+    final formData = FormData.fromMap(formDataMap);
+    pathBulkCreateTrackImage = '$baseUrl/bulk/image';
+    final response = await dio.post(
+      pathBulkCreateTrackImage,
+      data: formData,
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return GeneralResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathBulkCreateTrackImage));
     }
   }
 }
