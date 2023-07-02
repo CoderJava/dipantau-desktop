@@ -137,5 +137,11 @@
   "content_delete_track": "Are you sure you want to delete? You can't undo this action.",
   "delete": "Delete",
   "invalid_id_track": "Error: Invalid ID track",
-  "track_data_deleted_successfully": "Track data deleted successfully"
+  "track_data_deleted_successfully": "Track data deleted successfully",
+  "sync_now": "Sync Now",
+  "uploading_data": "Uploading data",
+  "your_data_is_already_synced": "Your data is already synced",
+  "uploading_data_successfully": "Upload data successfully",
+  "note": "Note:",
+  "screenshot_data_sync_background": "All screenshots will sync in the background."
 }
