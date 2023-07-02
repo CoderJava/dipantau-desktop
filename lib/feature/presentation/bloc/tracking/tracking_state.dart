@@ -31,3 +31,5 @@ class SuccessCreateTimeTrackingState extends TrackingState {
     return 'SuccessCreateTimeTrackingState{files: $files}';
   }
 }
+
+class SuccessSyncManualTrackingState extends TrackingState {}

@@ -14,3 +14,14 @@ class CreateTimeTrackingEvent extends TrackingEvent {
     return 'CreateTimeTrackingEvent{body: $body}';
   }
 }
+
+class SyncManualTrackingEvent extends TrackingEvent {
+  final BulkCreateTrackDataBody body;
+
+  SyncManualTrackingEvent({required this.body});
+
+  @override
+  String toString() {
+    return 'SyncManualTrackingEvent{body: $body}';
+  }
+}
