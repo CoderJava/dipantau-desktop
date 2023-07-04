@@ -7,6 +7,8 @@ import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_task/track_task.dart';
@@ -27,6 +29,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -66,7 +69,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var isTimerStart = false;
   ItemProjectResponse? selectedProject;
   TrackTask? selectedTask;
-  Timer? timer;
+  Timer? timeTrack, timerCronTrack;
   var countTimerInSeconds = 0;
   var isHaveActivity = false;
   var counterActivity = 0;
@@ -94,9 +97,84 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     doStartActivityListener();
     notificationHelper.requestPermissionNotification();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      setupCronTimer();
       doLoadData();
     });
     super.initState();
+  }
+
+  void setupCronTimer() {
+    timerCronTrack = Timer.periodic(
+      const Duration(minutes: 3),
+      (_) async {
+        BulkCreateTrackDataBody? bodyData;
+        final tracks = await trackDao.findAllTrack(userId);
+        final dataTrack = tracks.map((e) {
+          final files = e.files;
+          final listFileName = <String>[];
+          if (files.contains(',')) {
+            final splitFile = files.split(',');
+            for (final file in splitFile) {
+              final filename = file.split('/');
+              listFileName.add(filename.last);
+            }
+          } else {
+            final filename = files.split('/');
+            listFileName.add(filename.last);
+          }
+          return ItemBulkCreateTrackDataBody(
+            id: e.id,
+            taskId: e.taskId,
+            startDate: e.startDate,
+            finishDate: e.finishDate,
+            activity: e.activity,
+            duration: e.duration,
+            listFileName: listFileName,
+          );
+        }).toList();
+        if (dataTrack.isNotEmpty) {
+          bodyData = BulkCreateTrackDataBody(
+            data: dataTrack,
+          );
+        }
+
+        final directory = await getApplicationDocumentsDirectory();
+        final directoryPath = '${directory.path}/dipantau';
+        final isDirectoryExists = platformChannelHelper.checkDirectory(directoryPath);
+        BulkCreateTrackImageBody? bodyImage;
+        if (isDirectoryExists) {
+          final files = <String>[];
+          final directoryScreenshot = Directory(directoryPath);
+          final contents = directoryScreenshot.listSync();
+          var counter = 0;
+          for (final itemContent in contents) {
+            if (counter >= 10) {
+              break;
+            }
+
+            final path = itemContent.path;
+            final type = await FileSystemEntity.type(path);
+            if (type != FileSystemEntityType.file) {
+              continue;
+            } else if (!File(path).existsSync()) {
+              continue;
+            }
+
+            files.add(path);
+            counter += 1;
+          }
+          if (files.isNotEmpty) {
+            bodyImage = BulkCreateTrackImageBody(files: files);
+          }
+        }
+        trackingBloc.add(
+          CronTrackingEvent(
+            bodyData: bodyData,
+            bodyImage: bodyImage,
+          ),
+        );
+      },
+    );
   }
 
   void initDefaultSelectedProject() {
@@ -114,6 +192,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   void dispose() {
     windowManager.removeListener(this);
     trayManager.removeListener(this);
+    timerCronTrack?.cancel();
     super.dispose();
   }
 
@@ -213,6 +292,18 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       file.deleteSync();
                     }
                   }
+                } else if (state is SuccessCronTrackingState) {
+                  // TODO: tampilkan info last sync at: 22:09 04 Jul 2023
+                  final ids = state.ids;
+                  final files = state.files;
+                  trackDao.deleteMultipleTrackByIds(ids).then((value) {
+                    for (final itemFile in files) {
+                      final file = File(itemFile);
+                      if (file.existsSync()) {
+                        file.deleteSync();
+                      }
+                    }
+                  });
                 }
               },
             ),
@@ -802,6 +893,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       projectName: selectedProject?.name ?? '',
       taskName: selectedTask?.name ?? '',
     );
+
+    // TODO: debug mode untuk tes siapkan data sync manual
+    /*if (trackEntity != null) {
+      trackDao.insertTrack(trackEntity!);
+    }*/
+
+    // TODO: uncomment kode berikut jika sudah selesai fitur sync manual
     trackingBloc.add(
       CreateTimeTrackingEvent(
         body: CreateTrackBody(
@@ -824,14 +922,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   void startTimer() {
     stopTimer();
     increaseTimerTray();
-    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    timeTrack = Timer.periodic(const Duration(seconds: 1), (_) {
       increaseTimerTray();
     });
   }
 
   void stopTimer() {
-    if (timer != null && timer!.isActive) {
-      timer!.cancel();
+    if (timeTrack != null && timeTrack!.isActive) {
+      timeTrack!.cancel();
     }
   }
 

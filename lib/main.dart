@@ -24,8 +24,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
-// TODO: buat fitur sync manual (on progress)
-// TODO: buat cron yang jalan setiap menit untuk kirimkan data track yang belum sync
+// TODO: buat pengaturan untuk channel ID discord kirim gambar screenshot-nya
 
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
 /**

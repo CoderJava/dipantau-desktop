@@ -48,7 +48,7 @@ dependencies:
 
   # Custom event transformers inspired by ember concurrency.
   # Built to be used with the bloc state management package.
-  bloc_concurrency: ^0.2.0
+  bloc_concurrency: ^0.2.2
 
   # Package provides internationalized and localized messages, including message translation,
   # plurals and genders, date/number formatting and parsing, and bidirectional text.
