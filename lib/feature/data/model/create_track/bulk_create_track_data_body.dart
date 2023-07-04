@@ -27,6 +27,8 @@ class BulkCreateTrackDataBody extends Equatable {
 
 @JsonSerializable()
 class ItemBulkCreateTrackDataBody extends Equatable {
+  @JsonKey(name: 'id', includeFromJson: false, includeToJson: false)
+  final int? id;
   @JsonKey(name: 'task_id')
   final int taskId;
   @JsonKey(name: 'start_date')
@@ -41,6 +43,7 @@ class ItemBulkCreateTrackDataBody extends Equatable {
   final List<String> listFileName;
 
   ItemBulkCreateTrackDataBody({
+    this.id,
     required this.taskId,
     required this.startDate,
     required this.finishDate,
@@ -56,6 +59,7 @@ class ItemBulkCreateTrackDataBody extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
         taskId,
         startDate,
         finishDate,
@@ -66,7 +70,7 @@ class ItemBulkCreateTrackDataBody extends Equatable {
 
   @override
   String toString() {
-    return 'ItemBulkCreateTrackDataBody{taskId: $taskId, startDate: $startDate, finishDate: $finishDate, '
+    return 'ItemBulkCreateTrackDataBody{id: $id, taskId: $taskId, startDate: $startDate, finishDate: $finishDate, '
         'activity: $activity, duration: $duration, listFileName: $listFileName}';
   }
 }
