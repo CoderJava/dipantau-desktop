@@ -38,11 +38,29 @@ void main() {
 
     test(
       'pastikan output dari fungsi toString',
-          () async {
+      () async {
         // assert
         expect(
           tEvent.toString(),
           'SyncManualTrackingEvent{body: ${tEvent.body}}',
+        );
+      },
+    );
+  });
+
+  group('CronTrackingEvent', () {
+    final tEvent = CronTrackingEvent(
+      bodyData: null,
+      bodyImage: null,
+    );
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tEvent.toString(),
+          'CronTrackingEvent{bodyData: ${tEvent.bodyData}, bodyImage: ${tEvent.bodyImage}}',
         );
       },
     );

@@ -31,4 +31,22 @@ void main() {
       },
     );
   });
+
+  group('SuccessCronTrackingState', () {
+    final tState = SuccessCronTrackingState(
+      ids: [],
+      files: [],
+    );
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tState.toString(),
+          'SuccessCronTrackingState{ids: ${tState.ids}, files: ${tState.files}}',
+        );
+      },
+    );
+  });
 }

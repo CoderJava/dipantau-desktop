@@ -19,6 +19,7 @@ import 'package:dipantau_desktop_client/feature/domain/repository/project/projec
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_data/bulk_create_track_data.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_image/bulk_create_track_image.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
@@ -58,6 +59,7 @@ Future<void> init() async {
       createTrack: sl(),
       bulkCreateTrackData: sl(),
       helper: sl(),
+      bulkCreateTrackImage: sl(),
     ),
   );
   sl.registerFactory(
@@ -85,6 +87,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetTrackUserLite(repository: sl()));
   sl.registerLazySingleton(() => CreateTrack(repository: sl()));
   sl.registerLazySingleton(() => BulkCreateTrackData(repository: sl()));
+  sl.registerLazySingleton(() => BulkCreateTrackImage(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
