@@ -118,6 +118,7 @@ class _SyncPageState extends State<SyncPage> {
                                 listFileName.add(filename.last);
                               }
                               return ItemBulkCreateTrackDataBody(
+                                id: e.id,
                                 taskId: e.taskId,
                                 startDate: e.startDate,
                                 finishDate: e.finishDate,
