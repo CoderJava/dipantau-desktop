@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -185,5 +186,92 @@ void main() {
     );
 
     testDisconnected(() => repository.getProfile());
+  });
+
+  group('getAllMembers', () {
+    final tResponse = ListUserProfileResponse.fromJson(
+      json.decode(
+        fixture('list_user_profile_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model ListUserProfileResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getAllMembers()).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.getAllMembers();
+
+        // assert
+        verify(mockRemoteDataSource.getAllMembers());
+        expect(result, Right(tResponse));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getAllMembers())
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.getAllMembers();
+
+        // assert
+        verify(mockRemoteDataSource.getAllMembers());
+        expect(result, Left(ServerFailure('testError')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getAllMembers()).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.getAllMembers();
+
+        // assert
+        verify(mockRemoteDataSource.getAllMembers());
+        expect(result, Left(ServerFailure('400 testMessageError')));
+      },
+    );
+
+    testServerFailureString(
+      () => mockRemoteDataSource.getAllMembers(),
+      () => repository.getAllMembers(),
+      () => mockRemoteDataSource.getAllMembers(),
+    );
+
+    testParsingFailure(
+      () => mockRemoteDataSource.getAllMembers(),
+      () => repository.getAllMembers(),
+      () => mockRemoteDataSource.getAllMembers(),
+    );
+
+    testDisconnected(() => repository.getAllMembers());
   });
 }
