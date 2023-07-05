@@ -5,7 +5,7 @@ enum AppearanceMode {
 }
 
 extension AppearanceModeExtension on String {
-  AppearanceMode? get fromString {
+  AppearanceMode? get fromStringAppearanceMode {
     if (this == AppearanceMode.system.name) {
       return AppearanceMode.system;
     } else if (this == AppearanceMode.light.name) {

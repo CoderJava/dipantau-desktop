@@ -1,6 +1,8 @@
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
+import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
@@ -28,9 +30,11 @@ class _SettingPageState extends State<SettingPage> {
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final valueNotifierIsEnableScreenshotNotification = ValueNotifier(false);
   final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
+  final widgetHelper = WidgetHelper();
 
   var hostname = '';
   late AppearanceBloc appearanceBloc;
+  UserRole? userRole;
 
   @override
   void setState(VoidCallback fn) {
@@ -42,6 +46,8 @@ class _SettingPageState extends State<SettingPage> {
   @override
   void initState() {
     appearanceBloc = BlocProvider.of<AppearanceBloc>(context);
+    final strUserRole = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserRole) ?? '';
+    userRole = strUserRole.fromStringUserRole;
     prepareData();
     super.initState();
   }
@@ -60,7 +66,7 @@ class _SettingPageState extends State<SettingPage> {
 
     final strAppearanceMode =
         sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
-    final appearanceMode = strAppearanceMode.fromString;
+    final appearanceMode = strAppearanceMode.fromStringAppearanceMode;
     if (appearanceMode != null) {
       valueNotifierAppearanceMode.value = appearanceMode;
     }
@@ -72,7 +78,6 @@ class _SettingPageState extends State<SettingPage> {
       appBar: AppBar(
         title: Text('setting'.tr()),
         centerTitle: false,
-
       ),
       body: SizedBox(
         width: double.infinity,
@@ -81,13 +86,20 @@ class _SettingPageState extends State<SettingPage> {
             left: helper.getDefaultPaddingLayout,
             top: helper.getDefaultPaddingLayoutTop,
             right: helper.getDefaultPaddingLayout,
+            bottom: helper.getDefaultPaddingLayout + 8,
           ),
           children: [
+            Text(
+              'general'.tr(),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
             buildWidgetScreenshotNotification(),
             const SizedBox(height: 16),
             buildWidgetSetHostName(),
             const SizedBox(height: 16),
             buildWidgetChooseAppearance(),
+            buildWidgetCompanySetting(),
             const SizedBox(height: 24),
             buildWidgetButtonLogout(),
           ],
@@ -360,5 +372,171 @@ class _SettingPageState extends State<SettingPage> {
         context.goNamed(SplashPage.routeName);
       }
     }
+  }
+
+  Widget buildWidgetMember() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'members'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'add_edit_or_remove_member'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () {
+            // TODO: Arahkan ke halaman member_setting_page.dart
+            widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Icon(
+              Icons.keyboard_arrow_right,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetProject() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'projects'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'add_edit_or_remove_project'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () {
+            // TODO: Arahkan ke halaman project_setting_page.dart
+            widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Icon(
+              Icons.keyboard_arrow_right,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetTask() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'tasks_2'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'add_edit_or_remove_task'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () {
+            // TODO: Arahkan ke halaman task_setting_page.dart
+            widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Icon(
+              Icons.keyboard_arrow_right,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetCompanySetting() {
+    if (userRole == null || userRole != UserRole.superAdmin) {
+      return Container();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        const Divider(),
+        const SizedBox(height: 16),
+        Text(
+          'company'.tr(),
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        buildWidgetMember(),
+        const SizedBox(height: 16),
+        buildWidgetProject(),
+        const SizedBox(height: 16),
+        buildWidgetTask(),
+      ],
+    );
   }
 }

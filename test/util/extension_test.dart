@@ -11,9 +11,9 @@ void main() {
       final system = AppearanceMode.system.name;
 
       // act
-      final resultLight = light.fromString;
-      final resultDark = dark.fromString;
-      final resultSystem = system.fromString;
+      final resultLight = light.fromStringAppearanceMode;
+      final resultDark = dark.fromStringAppearanceMode;
+      final resultSystem = system.fromStringAppearanceMode;
 
       // assert
       expect(resultLight, AppearanceMode.light);
