@@ -6,5 +6,5 @@ import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_pro
 abstract class UserRepository {
   Future<Either<Failure, UserProfileResponse>> getProfile();
 
-  Future<Either<Failure, ListUserProfileResponse>> getAllMembers();
+  Future<({Failure? failure, ListUserProfileResponse? response})> getAllMembers();
 }

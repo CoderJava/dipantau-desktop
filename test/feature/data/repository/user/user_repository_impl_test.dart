@@ -53,6 +53,23 @@ void main() {
     );
   }
 
+  void testDisconnected2(Function endpointInvoke) {
+    test(
+      'pastikan mengembalikan objek ConnectionFailure ketika device tidak terhubung ke internet',
+          () async {
+        // arrange
+        setUpMockNetworkDisconnected();
+
+        // act
+        final result = await endpointInvoke.call();
+
+        // assert
+        verify(mockNetworkInfo.isConnected);
+        expect(result.failure, ConnectionFailure());
+      },
+    );
+  }
+
   void testServerFailureString(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ServerFailure ketika EmployeeRepository menerima respon kegagalan '
@@ -82,6 +99,35 @@ void main() {
     );
   }
 
+  void testServerFailureString2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika EmployeeRepository menerima respon kegagalan '
+          'dari endpoint dengan respon data html atau string',
+          () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(whenInvoke.call()).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: 'testDataError',
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await actInvoke.call();
+
+        // assert
+        verify(verifyInvoke.call());
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+  }
+
   void testParsingFailure(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
@@ -97,6 +143,25 @@ void main() {
         // assert
         verify(verifyInvoke.call());
         expect(result, Left(ParsingFailure(TypeError().toString())));
+      },
+    );
+  }
+
+  void testParsingFailure2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
+    test(
+      'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
+          'dari endpoint',
+          () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(whenInvoke.call()).thenThrow(TypeError());
+
+        // act
+        final result = await actInvoke.call();
+
+        // assert
+        verify(verifyInvoke.call());
+        expect(result.failure, ParsingFailure(TypeError().toString()));
       },
     );
   }
@@ -208,7 +273,7 @@ void main() {
 
         // assert
         verify(mockRemoteDataSource.getAllMembers());
-        expect(result, Right(tResponse));
+        expect(result.response, tResponse);
       },
     );
 
@@ -226,7 +291,7 @@ void main() {
 
         // assert
         verify(mockRemoteDataSource.getAllMembers());
-        expect(result, Left(ServerFailure('testError')));
+        expect(result.failure, ServerFailure('testError'));
       },
     );
 
@@ -256,22 +321,22 @@ void main() {
 
         // assert
         verify(mockRemoteDataSource.getAllMembers());
-        expect(result, Left(ServerFailure('400 testMessageError')));
+        expect(result.failure, ServerFailure('400 testMessageError'));
       },
     );
 
-    testServerFailureString(
+    testServerFailureString2(
       () => mockRemoteDataSource.getAllMembers(),
       () => repository.getAllMembers(),
       () => mockRemoteDataSource.getAllMembers(),
     );
 
-    testParsingFailure(
+    testParsingFailure2(
       () => mockRemoteDataSource.getAllMembers(),
       () => repository.getAllMembers(),
       () => mockRemoteDataSource.getAllMembers(),
     );
 
-    testDisconnected(() => repository.getAllMembers());
+    testDisconnected2(() => repository.getAllMembers());
   });
 }

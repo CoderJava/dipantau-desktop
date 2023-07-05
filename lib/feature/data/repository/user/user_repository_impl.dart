@@ -54,29 +54,32 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, ListUserProfileResponse>> getAllMembers() async {
+  Future<({Failure? failure, ListUserProfileResponse? response})> getAllMembers() async {
+    Failure? failure;
+    ListUserProfileResponse? response;
     final isConnected = await networkInfo.isConnected;
     if (isConnected) {
       try {
-        final response = await remoteDataSource.getAllMembers();
-        return Right(response);
+        response = await remoteDataSource.getAllMembers();
       } on DioException catch (error) {
         final message = error.message ?? error.toString();
         if (error.response == null) {
-          return Left(ServerFailure(message));
+          failure = ServerFailure(message);
+        } else {
+          final errorMessage = getErrorMessageFromEndpoint(
+            error.response?.data,
+            message,
+            error.response?.statusCode,
+          );
+          failure = ServerFailure(errorMessage);
         }
-        final errorMessage = getErrorMessageFromEndpoint(
-          error.response?.data,
-          message,
-          error.response?.statusCode,
-        );
-        return Left(ServerFailure(errorMessage));
       } on TypeError catch (error) {
         final errorMessage = error.toString();
-        return Left(ParsingFailure(errorMessage));
+        failure = ParsingFailure(errorMessage);
       }
     } else {
-      return Left(ConnectionFailure());
+      failure = ConnectionFailure();
     }
+    return (failure: failure, response: response);
   }
 }
