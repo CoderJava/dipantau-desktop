@@ -1,9 +1,10 @@
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
+import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
-    'pastikan output dari extension fromString yang di appearance_mode bisa mengembalikan enum AppearanceMode',
+    'pastikan output dari extension fromStringAppearanceMode yang di appearance_mode bisa mengembalikan enum AppearanceMode',
     () async {
       // arrange
       final light = AppearanceMode.light.name;
@@ -19,6 +20,26 @@ void main() {
       expect(resultLight, AppearanceMode.light);
       expect(resultDark, AppearanceMode.dark);
       expect(resultSystem, AppearanceMode.system);
+    },
+  );
+
+  test(
+    'pastikan output dari extension fromStringUserRole yang di user_role bisa mengembalikan enum UserRole',
+    () async {
+      // arrange
+      final superAdmin = UserRole.superAdmin.name;
+      final admin = UserRole.admin.name;
+      final employee = UserRole.employee.name;
+
+      // act
+      final resultSuperAdmin = superAdmin.fromStringUserRole;
+      final resultAdmin = admin.fromStringUserRole;
+      final resultEmployee = employee.fromStringUserRole;
+
+      // assert
+      expect(resultSuperAdmin, UserRole.superAdmin);
+      expect(resultAdmin, UserRole.admin);
+      expect(resultEmployee, UserRole.employee);
     },
   );
 }
