@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/app
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
@@ -28,7 +29,7 @@ import 'package:window_manager/window_manager.dart';
 
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
 /**
- * 1. CRUD user
+ * 1. CRUD user (on progress)
  * 2. CRUD projek
  * 3. CRUD task
  * 4. CRUD track manual
@@ -192,6 +193,11 @@ class _MyAppState extends State<MyApp> {
           return PhotoViewPage(listPhotos: listPhotos);
         },
       ),
+      GoRoute(
+        path: MemberSettingPage.routePath,
+        name: MemberSettingPage.routeName,
+        builder: (context, state) => const MemberSettingPage(),
+      ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
   );
@@ -215,7 +221,7 @@ class _MyAppState extends State<MyApp> {
   void updateAppearanceMode(FlutterView window) {
     final strAppearanceMode =
         sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
-    final appearanceMode = strAppearanceMode.fromString;
+    final appearanceMode = strAppearanceMode.fromStringAppearanceMode;
     if (appearanceMode != null) {
       switch (appearanceMode) {
         case AppearanceMode.light:

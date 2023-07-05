@@ -4,6 +4,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
@@ -400,8 +401,7 @@ class _SettingPageState extends State<SettingPage> {
         InkWell(
           borderRadius: BorderRadius.circular(999),
           onTap: () {
-            // TODO: Arahkan ke halaman member_setting_page.dart
-            widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+            context.pushNamed(MemberSettingPage.routeName);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(

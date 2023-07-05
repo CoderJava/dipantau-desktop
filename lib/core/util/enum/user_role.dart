@@ -1,10 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
+
 enum UserRole {
   superAdmin,
   admin,
   employee,
 }
 
-extension UserRoleExtension on String {
+extension StringUserRoleExtension on String {
   UserRole? get fromStringUserRole {
     if (this == UserRole.superAdmin.name) {
       return UserRole.superAdmin;
@@ -14,5 +16,20 @@ extension UserRoleExtension on String {
       return UserRole.employee;
     }
     return null;
+  }
+}
+
+extension UserRoleExtension on UserRole {
+  String? get toName {
+    switch (this) {
+      case UserRole.superAdmin:
+        return 'super_admin'.tr();
+      case UserRole.admin:
+        return 'admin'.tr();
+      case UserRole.employee:
+        return 'employee'.tr();
+      default:
+        return null;
+    }
   }
 }

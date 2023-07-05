@@ -294,6 +294,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   }
                 } else if (state is SuccessCronTrackingState) {
                   // TODO: tampilkan info last sync at: 22:09 04 Jul 2023
+                  // TODO: info ini akan ditampilkan dibagian paling bawah sama seperti tampilan hubstaff
                   final ids = state.ids;
                   final files = state.files;
                   trackDao.deleteMultipleTrackByIds(ids).then((value) {

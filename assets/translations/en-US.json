@@ -143,5 +143,21 @@
   "your_data_is_already_synced": "Your data is already synced",
   "uploading_data_successfully": "Upload data successfully",
   "note": "Note:",
-  "screenshot_data_sync_background": "All screenshots will sync in the background."
+  "screenshot_data_sync_background": "All screenshots will sync in the background.",
+  "general": "General",
+  "company": "Company",
+  "members": "Members",
+  "add_edit_or_remove_member": "Add, edit, or remove member",
+  "projects": "Projects",
+  "add_edit_or_remove_project": "Add, edit, or remove project",
+  "tasks_2": "Tasks",
+  "add_edit_or_remove_task": "Add, edit, or remove task",
+  "member_setting": "Member Setting",
+  "name": "Name",
+  "role": "Role",
+  "email_2": "Email",
+  "super_admin": "Super Admin",
+  "admin": "Admin",
+  "employee": "Employee",
+  "create": "Create"
 }
