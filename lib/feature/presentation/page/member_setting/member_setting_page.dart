@@ -3,6 +3,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/add_member/add_member_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
@@ -11,6 +12,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class MemberSettingPage extends StatefulWidget {
   static const routePath = '/member-setting';
@@ -56,7 +58,11 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
             padding: const EdgeInsets.only(right: 16),
             child: WidgetPrimaryButton(
               onPressed: () {
-                // TODO: buat fitur add member
+                context.pushNamed<bool?>(AddMemberPage.routeName).then((isRefresh) {
+                  if (isRefresh != null) {
+                    doLoadData();
+                  }
+                });
               },
               child: Row(
                 children: [
@@ -88,6 +94,7 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
             } else if (state is SuccessLoadListMemberState) {
               final data = state.response.data ?? [];
               data.sort((a, b) => (a.name ?? '').compareTo(b.name ?? ''));
+              rows.clear();
               for (final itemData in data) {
                 final name = itemData.name;
                 final role = itemData.role;
@@ -105,15 +112,15 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () {
-                          // TODO: Arahkan ke halaman member_detail_page.dart
+                          // TODO: Arahkan ke halaman member_detail_page.dart (on progress)
                         },
                         child: Text(
                           name,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                       ),
                     ),
@@ -185,9 +192,9 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
             columns: columns,
             rows: rows,
             headingTextStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
             dataRowMaxHeight: 64,
           ),
         ),
