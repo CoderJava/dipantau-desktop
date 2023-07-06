@@ -19,6 +19,8 @@ class Helper {
 
   double get getDefaultPaddingLayoutTop => 8.0;
 
+  double get getDefaultPaddingLayoutBottom => 24.0;
+
   double get getDefaultWindowSize => 500.0;
 
   DateFormat setDateFormat(String pattern, {String? languageCode}) {
