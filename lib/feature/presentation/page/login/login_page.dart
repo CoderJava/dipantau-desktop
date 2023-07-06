@@ -180,7 +180,9 @@ class _LoginPageState extends State<LoginPage> {
               onTap: () {
                 valueNotifierShowPassword.value = !valueNotifierShowPassword.value;
               },
-              child: Icon(isShowPassword ? Icons.visibility : Icons.visibility_off),
+              child: Icon(
+                isShowPassword ? Icons.visibility : Icons.visibility_off,
+              ),
             ),
           ),
           obscureText: !isShowPassword,
