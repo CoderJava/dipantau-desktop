@@ -4,6 +4,7 @@ import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/add_member/add_member_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
@@ -197,6 +198,11 @@ class _MyAppState extends State<MyApp> {
         path: MemberSettingPage.routePath,
         name: MemberSettingPage.routeName,
         builder: (context, state) => const MemberSettingPage(),
+      ),
+      GoRoute(
+        path: AddMemberPage.routePath,
+        name: AddMemberPage.routeName,
+        builder: (context, state) => const AddMemberPage(),
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
