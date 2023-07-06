@@ -21,6 +21,7 @@ class WidgetHelper {
     String? labelText,
     Widget? suffixIcon,
     String? hintText,
+    FloatingLabelBehavior? floatingLabelBehavior,
   }) {
     return InputDecoration(
       labelText: labelText,
@@ -28,6 +29,7 @@ class WidgetHelper {
       border: const OutlineInputBorder(),
       suffixIcon: suffixIcon,
       hintText: hintText,
+      floatingLabelBehavior: floatingLabelBehavior,
     );
   }
 
