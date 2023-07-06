@@ -51,6 +51,14 @@ void main() {
   );
 
   test(
+    'pastikan output dari variable getDefaultPaddingLayoutBottom',
+    () async {
+      // assert
+      expect(helper.getDefaultPaddingLayoutBottom, 24.0);
+    },
+  );
+
+  test(
     'pastikan output dari variable getDefaultWindowSize',
     () async {
       // assert
