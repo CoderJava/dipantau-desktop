@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
         create: (context) => loginBloc,
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
-            isLoading = state is LoadingLoginState;
+            setState(() => isLoading = state is LoadingLoginState);
             if (state is FailureLoginState) {
               final errorMessage = state.errorMessage;
               widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
