@@ -29,3 +29,5 @@ class SuccessLoadListMemberState extends MemberState {
     return 'SuccessLoadListMemberState{response: $response}';
   }
 }
+
+class SuccessEditMemberState extends MemberState {}
