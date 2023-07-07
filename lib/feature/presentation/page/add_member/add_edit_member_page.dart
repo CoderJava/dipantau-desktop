@@ -4,7 +4,9 @@ import 'package:dipantau_desktop_client/core/util/password_validator.dart';
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/update_user/update_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
@@ -32,6 +34,7 @@ class AddEditMemberPage extends StatefulWidget {
 
 class _AddEditMemberPageState extends State<AddEditMemberPage> {
   final signUpBloc = sl<SignUpBloc>();
+  final memberBloc = sl<MemberBloc>();
   final widgetHelper = WidgetHelper();
   final controllerName = TextEditingController();
   final controllerEmail = TextEditingController();
@@ -81,26 +84,56 @@ class _AddEditMemberPageState extends State<AddEditMemberPage> {
           ),
           centerTitle: false,
         ),
-        body: BlocProvider<SignUpBloc>(
-          create: (context) => signUpBloc,
-          child: BlocListener<SignUpBloc, SignUpState>(
-            listener: (context, state) {
-              isLoading = state is LoadingSignUpState;
-              if (state is FailureSignUpState) {
-                final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
-                if (errorMessage.contains('401')) {
-                  widgetHelper.showDialog401(context);
-                  return;
-                }
-                widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
-              } else if (state is SuccessSubmitSignUpState) {
-                widgetHelper.showSnackBar(
-                  context,
-                  'create_member_successfully'.tr(),
-                );
-                context.pop(true);
-              }
-            },
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<SignUpBloc>(
+              create: (context) => signUpBloc,
+            ),
+            BlocProvider<MemberBloc>(
+              create: (context) => memberBloc,
+            ),
+          ],
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<SignUpBloc, SignUpState>(
+                listener: (context, state) {
+                  setState(() => isLoading = state is LoadingSignUpState);
+                  if (state is FailureSignUpState) {
+                    final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+                    if (errorMessage.contains('401')) {
+                      widgetHelper.showDialog401(context);
+                      return;
+                    }
+                    widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
+                  } else if (state is SuccessSubmitSignUpState) {
+                    widgetHelper.showSnackBar(
+                      context,
+                      'create_member_successfully'.tr(),
+                    );
+                    context.pop(true);
+                  }
+                },
+              ),
+              BlocListener<MemberBloc, MemberState>(
+                listener: (context, state) {
+                  setState(() => isLoading = state is LoadingCenterOverlayMemberState);
+                  if (state is FailureMemberState) {
+                    final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+                    if (errorMessage.contains('401')) {
+                      widgetHelper.showDialog401(context);
+                      return;
+                    }
+                    widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
+                  } else if (state is SuccessEditMemberState) {
+                    widgetHelper.showSnackBar(
+                      context,
+                      'update_member_successfully'.tr(),
+                    );
+                    context.pop(true);
+                  }
+                },
+              ),
+            ],
             child: Form(
               key: formState,
               child: ListView(
@@ -236,7 +269,23 @@ class _AddEditMemberPageState extends State<AddEditMemberPage> {
         ),
       );
     } else {
-      // TODO: buat fitur edit member
+      final id = defaultValue?.id;
+      if (id == null) {
+        widgetHelper.showSnackBar(context, 'invalid_user_id_2'.tr());
+        return;
+      } else if (userRole == null) {
+        widgetHelper.showSnackBar(context, 'invalid_user_role'.tr());
+      }
+
+      memberBloc.add(
+        EditMemberEvent(
+          body: UpdateUserBody(
+            name: name,
+            userRole: userRole!,
+          ),
+          id: id,
+        ),
+      );
     }
   }
 
@@ -324,8 +373,8 @@ class _AddEditMemberPageState extends State<AddEditMemberPage> {
       },
       selectedItemBuilder: (context) {
         return items.map((element) {
-          final strUserRole = element.userRole.toName;
-          return Text(strUserRole ?? '-');
+          final strUserRole = element.userRole.toName.tr();
+          return Text(strUserRole);
         }).toList();
       },
       validator: (value) {
@@ -337,25 +386,35 @@ class _AddEditMemberPageState extends State<AddEditMemberPage> {
   }
 
   Widget buildWidgetButtonSave() {
-    return BlocBuilder<SignUpBloc, SignUpState>(
-      builder: (context, state) {
-        return ValueListenableBuilder(
-          valueListenable: valueNotifierEnableButtonSave,
-          builder: (BuildContext context, bool isEnable, _) {
-            return SizedBox(
-              width: double.infinity,
-              child: WidgetPrimaryButton(
-                onPressed: isEnable ? doSave : null,
-                isLoading: isLoading,
-                child: Text(
-                  'save'.tr(),
-                ),
-              ),
-            );
-          },
+    final widgetButton = ValueListenableBuilder(
+      valueListenable: valueNotifierEnableButtonSave,
+      builder: (BuildContext context, bool isEnable, _) {
+        return SizedBox(
+          width: double.infinity,
+          child: WidgetPrimaryButton(
+            onPressed: isEnable ? doSave : null,
+            isLoading: isLoading,
+            child: Text(
+              'save'.tr(),
+            ),
+          ),
         );
       },
     );
+
+    if (defaultValue == null) {
+      return BlocBuilder<SignUpBloc, SignUpState>(
+        builder: (context, state) {
+          return widgetButton;
+        },
+      );
+    } else {
+      return BlocBuilder<MemberBloc, MemberState>(
+        builder: (context, state) {
+          return widgetButton;
+        },
+      );
+    }
   }
 
   Widget buildWidgetPasswordValidator() {

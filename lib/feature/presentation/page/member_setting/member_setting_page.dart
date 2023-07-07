@@ -138,7 +138,7 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
                     SizedBox(
                       width: 72,
                       child: Text(
-                        role.toName ?? '-',
+                        role.toName.tr(),
                       ),
                     ),
                   ),

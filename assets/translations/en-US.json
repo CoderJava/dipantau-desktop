@@ -174,5 +174,7 @@
   "uppercase_letter": "Uppercase letter",
   "numeric_character": "Numeric character",
   "special_character": "Special character",
-  "edit_member": "Edit Member"
+  "edit_member": "Edit Member",
+  "invalid_user_id_2": "Invalid user ID",
+  "update_member_successfully": "Update member successfully"
 }
