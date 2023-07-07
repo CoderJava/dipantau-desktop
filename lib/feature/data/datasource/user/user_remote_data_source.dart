@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/base_url_config.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/feature/data/model/update_user/update_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 
@@ -18,6 +19,13 @@ abstract class UserRemoteDataSource {
   late String pathGetAllMembers;
 
   Future<ListUserProfileResponse> getAllMembers();
+
+  /// Panggil endpoint [host]/profile/:id
+  ///
+  /// Throws [DioException] untuk semua error kode
+  late String pathUpdateUser;
+
+  Future<bool> updateUser(UpdateUserBody body, int id);
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -69,6 +77,27 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       return ListUserProfileResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathGetAllMembers));
+    }
+  }
+
+  @override
+  String pathUpdateUser = '';
+
+  @override
+  Future<bool> updateUser(UpdateUserBody body, int id) async {
+    pathUpdateUser = '$baseUrl/profile/$id';
+    final response = await dio.post(
+      pathUpdateUser,
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return true;
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathUpdateUser));
     }
   }
 }
