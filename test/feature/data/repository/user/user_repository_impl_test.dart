@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
+import 'package:dipantau_desktop_client/feature/data/model/update_user/update_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
@@ -56,7 +57,7 @@ void main() {
   void testDisconnected2(Function endpointInvoke) {
     test(
       'pastikan mengembalikan objek ConnectionFailure ketika device tidak terhubung ke internet',
-          () async {
+      () async {
         // arrange
         setUpMockNetworkDisconnected();
 
@@ -102,8 +103,8 @@ void main() {
   void testServerFailureString2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ServerFailure ketika EmployeeRepository menerima respon kegagalan '
-          'dari endpoint dengan respon data html atau string',
-          () async {
+      'dari endpoint dengan respon data html atau string',
+      () async {
         // arrange
         setUpMockNetworkConnected();
         when(whenInvoke.call()).thenThrow(
@@ -150,8 +151,8 @@ void main() {
   void testParsingFailure2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
-          'dari endpoint',
-          () async {
+      'dari endpoint',
+      () async {
         // arrange
         setUpMockNetworkConnected();
         when(whenInvoke.call()).thenThrow(TypeError());
@@ -338,5 +339,94 @@ void main() {
     );
 
     testDisconnected2(() => repository.getAllMembers());
+  });
+
+  group('updateUser', () {
+    const tId = 1;
+    final tBody = UpdateUserBody.fromJson(
+      json.decode(
+        fixture('update_user_body.json'),
+      ),
+    );
+    const tResponse = true;
+
+    test(
+      'pastikan mengembalikan boolean true ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.updateUser(any, any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.updateUser(tBody, tId);
+
+        // assert
+        verify(mockRemoteDataSource.updateUser(tBody, tId));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.updateUser(any, any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.updateUser(tBody, tId);
+
+        // assert
+        verify(mockRemoteDataSource.updateUser(tBody, tId));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.updateUser(any, any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.updateUser(tBody, tId);
+
+        // assert
+        verify(mockRemoteDataSource.updateUser(tBody, tId));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.updateUser(any, any),
+      () => repository.updateUser(tBody, tId),
+      () => mockRemoteDataSource.updateUser(tBody, tId),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.updateUser(any, any),
+      () => repository.updateUser(tBody, tId),
+      () => mockRemoteDataSource.updateUser(tBody, tId),
+    );
+
+    testDisconnected2(() => repository.updateUser(tBody, tId));
   });
 }
