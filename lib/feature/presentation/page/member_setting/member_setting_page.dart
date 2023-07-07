@@ -3,7 +3,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
-import 'package:dipantau_desktop_client/feature/presentation/page/add_member/add_member_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/add_member/add_edit_member_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
@@ -58,7 +58,7 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
             padding: const EdgeInsets.only(right: 16),
             child: WidgetPrimaryButton(
               onPressed: () {
-                context.pushNamed<bool?>(AddMemberPage.routeName).then((isRefresh) {
+                context.pushNamed<bool?>(AddEditMemberPage.routeName).then((isRefresh) {
                   if (isRefresh != null) {
                     doLoadData();
                   }
@@ -112,7 +112,16 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () {
-                          // TODO: Arahkan ke halaman member_detail_page.dart (on progress)
+                          context.pushNamed<bool?>(
+                            AddEditMemberPage.routeName,
+                            extra: {
+                              AddEditMemberPage.parameterDefaultValue: itemData,
+                            },
+                          ).then((bool? isRefresh) {
+                            if (isRefresh != null && isRefresh) {
+                              doLoadData();
+                            }
+                          });
                         },
                         child: Text(
                           name,

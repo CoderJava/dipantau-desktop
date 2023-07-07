@@ -4,6 +4,7 @@ import 'package:dipantau_desktop_client/core/util/password_validator.dart';
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
@@ -13,17 +14,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-class AddMemberPage extends StatefulWidget {
-  static const routePath = '/add-member';
-  static const routeName = 'add-member';
+class AddEditMemberPage extends StatefulWidget {
+  static const routePath = '/add-edit-member';
+  static const routeName = 'add-edit-member';
+  static const parameterDefaultValue = 'default_value';
 
-  const AddMemberPage({Key? key}) : super(key: key);
+  final UserProfileResponse? defaultValue;
+
+  const AddEditMemberPage({
+    Key? key,
+    this.defaultValue,
+  }) : super(key: key);
 
   @override
-  State<AddMemberPage> createState() => _AddMemberPageState();
+  State<AddEditMemberPage> createState() => _AddEditMemberPageState();
 }
 
-class _AddMemberPageState extends State<AddMemberPage> {
+class _AddEditMemberPageState extends State<AddEditMemberPage> {
   final signUpBloc = sl<SignUpBloc>();
   final widgetHelper = WidgetHelper();
   final controllerName = TextEditingController();
@@ -42,6 +49,26 @@ class _AddMemberPageState extends State<AddMemberPage> {
 
   var isLoading = false;
   UserRole? userRole;
+  UserProfileResponse? defaultValue;
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
+  void initState() {
+    defaultValue = widget.defaultValue;
+    if (defaultValue != null) {
+      controllerName.text = defaultValue?.name ?? '';
+      controllerEmail.text = defaultValue?.username ?? '';
+      userRole = defaultValue?.role;
+      doCheckEnableButtonSave();
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +76,9 @@ class _AddMemberPageState extends State<AddMemberPage> {
       ignoring: isLoading,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('add_member'.tr()),
+          title: Text(
+            defaultValue != null ? 'edit_member'.tr() : 'add_member'.tr(),
+          ),
           centerTitle: false,
         ),
         body: BlocProvider<SignUpBloc>(
@@ -97,6 +126,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
                     label: 'email'.tr(),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
+                    enabled: defaultValue == null,
                     validator: (value) {
                       if (value != null) {
                         if (value.isEmpty) {
@@ -111,9 +141,9 @@ class _AddMemberPageState extends State<AddMemberPage> {
                   ),
                   const SizedBox(height: 24),
                   buildWidgetFieldRole(),
-                  const SizedBox(height: 24),
+                  defaultValue != null ? Container() : const SizedBox(height: 24),
                   buildWidgetTextFieldPassword(),
-                  const SizedBox(height: 12),
+                  defaultValue != null ? Container() : const SizedBox(height: 12),
                   buildWidgetPasswordValidator(),
                   const SizedBox(height: 24),
                   buildWidgetButtonSave(),
@@ -127,6 +157,10 @@ class _AddMemberPageState extends State<AddMemberPage> {
   }
 
   Widget buildWidgetTextFieldPassword() {
+    if (defaultValue != null) {
+      return Container();
+    }
+
     return ValueListenableBuilder(
       valueListenable: valueNotifierShowPassword,
       builder: (BuildContext context, bool isShowPassword, _) {
@@ -146,7 +180,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
           obscureText: !isShowPassword,
           textInputAction: TextInputAction.go,
           onFieldSubmitted: (_) {
-            doCreateMember();
+            doSave();
           },
           validator: (value) {
             return value == null || value.isEmpty ? 'password_is_required'.tr() : null;
@@ -167,6 +201,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
     TextInputType? keyboardType,
     TextInputAction? textInputAction,
     FormFieldValidator<String>? validator,
+    bool? enabled,
   }) {
     return TextFormField(
       controller: controller,
@@ -177,27 +212,32 @@ class _AddMemberPageState extends State<AddMemberPage> {
       validator: validator,
       textInputAction: textInputAction,
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      enabled: enabled,
       onChanged: (_) {
         doCheckEnableButtonSave();
       },
     );
   }
 
-  void doCreateMember() {
+  void doSave() {
     final name = controllerName.text.trim();
     final email = controllerEmail.text.trim();
     final password = controllerPassword.text.trim();
 
-    signUpBloc.add(
-      SubmitSignUpEvent(
-        body: SignUpBody(
-          name: name,
-          email: email,
-          password: password,
-          userRole: userRole!,
+    if (defaultValue == null) {
+      signUpBloc.add(
+        SubmitSignUpEvent(
+          body: SignUpBody(
+            name: name,
+            email: email,
+            password: password,
+            userRole: userRole!,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      // TODO: buat fitur edit member
+    }
   }
 
   void doCheckEnableButtonSave() {
@@ -210,16 +250,22 @@ class _AddMemberPageState extends State<AddMemberPage> {
     final passwordUpperCaseValid = valueNotifierPasswordUpperCase.value;
     final passwordNumericCharValid = valueNotifierPasswordNumericChar.value;
     final passwordSpecialCharValid = valueNotifierPasswordSpecialChar.value;
-    if (name.isNotEmpty &&
-        email.isNotEmpty &&
-        userRole != null &&
-        password.isNotEmpty &&
-        passwordLengthValid &&
-        passwordLowerCaseValid &&
-        passwordUpperCaseValid &&
-        passwordNumericCharValid &&
-        passwordSpecialCharValid) {
-      isEnableTemp = true;
+    if (defaultValue == null) {
+      if (name.isNotEmpty &&
+          email.isNotEmpty &&
+          userRole != null &&
+          password.isNotEmpty &&
+          passwordLengthValid &&
+          passwordLowerCaseValid &&
+          passwordUpperCaseValid &&
+          passwordNumericCharValid &&
+          passwordSpecialCharValid) {
+        isEnableTemp = true;
+      }
+    } else {
+      if (name.isNotEmpty && email.isNotEmpty && userRole != null) {
+        isEnableTemp = true;
+      }
     }
 
     if (isEnableTemp != valueNotifierEnableButtonSave.value) {
@@ -299,7 +345,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
             return SizedBox(
               width: double.infinity,
               child: WidgetPrimaryButton(
-                onPressed: isEnable ? doCreateMember : null,
+                onPressed: isEnable ? doSave : null,
                 isLoading: isLoading,
                 child: Text(
                   'save'.tr(),
@@ -313,6 +359,10 @@ class _AddMemberPageState extends State<AddMemberPage> {
   }
 
   Widget buildWidgetPasswordValidator() {
+    if (defaultValue != null) {
+      return Container();
+    }
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
