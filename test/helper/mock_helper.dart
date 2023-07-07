@@ -21,6 +21,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_li
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,5 +51,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<BulkCreateTrackData>(),
   MockSpec<BulkCreateTrackImage>(),
   MockSpec<GetAllMember>(),
+  MockSpec<UpdateUser>(),
 ])
 void main() {}
