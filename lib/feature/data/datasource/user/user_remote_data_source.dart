@@ -88,6 +88,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     pathUpdateUser = '$baseUrl/profile/$id';
     final response = await dio.post(
       pathUpdateUser,
+      data: body.toJson(),
       options: Options(
         headers: {
           baseUrlConfig.requiredToken: true,
