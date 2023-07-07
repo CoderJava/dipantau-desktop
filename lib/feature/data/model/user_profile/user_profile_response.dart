@@ -12,7 +12,7 @@ class UserProfileResponse extends Equatable {
   final String? name;
   @JsonKey(name: 'username')
   final String? username;
-  @JsonKey(name: 'role', fromJson: _userRoleFromJson)
+  @JsonKey(name: 'user_role', fromJson: _userRoleFromJson)
   final UserRole? role;
 
   UserProfileResponse({

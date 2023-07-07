@@ -2,5 +2,5 @@
   "id": 1,
   "name": "testName",
   "username": "testUsername",
-  "role": "super_admin"
+  "user_role": "super_admin"
 }
