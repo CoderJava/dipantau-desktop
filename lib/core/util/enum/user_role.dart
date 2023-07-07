@@ -1,5 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
-
 enum UserRole {
   superAdmin,
   admin,
@@ -20,16 +18,14 @@ extension StringUserRoleExtension on String {
 }
 
 extension UserRoleExtension on UserRole {
-  String? get toName {
+  String get toName {
     switch (this) {
       case UserRole.superAdmin:
-        return 'super_admin'.tr();
+        return 'super_admin';
       case UserRole.admin:
-        return 'admin'.tr();
+        return 'admin';
       case UserRole.employee:
-        return 'employee'.tr();
-      default:
-        return null;
+        return 'employee';
     }
   }
 }

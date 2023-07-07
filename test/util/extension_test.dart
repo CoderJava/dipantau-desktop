@@ -42,4 +42,24 @@ void main() {
       expect(resultEmployee, UserRole.employee);
     },
   );
+
+  test(
+    'pastiakn output dari extension toName yang di user_role bisa mengembalikan label dari enum UserRole',
+    () async {
+      // arrange
+      const superAdmin = UserRole.superAdmin;
+      const admin = UserRole.admin;
+      const employee = UserRole.employee;
+
+      // act
+      final resultSuperAdmin = superAdmin.toName;
+      final resultAdmin = admin.toName;
+      final resultEmployee = employee.toName;
+
+      // assert
+      expect(resultSuperAdmin, 'super_admin');
+      expect(resultAdmin, 'admin');
+      expect(resultEmployee, 'employee');
+    },
+  );
 }
