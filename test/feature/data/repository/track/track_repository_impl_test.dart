@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_cre
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -532,5 +533,94 @@ void main() {
     );
 
     testDisconnected2(() => repository.bulkCreateTrackImage(tBody));
+  });
+
+  group('getTrackUser', () {
+    const tUserId = 'testUserId';
+    const tDate = 'testDate';
+    final tResponse = TrackUserResponse.fromJson(
+      json.decode(
+        fixture('track_user_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model TrackUserResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getTrackUser(any, any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.getTrackUser(tUserId, tDate);
+
+        // assert
+        verify(mockRemoteDataSource.getTrackUser(tUserId, tDate));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getTrackUser(any, any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.getTrackUser(tUserId, tDate);
+
+        // assert
+        verify(mockRemoteDataSource.getTrackUser(tUserId, tDate));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getTrackUser(any, any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.getTrackUser(tUserId, tDate);
+
+        // assert
+        verify(mockRemoteDataSource.getTrackUser(tUserId, tDate));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.getTrackUser(any, any),
+      () => repository.getTrackUser(tUserId, tDate),
+      () => mockRemoteDataSource.getTrackUser(tUserId, tDate),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.getTrackUser(any, any),
+      () => repository.getTrackUser(tUserId, tDate),
+      () => mockRemoteDataSource.getTrackUser(tUserId, tDate),
+    );
+
+    testDisconnected2(() => repository.getTrackUser(tUserId, tDate));
   });
 }
