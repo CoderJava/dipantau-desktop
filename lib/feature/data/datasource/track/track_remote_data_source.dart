@@ -5,6 +5,7 @@ import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_cre
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 
 abstract class TrackRemoteDataSource {
@@ -35,6 +36,13 @@ abstract class TrackRemoteDataSource {
   late String pathBulkCreateTrackImage;
 
   Future<GeneralResponse> bulkCreateTrackImage(BulkCreateTrackImageBody body);
+
+  /// Panggil endpoint [host]/track/user
+  ///
+  /// Throws [DioException] untuk semua error kode
+  late String pathGetTrackUser;
+
+  Future<TrackUserResponse> getTrackUser(String userId, String date);
 }
 
 class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
@@ -159,6 +167,31 @@ class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
       return GeneralResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathBulkCreateTrackImage));
+    }
+  }
+
+  @override
+  String pathGetTrackUser = '';
+
+  @override
+  Future<TrackUserResponse> getTrackUser(String userId, String date) async {
+    pathGetTrackUser = '$baseUrl/user';
+    final response = await dio.get(
+      pathGetTrackUser,
+      queryParameters: {
+        'user_id': userId,
+        'date': date,
+      },
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return TrackUserResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathGetTrackUser));
     }
   }
 }

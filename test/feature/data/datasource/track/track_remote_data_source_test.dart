@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_cre
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -345,6 +346,81 @@ void main() {
 
         // act
         final call = remoteDataSource.bulkCreateTrackImage(tBody);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
+
+  group('getTrackUser', () {
+    const tDate = 'testDate';
+    const tUserId = 'testProjectId';
+    const tPathResponse = 'track_user_response.json';
+    final tResponse = TrackUserResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.get(any, queryParameters: anyNamed('queryParameters'), options: anyNamed('options')))
+          .thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint getTrackUser benar-benar terpanggil dengan method GET',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.getTrackUser(tUserId, tDate);
+
+        // assert
+        verify(
+            mockDio.get('$baseUrl/user', queryParameters: anyNamed('queryParameters'), options: anyNamed('options')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model TrackUserResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.getTrackUser(tUserId, tDate);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.get(any, queryParameters: anyNamed('queryParameters'), options: anyNamed('options')))
+            .thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.getTrackUser(tUserId, tDate);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));
