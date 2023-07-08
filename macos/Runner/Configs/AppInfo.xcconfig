@@ -5,7 +5,7 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = dipantau_desktop_client
+PRODUCT_NAME = Dipantau
 
 // The application's bundle identifier
 PRODUCT_BUNDLE_IDENTIFIER = com.ysn.dipantauDesktopClient
