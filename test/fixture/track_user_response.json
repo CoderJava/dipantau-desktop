@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "task_id": 1,
+      "task_name": "testTaskName",
+      "project_id": 1,
+      "project_name": "testProjectName",
+      "start_date": "testStartDate",
+      "finish_date": "testFinishDate",
+      "activity": 1,
+      "duration": 1,
+      "user_id": 1,
+      "user": "testUser",
+      "files": [
+        {
+          "id": 1,
+          "url": "testUrl",
+          "size": 1
+        }
+      ]
+    }
+  ]
+}
