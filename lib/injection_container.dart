@@ -24,6 +24,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/crea
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_member/get_all_member.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/get_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
@@ -34,6 +35,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screenshot/report_screenshot_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -87,6 +89,12 @@ Future<void> init() async {
       updateUser: sl(),
     ),
   );
+  sl.registerFactory(
+    () => ReportScreenshotBloc(
+      helper: sl(),
+      getTrackUser: sl(),
+    ),
+  );
 
   // use case
   sl.registerLazySingleton(() => GetProject(repository: sl()));
@@ -100,6 +108,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => BulkCreateTrackImage(repository: sl()));
   sl.registerLazySingleton(() => GetAllMember(repository: sl()));
   sl.registerLazySingleton(() => UpdateUser(repository: sl()));
+  sl.registerLazySingleton(() => GetTrackUser(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
