@@ -278,7 +278,7 @@ class _SyncPageState extends State<SyncPage> {
         if (listScreenshots.isNotEmpty) {
           thumbnail = listScreenshots.first;
         }
-        const heightImage = 128.0;
+        const heightImage = 92.0;
 
         return Column(
           children: [
