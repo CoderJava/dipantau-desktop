@@ -280,13 +280,15 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
   }
 
   Widget buildWidgetFilterUser() {
+    final isEnabled = userRole != null && (userRole == UserRole.superAdmin || userRole == UserRole.admin);
+    final foregroundColor = isEnabled ? Theme.of(context).colorScheme.inverseSurface : Theme.of(context).colorScheme.inverseSurface.withOpacity(.3);
     return TextField(
       controller: controllerFilterUser,
       decoration: widgetHelper.setDefaultTextFieldDecoration(
         suffixIcon: FaIcon(
           FontAwesomeIcons.userLarge,
           size: 14,
-          color: Theme.of(context).colorScheme.inverseSurface,
+          color: foregroundColor,
         ),
         suffixIconConstraints: const BoxConstraints(
           minWidth: 28,
@@ -295,8 +297,11 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
       ),
       mouseCursor: MaterialStateMouseCursor.clickable,
       readOnly: true,
-      style: Theme.of(context).textTheme.bodyMedium,
-      onTap: () async {
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: foregroundColor,
+      ),
+      enabled: isEnabled,
+      onTap: !isEnabled ? null : () async {
         final selectedUserTemp = await showDialog<UserProfileResponse?>(
           context: context,
           builder: (context) {
@@ -388,7 +393,10 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
     // rumus mencari nilai rata-rata
     // average = jumlah data / banyak data
     // e.g. 59 + 78 + 94 = 231% = 77%
-    final strAverageActivity = (averageActivity / listTracks.length).toStringAsFixed(2);
+    var strAverageActivity = (averageActivity / listTracks.length).toStringAsFixed(2);
+    if (strAverageActivity.endsWith('0')) {
+      strAverageActivity = strAverageActivity.substring(0, strAverageActivity.length - 1);
+    }
 
     final totalIdleTime = helper.convertSecondToHms(totalIdleTimeInSeconds);
     final totalIdleTimeHour = totalIdleTime.hour;

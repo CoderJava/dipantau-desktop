@@ -13,6 +13,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/member_setting
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register_success/register_success_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/report_screenshot/report_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
@@ -31,25 +32,29 @@ import 'package:window_manager/window_manager.dart';
 
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
 /**
- * 1. CRUD user (on progress)
+ * 1. CRUD user
+ *    - add [done]
+ *    - edit [done]
+ *    - delete
  * 2. CRUD projek
  * 3. CRUD task
  * 4. CRUD track manual
- * 5. Report track
+ * 5. Report screenshot all member (done)
  */
 
 // TODO: buat fitur khusus untuk admin. Admin memiliki fitur berikut:
 /**
- * 1. CRUD projek
- * 2. CRUD task
+ * 1. Read projek
+ * 2. add/edit/view task all member
  * 3. CRUD track manual
- * 4. Report track
+ * 4. Report screenshot all member (done)
  */
 
 // TODO: buat fitur khusus untuk employee. Employee memiliki fitur berikut:
-/// 1. CRUD task hanya untuk diri dia sendiri
-/// 2. CRUD track manual hanya untuk diri dia sendiri
-/// 3. Report track khusus untuk diri dia sendiri
+/// 1. Read assigned project
+/// 2. add/edit/view personal
+/// 3. CRUD personal
+/// 4. Report screenshot personal (done)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -211,6 +216,11 @@ class _MyAppState extends State<MyApp> {
           return AddEditMemberPage(defaultValue: defaultValue);
         },
       ),
+      GoRoute(
+        path: ReportScreenshotPage.routePath,
+        name: ReportScreenshotPage.routeName,
+        builder: (context, state) => const ReportScreenshotPage(),
+      ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
   );
@@ -261,16 +271,19 @@ class _MyAppState extends State<MyApp> {
             isDarkMode = state.isDarkMode;
           }
 
-          return MaterialApp.router(
-            title: 'Dipantau',
-            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            theme: lightTheme(),
-            darkTheme: darkTheme(),
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            routerConfig: router,
-            debugShowCheckedModeBanner: false,
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: MaterialApp.router(
+              title: 'Dipantau',
+              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              theme: lightTheme(),
+              darkTheme: darkTheme(),
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+            ),
           );
         },
       ),
