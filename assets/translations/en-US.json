@@ -176,5 +176,12 @@
   "special_character": "Special character",
   "edit_member": "Edit Member",
   "invalid_user_id_2": "Invalid user ID",
-  "update_member_successfully": "Update member successfully"
+  "update_member_successfully": "Update member successfully",
+  "report_screenshot": "Report Screenshot",
+  "apply": "Apply",
+  "show": "Show",
+  "selected_user_id_invalid": "Invalid selected user ID",
+  "total_time": "Total Time",
+  "avg_activity": "Avg. Activity",
+  "idle_time": "Idle Time"
 }

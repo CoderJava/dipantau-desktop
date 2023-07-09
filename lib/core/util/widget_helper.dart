@@ -22,14 +22,18 @@ class WidgetHelper {
     Widget? suffixIcon,
     String? hintText,
     FloatingLabelBehavior? floatingLabelBehavior,
+    Color? hoverColor,
+    BoxConstraints? suffixIconConstraints,
   }) {
     return InputDecoration(
       labelText: labelText,
       isDense: true,
       border: const OutlineInputBorder(),
       suffixIcon: suffixIcon,
+      suffixIconConstraints: suffixIconConstraints,
       hintText: hintText,
       floatingLabelBehavior: floatingLabelBehavior,
+      hoverColor: hoverColor,
     );
   }
 
@@ -56,5 +60,12 @@ class WidgetHelper {
         );
       },
     );
+  }
+
+  void unfocus(BuildContext context) {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
   }
 }

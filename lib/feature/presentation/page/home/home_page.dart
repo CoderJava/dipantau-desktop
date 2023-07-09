@@ -17,6 +17,7 @@ import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dar
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/report_screenshot/report_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_choose_project.dart';
@@ -631,10 +632,30 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 4,
-                  horizontal: 6,
+                  horizontal: 8,
                 ),
                 child: Icon(
                   Icons.sync,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                ),
+              ),
+            ),
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(999),
+              onTap: () {
+                context.pushNamed(ReportScreenshotPage.routeName);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 8,
+                ),
+                child: Icon(
+                  Icons.bar_chart_outlined,
                   size: 16,
                   color: Theme.of(context).colorScheme.primaryContainer,
                 ),
@@ -651,7 +672,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 4,
-                  horizontal: 6,
+                  horizontal: 8,
                 ),
                 child: Icon(
                   Icons.settings,
