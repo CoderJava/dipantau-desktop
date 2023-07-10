@@ -25,7 +25,9 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
             } else if ("take_screenshot" == call.method) {
                 let args: [String: Any] = call.arguments as! [String: Any]
                 let path: String = args["path"] as! String
-                let listPathImages = self.takeScreenshots(folderName: path)
+                let userId: String = args["user_id"] as! String
+                let randomNumber: String = args["random_number"] as! String
+                let listPathImages = self.takeScreenshots(folderName: path, userId: userId, randomNumber: randomNumber)
                 result(listPathImages)
             }
         })
@@ -33,7 +35,7 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
         eventChannel.setStreamHandler(self)
     }
     
-    func takeScreenshots(folderName: String) -> Array<String> {
+    func takeScreenshots(folderName: String, userId: String, randomNumber: String) -> Array<String> {
         var displayCount: UInt32 = 0
         var result = CGGetActiveDisplayList(0, nil, &displayCount)
         if (result != CGError.success) {
@@ -52,7 +54,7 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
         var listPathImages = [String]()
         for i in 1...displayCount {
             let unixTimestamp = createTimestamp()
-            let fileUrl = URL(fileURLWithPath: folderName + "/\(unixTimestamp)" + "_" + "\(i)" + ".jpg", isDirectory: true)
+            let fileUrl = URL(fileURLWithPath: folderName + "/\(unixTimestamp)" + "_" + "\(userId)" + "_" + "\(randomNumber)" + "_" + "\(i)" + ".jpg", isDirectory: true)
             let screenshot:CGImage = CGDisplayCreateImage(activeDisplays[Int(i-1)])!
             let bitmapRep = NSBitmapImageRep(cgImage: screenshot)
             let jpegData = bitmapRep.representation(using: NSBitmapImageRep.FileType.jpeg, properties: [:])!
