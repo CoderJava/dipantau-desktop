@@ -916,12 +916,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       taskName: selectedTask?.name ?? '',
     );
 
-    // TODO: debug mode untuk tes siapkan data sync manual
-    /*if (trackEntity != null) {
-      trackDao.insertTrack(trackEntity!);
-    }*/
-
-    // TODO: uncomment kode berikut jika sudah selesai fitur sync manual
     trackingBloc.add(
       CreateTimeTrackingEvent(
         body: CreateTrackBody(
@@ -943,7 +937,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   void startTimer() {
     stopTimer();
-    increaseTimerTray();
     timeTrack = Timer.periodic(const Duration(seconds: 1), (_) {
       increaseTimerTray();
     });
