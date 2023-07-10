@@ -71,6 +71,7 @@ class Helper {
         baseUrlUser: '$domainApi/user',
         baseUrlTrack: '$domainApi/track',
         baseUrlProject: '$domainApi/project',
+        baseUrlSetting: '$domainApi/setting',
       ),
     );
   }

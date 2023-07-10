@@ -30,6 +30,7 @@ void main() {
         baseUrlUser: '',
         baseUrlTrack: baseUrl,
         baseUrlProject: '',
+        baseUrlSetting: '',
       ),
     );
     mockDio = MockDio();
