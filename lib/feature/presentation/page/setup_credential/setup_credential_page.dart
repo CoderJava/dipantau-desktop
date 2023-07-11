@@ -52,7 +52,6 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: widget.isFromSplashScreen ? false : true,
-
       ),
       body: Padding(
         padding: EdgeInsets.only(
@@ -92,7 +91,7 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
   }
 
   Text buildWidgetTitle() {
-    var title = widget.isFromSplashScreen ? 'getting_started'.tr() : 'set_hostname'.tr();
+    final title = widget.isFromSplashScreen ? 'getting_started'.tr() : 'set_hostname'.tr();
     return Text(
       title,
       style: Theme.of(context).textTheme.headlineSmall,
@@ -103,8 +102,10 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
     return TextFormField(
       autofocus: true,
       controller: controllerHostname,
-      decoration:
-          widgetHelper.setDefaultTextFieldDecoration(labelText: 'hostname'.tr(), hintText: 'example_hostname'.tr()),
+      decoration: widgetHelper.setDefaultTextFieldDecoration(
+        labelText: 'hostname'.tr(),
+        hintText: 'example_hostname'.tr(),
+      ),
       keyboardType: TextInputType.url,
       textInputAction: TextInputAction.go,
       onFieldSubmitted: (_) {
