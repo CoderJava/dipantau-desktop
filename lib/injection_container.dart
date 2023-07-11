@@ -41,6 +41,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bl
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screenshot/report_screenshot_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/setting_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -98,6 +99,13 @@ Future<void> init() async {
     () => ReportScreenshotBloc(
       helper: sl(),
       getTrackUser: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => SettingBloc(
+      helper: sl(),
+      getKvSetting: sl(),
+      setKvSetting: sl(),
     ),
   );
 
