@@ -10,6 +10,7 @@ import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remo
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/setting/setting_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_data/bulk_create_track_data.dart';
@@ -44,6 +45,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<UserRepository>(),
   MockSpec<TrackRepository>(),
   MockSpec<ProjectRepository>(),
+  MockSpec<SettingRepository>(),
   MockSpec<GetProject>(),
   MockSpec<CreateTrack>(),
   MockSpec<Login>(),

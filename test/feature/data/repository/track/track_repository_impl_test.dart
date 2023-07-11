@@ -105,7 +105,7 @@ void main() {
 
   void testServerFailureString2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
-      'pastikan mengembalikan objek ServerFailure ketika EmployeeRepository menerima respon kegagalan '
+      'pastikan mengembalikan objek ServerFailure ketika repository menerima respon kegagalan '
       'dari endpoint dengan respon data html atau string',
       () async {
         // arrange

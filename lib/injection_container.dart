@@ -7,15 +7,18 @@ import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/datasource/setting/setting_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/project/project_repository_impl.dart';
+import 'package:dipantau_desktop_client/feature/data/repository/setting/setting_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/database/app_database.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/setting/setting_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_data/bulk_create_track_data.dart';
@@ -135,6 +138,12 @@ Future<void> init() async {
       networkInfo: sl(),
     ),
   );
+  sl.registerLazySingleton<SettingRepository>(
+    () => SettingRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
 
   // data source
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -154,6 +163,11 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<ProjectRemoteDataSource>(
     () => ProjectRemoteDataSourceImpl(
+      dio: sl(instanceName: dioRefreshToken),
+    ),
+  );
+  sl.registerLazySingleton<SettingRemoteDataSource>(
+    () => SettingRemoteDataSourceImpl(
       dio: sl(instanceName: dioRefreshToken),
     ),
   );
