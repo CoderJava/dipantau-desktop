@@ -183,5 +183,12 @@
   "selected_user_id_invalid": "Invalid selected user ID",
   "total_time": "Total Time",
   "avg_activity": "Avg. Activity",
-  "idle_time": "Idle Time"
+  "idle_time": "Idle Time",
+  "discord_channel_id": "Discord Channel ID",
+  "subtitle_discord_channel_id": "It's used as cloud storage for all screenshots members",
+  "discord_channel_id_sucessfully_updated": "Discord channel ID successfully updated",
+  "set_discord_channel_id": "Set Discord Channel ID",
+  "cannot_be_empty": "Cannot be empty",
+  "discord_channel_id_2": "Discord channel ID",
+  "example_discord_channel_id": "e.g. 1119234567890123455"
 }
