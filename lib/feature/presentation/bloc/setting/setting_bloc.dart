@@ -31,7 +31,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
     LoadKvSettingEvent event,
     Emitter<SettingState> emit,
   ) async {
-    emit(LoadingSettingState());
+    emit(LoadingCenterSettingState());
     final (:response, :failure) = await getKvSetting(NoParams());
     if (response != null) {
       emit(SuccessLoadKvSettingState(response: response));
@@ -43,7 +43,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
   }
 
   FutureOr<void> _onUpdateKvSettingEvent(UpdateKvSettingEvent event, Emitter<SettingState> emit) async {
-    emit(LoadingSettingState());
+    emit(LoadingButtonSettingState());
     final (:response, :failure) = await setKvSetting(
       ParamsSetKvSetting(
         body: event.body,
@@ -55,6 +55,6 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
     }
 
     final errorMessage = helper.getErrorMessageFromFailure(failure);
-    emit(FailureSettingState(errorMessage: errorMessage));
+    emit(FailureSnackBarSettingState(errorMessage: errorMessage));
   }
 }

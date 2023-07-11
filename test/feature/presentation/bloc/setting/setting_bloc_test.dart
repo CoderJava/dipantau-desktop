@@ -53,7 +53,7 @@ void main() {
     );
 
     blocTest(
-      'pastikan emit [LoadingSettingState, SuccessLoadKvSettingState] ketika terima event '
+      'pastikan emit [LoadingCenterSettingState, SuccessLoadKvSettingState] ketika terima event '
       'LoadKvSettingEvent dengan proses berhasil',
       build: () {
         final result = (failure: null, response: tResponse);
@@ -64,7 +64,7 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
+        isA<LoadingCenterSettingState>(),
         isA<SuccessLoadKvSettingState>(),
       ],
       verify: (_) {
@@ -73,7 +73,7 @@ void main() {
     );
 
     blocTest(
-      'pastikan emit [LoadingSettingState, FailureSettingState] ketika terima event '
+      'pastikan emit [LoadingCenterSettingState, FailureSettingState] ketika terima event '
       'LoadKvSettingEvent dengan proses gagal dari endpoint',
       build: () {
         final result = (failure: ServerFailure(tErrorMessage), response: null);
@@ -84,7 +84,7 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
+        isA<LoadingCenterSettingState>(),
         isA<FailureSettingState>(),
       ],
       verify: (_) {
@@ -93,7 +93,7 @@ void main() {
     );
 
     blocTest(
-      'pastikan emit [LoadingSettingState, FailureSettingState] ketika terima event '
+      'pastikan emit [LoadingCenterSettingState, FailureSettingState] ketika terima event '
       'LoadKvSettingEvent dengan kondisi internet tidak terhubung',
       build: () {
         final result = (failure: ConnectionFailure(), response: null);
@@ -104,7 +104,7 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
+        isA<LoadingCenterSettingState>(),
         isA<FailureSettingState>(),
       ],
       verify: (_) {
@@ -113,7 +113,7 @@ void main() {
     );
 
     blocTest(
-      'pastikan emit [LoadingSettingState, FailureSettingState] ketika terima event '
+      'pastikan emit [LoadingCenterSettingState, FailureSettingState] ketika terima event '
       'LoadKvSettingEvent dengan proses gagal parsing respon dari endpoint',
       build: () {
         final result = (failure: ParsingFailure(tErrorMessage), response: null);
@@ -124,7 +124,7 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
+        isA<LoadingCenterSettingState>(),
         isA<FailureSettingState>(),
       ],
       verify: (_) {
@@ -148,7 +148,7 @@ void main() {
     const tResponse = true;
 
     blocTest(
-      'pastikan emit [LoadingSettingState, SuccessUpdateKvSettingState] ketika terima event '
+      'pastikan emit [LoadingButtonSettingState, SuccessUpdateKvSettingState] ketika terima event '
       'UpdateKvSettingEvent dengan proses berhasil',
       build: () {
         const result = (failure: null, response: tResponse);
@@ -159,7 +159,7 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
+        isA<LoadingButtonSettingState>(),
         isA<SuccessUpdateKvSettingState>(),
       ],
       verify: (_) {
@@ -168,7 +168,7 @@ void main() {
     );
 
     blocTest(
-      'pastikan emit [LoadingSettingState, FailureSettingState] ketika terima event '
+      'pastikan emit [LoadingButtonSettingState, FailureSnackBarSettingState] ketika terima event '
       'UpdateKvSettingEvent dengan proses gagal dari endpoint',
       build: () {
         final result = (failure: ServerFailure(tErrorMessage), response: null);
@@ -179,8 +179,8 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
-        isA<FailureSettingState>(),
+        isA<LoadingButtonSettingState>(),
+        isA<FailureSnackBarSettingState>(),
       ],
       verify: (_) {
         verify(mockSetKvSetting(tParams));
@@ -188,7 +188,7 @@ void main() {
     );
 
     blocTest(
-      'pastikan emit [LoadingSettingState, FailureSettingState] ketika terima event '
+      'pastikan emit [LoadingButtonSettingState, FailureSnackBarSettingState] ketika terima event '
       'UpdateKvSettingEvent dengan kondisi internet tidak terhubung',
       build: () {
         final result = (failure: ConnectionFailure(), response: null);
@@ -199,8 +199,8 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
-        isA<FailureSettingState>(),
+        isA<LoadingButtonSettingState>(),
+        isA<FailureSnackBarSettingState>(),
       ],
       verify: (_) {
         verify(mockSetKvSetting(tParams));
@@ -208,7 +208,7 @@ void main() {
     );
 
     blocTest(
-      'pastikan emit [LoadingSettingState, FailureSettingState] ketika terima event '
+      'pastikan emit [LoadingButtonSettingState, FailureSnackBarSettingState] ketika terima event '
       'UpdateKvSettingEvent dengan proses gagal parsing respon dari endpoint',
       build: () {
         final result = (failure: ParsingFailure(tErrorMessage), response: null);
@@ -219,8 +219,8 @@ void main() {
         return bloc.add(tEvent);
       },
       expect: () => [
-        isA<LoadingSettingState>(),
-        isA<FailureSettingState>(),
+        isA<LoadingButtonSettingState>(),
+        isA<FailureSnackBarSettingState>(),
       ],
       verify: (_) {
         verify(mockSetKvSetting(tParams));

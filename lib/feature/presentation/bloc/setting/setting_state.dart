@@ -4,7 +4,9 @@ abstract class SettingState {}
 
 class InitialSettingState extends SettingState {}
 
-class LoadingSettingState extends SettingState {}
+class LoadingCenterSettingState extends SettingState {}
+
+class LoadingButtonSettingState extends SettingState {}
 
 class FailureSettingState extends SettingState {
   final String errorMessage;
@@ -14,6 +16,17 @@ class FailureSettingState extends SettingState {
   @override
   String toString() {
     return 'FailureSettingState{errorMessage: $errorMessage}';
+  }
+}
+
+class FailureSnackBarSettingState extends SettingState {
+  final String errorMessage;
+
+  FailureSnackBarSettingState({required this.errorMessage});
+
+  @override
+  String toString() {
+    return 'FailureSnackBarSettingState{errorMessage: $errorMessage}';
   }
 }
 

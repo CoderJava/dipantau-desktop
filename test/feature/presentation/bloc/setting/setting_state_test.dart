@@ -22,6 +22,21 @@ void main() {
     );
   });
 
+  group('FailureSnackBarSettingState', () {
+    final tState = FailureSnackBarSettingState(errorMessage: 'testErrorMessage');
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tState.toString(),
+          'FailureSnackBarSettingState{errorMessage: ${tState.errorMessage}}',
+        );
+      },
+    );
+  });
+
   group('SuccessLoadKvSettingState', () {
     final tState = SuccessLoadKvSettingState(
       response: KvSettingResponse.fromJson(
