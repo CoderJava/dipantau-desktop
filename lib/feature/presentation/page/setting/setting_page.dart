@@ -5,6 +5,7 @@ import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dar
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting_discord/setting_discord_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
@@ -389,8 +390,8 @@ class _SettingPageState extends State<SettingPage> {
               Text(
                 'add_edit_or_remove_member'.tr(),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey,
-                ),
+                      color: Colors.grey,
+                    ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -435,8 +436,8 @@ class _SettingPageState extends State<SettingPage> {
               Text(
                 'add_edit_or_remove_project'.tr(),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey,
-                ),
+                      color: Colors.grey,
+                    ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -482,8 +483,8 @@ class _SettingPageState extends State<SettingPage> {
               Text(
                 'add_edit_or_remove_task'.tr(),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey,
-                ),
+                      color: Colors.grey,
+                    ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -536,6 +537,54 @@ class _SettingPageState extends State<SettingPage> {
         buildWidgetProject(),
         const SizedBox(height: 16),
         buildWidgetTask(),
+        const SizedBox(height: 16),
+        buildWidgetDiscordChannelId(),
+      ],
+    );
+  }
+
+  Widget buildWidgetDiscordChannelId() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'discord_channel_id'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'subtitle_discord_channel_id'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () {
+            context.pushNamed(SettingDiscordPage.routeName);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Icon(
+              Icons.keyboard_arrow_right,
+              color: Colors.grey,
+            ),
+          ),
+        ),
       ],
     );
   }

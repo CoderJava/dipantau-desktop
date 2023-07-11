@@ -17,6 +17,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/report_screens
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password/reset_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting_discord/setting_discord_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
@@ -28,7 +29,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
-// TODO: buat pengaturan untuk channel ID discord kirim gambar screenshot-nya
+// TODO: buat fitur ubah password
 
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
 /**
@@ -40,6 +41,7 @@ import 'package:window_manager/window_manager.dart';
  * 3. CRUD task
  * 4. CRUD track manual
  * 5. Report screenshot all member (done)
+ * 6. Atur discord channel ID (on progress)
  */
 
 // TODO: buat fitur khusus untuk admin. Admin memiliki fitur berikut:
@@ -220,6 +222,11 @@ class _MyAppState extends State<MyApp> {
         path: ReportScreenshotPage.routePath,
         name: ReportScreenshotPage.routeName,
         builder: (context, state) => const ReportScreenshotPage(),
+      ),
+      GoRoute(
+        path: SettingDiscordPage.routePath,
+        name: SettingDiscordPage.routeName,
+        builder: (context, state) => const SettingDiscordPage(),
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
