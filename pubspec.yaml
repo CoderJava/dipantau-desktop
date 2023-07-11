@@ -122,9 +122,6 @@ dependencies:
   # of a Lottie player.
   lottie: ^2.4.0
 
-  # Flutter library to load and cache network images. Can also be used with placeholder and error widgets.
-  cached_network_image: ^3.2.3
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

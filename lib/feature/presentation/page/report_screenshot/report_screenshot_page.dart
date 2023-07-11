@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
@@ -281,7 +280,9 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
 
   Widget buildWidgetFilterUser() {
     final isEnabled = userRole != null && (userRole == UserRole.superAdmin || userRole == UserRole.admin);
-    final foregroundColor = isEnabled ? Theme.of(context).colorScheme.inverseSurface : Theme.of(context).colorScheme.inverseSurface.withOpacity(.3);
+    final foregroundColor = isEnabled
+        ? Theme.of(context).colorScheme.inverseSurface
+        : Theme.of(context).colorScheme.inverseSurface.withOpacity(.3);
     return TextField(
       controller: controllerFilterUser,
       decoration: widgetHelper.setDefaultTextFieldDecoration(
@@ -298,50 +299,52 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
       mouseCursor: MaterialStateMouseCursor.clickable,
       readOnly: true,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: foregroundColor,
-      ),
+            color: foregroundColor,
+          ),
       enabled: isEnabled,
-      onTap: !isEnabled ? null : () async {
-        final selectedUserTemp = await showDialog<UserProfileResponse?>(
-          context: context,
-          builder: (context) {
-            return SimpleDialog(
-              titlePadding: EdgeInsets.zero,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16),
-              children: listUserProfile.map((element) {
-                return InkWell(
-                  onTap: () => Navigator.pop(context, element),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                      horizontal: 16.0,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(element.name ?? '-'),
+      onTap: !isEnabled
+          ? null
+          : () async {
+              final selectedUserTemp = await showDialog<UserProfileResponse?>(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    titlePadding: EdgeInsets.zero,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    children: listUserProfile.map((element) {
+                      return InkWell(
+                        onTap: () => Navigator.pop(context, element),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16.0,
+                            horizontal: 16.0,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(element.name ?? '-'),
+                              ),
+                              const SizedBox(width: 16),
+                              element == selectedUser
+                                  ? Icon(
+                                      Icons.check_circle,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    )
+                                  : Container(),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 16),
-                        element == selectedUser
-                            ? Icon(
-                                Icons.check_circle,
-                                color: Theme.of(context).colorScheme.primary,
-                              )
-                            : Container(),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            );
-          },
-        );
-        if (selectedUserTemp != null) {
-          selectedUser = selectedUserTemp;
-          setFilterUser();
-          setState(() {});
-        }
-      },
+                      );
+                    }).toList(),
+                  );
+                },
+              );
+              if (selectedUserTemp != null) {
+                selectedUser = selectedUserTemp;
+                setFilterUser();
+                setState(() {});
+              }
+            },
       maxLines: 1,
     );
   }
@@ -498,12 +501,12 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                                 topLeft: Radius.circular(8),
                                 topRight: Radius.circular(8),
                               ),
-                              child: CachedNetworkImage(
-                                imageUrl: thumbnail ?? '',
+                              child: Image.network(
+                                thumbnail ?? '',
                                 width: double.infinity,
                                 height: heightImage,
                                 fit: BoxFit.cover,
-                                errorWidget: (context, error, stacktrace) {
+                                errorBuilder: (context, error, stacktrace) {
                                   return Image.asset(
                                     BaseImage.imagePlaceholder,
                                     width: double.infinity,
@@ -511,14 +514,16 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                                     fit: BoxFit.cover,
                                   );
                                 },
-                                progressIndicatorBuilder: (context, url, downloadProgress) {
-                                  return SizedBox(
-                                    height: heightImage,
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 1,
-                                        value: downloadProgress.progress,
-                                      ),
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 1,
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                          : null,
                                     ),
                                   );
                                 },

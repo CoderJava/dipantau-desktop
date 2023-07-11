@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -44,73 +43,73 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
             child: Text('no_data_to_display'.tr()),
           )
         : Stack(
-          children: [
-            PhotoViewGallery.builder(
-              pageController: pageController,
-              scrollPhysics: const BouncingScrollPhysics(),
-              builder: (BuildContext context, int index) {
-                final photo = listPhotos[index];
-                return photo.startsWith('http')
-                    ? PhotoViewGalleryPageOptions(
-                        imageProvider: CachedNetworkImageProvider(photo),
-                        initialScale: PhotoViewComputedScale.contained,
-                        heroAttributes: PhotoViewHeroAttributes(
-                          tag: photo,
-                        ),
-                      )
-                    : PhotoViewGalleryPageOptions(
-                        imageProvider: FileImage(File(photo)),
-                        initialScale: PhotoViewComputedScale.contained,
-                        heroAttributes: PhotoViewHeroAttributes(
-                          tag: photo,
-                        ),
-                      );
-              },
-              loadingBuilder: (context, loadingProgress) {
-                final cumulativeBytesLoaded = loadingProgress?.cumulativeBytesLoaded ?? 0;
-                return Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1,
-                    value: loadingProgress?.expectedTotalBytes != null
-                        ? cumulativeBytesLoaded / loadingProgress!.expectedTotalBytes!
-                        : null,
+            children: [
+              PhotoViewGallery.builder(
+                pageController: pageController,
+                scrollPhysics: const BouncingScrollPhysics(),
+                builder: (BuildContext context, int index) {
+                  final photo = listPhotos[index];
+                  return photo.startsWith('http')
+                      ? PhotoViewGalleryPageOptions(
+                          imageProvider: NetworkImage(photo),
+                          initialScale: PhotoViewComputedScale.contained,
+                          heroAttributes: PhotoViewHeroAttributes(
+                            tag: photo,
+                          ),
+                        )
+                      : PhotoViewGalleryPageOptions(
+                          imageProvider: FileImage(File(photo)),
+                          initialScale: PhotoViewComputedScale.contained,
+                          heroAttributes: PhotoViewHeroAttributes(
+                            tag: photo,
+                          ),
+                        );
+                },
+                loadingBuilder: (context, loadingProgress) {
+                  final cumulativeBytesLoaded = loadingProgress?.cumulativeBytesLoaded ?? 0;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1,
+                      value: loadingProgress?.expectedTotalBytes != null
+                          ? cumulativeBytesLoaded / loadingProgress!.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                itemCount: listPhotos.length,
+                onPageChanged: (index) {
+                  setState(() => indexSelectedPhoto = index);
+                },
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black.withOpacity(.5),
                   ),
-                );
-              },
-              itemCount: listPhotos.length,
-              onPageChanged: (index) {
-                setState(() => indexSelectedPhoto = index);
-              },
-            ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withOpacity(.5),
-                ),
-                margin: const EdgeInsets.only(
-                  left: 8,
-                  top: 8,
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.clear,
-                    color: Colors.white,
+                  margin: const EdgeInsets.only(
+                    left: 8,
+                    top: 8,
                   ),
-                  padding: const EdgeInsets.all(8),
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Colors.white,
+                    ),
+                    padding: const EdgeInsets.all(8),
+                  ),
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: buildWidgetSliderPreviewPhoto(),
-            ),
-          ],
-        );
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: buildWidgetSliderPreviewPhoto(),
+              ),
+            ],
+          );
   }
 
   Widget buildWidgetSliderPreviewPhoto() {
@@ -135,7 +134,7 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
               width: defaultSize,
               height: defaultSize,
               child: photo.startsWith('http')
-                  ? CachedNetworkImage(
+                  ? /*CachedNetworkImage(
                       imageUrl: photo,
                       fit: BoxFit.cover,
                       width: defaultSize,
@@ -153,6 +152,33 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
                           child: CircularProgressIndicator(
                             strokeWidth: 1,
                             value: downloadProgress.progress,
+                          ),
+                        );
+                      },
+                    )*/
+                  Image.network(
+                      photo,
+                      fit: BoxFit.cover,
+                      width: defaultSize,
+                      height: defaultSize,
+                      errorBuilder: (context, error, stacktrace) {
+                        return Image.asset(
+                          BaseImage.imagePlaceholder,
+                          fit: BoxFit.cover,
+                          width: defaultSize,
+                          height: defaultSize,
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                : null,
                           ),
                         );
                       },
