@@ -518,12 +518,16 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                                   if (loadingProgress == null) {
                                     return child;
                                   }
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 1,
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                          : null,
+                                  return SizedBox(
+                                    height: heightImage,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 1,
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded /
+                                                loadingProgress.expectedTotalBytes!
+                                            : null,
+                                      ),
                                     ),
                                   );
                                 },
