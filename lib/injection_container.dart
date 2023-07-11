@@ -25,12 +25,14 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_image/bulk_create_track_image.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_member/get_all_member.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_kv_setting/get_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/get_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/set_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
@@ -112,6 +114,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetAllMember(repository: sl()));
   sl.registerLazySingleton(() => UpdateUser(repository: sl()));
   sl.registerLazySingleton(() => GetTrackUser(repository: sl()));
+  sl.registerLazySingleton(() => GetKvSetting(repository: sl()));
+  sl.registerLazySingleton(() => SetKvSetting(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
