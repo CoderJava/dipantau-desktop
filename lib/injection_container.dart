@@ -44,6 +44,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screens
 import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/setting_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/user_profile/user_profile_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -106,6 +107,12 @@ Future<void> init() async {
       helper: sl(),
       getKvSetting: sl(),
       setKvSetting: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => UserProfileBloc(
+      helper: sl(),
+      getProfile: sl(),
     ),
   );
 
