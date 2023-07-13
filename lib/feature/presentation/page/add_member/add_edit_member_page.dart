@@ -282,6 +282,7 @@ class _AddEditMemberPageState extends State<AddEditMemberPage> {
           body: UpdateUserBody(
             name: name,
             userRole: userRole!,
+            password: null,
           ),
           id: id,
         ),
