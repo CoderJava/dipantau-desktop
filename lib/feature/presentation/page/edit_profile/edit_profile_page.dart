@@ -136,7 +136,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
                     child: WidgetError(
-                      title: 'info'.tr(),
+                      title: 'oops'.tr(),
                       message: errorMessage,
                       onTryAgain: doLoadData,
                     ),
