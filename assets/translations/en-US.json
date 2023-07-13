@@ -190,5 +190,8 @@
   "set_discord_channel_id": "Set Discord Channel ID",
   "cannot_be_empty": "Cannot be empty",
   "discord_channel_id_2": "Discord channel ID",
-  "example_discord_channel_id": "e.g. 1119234567890123455"
+  "example_discord_channel_id": "e.g. 1119234567890123455",
+  "profile_updated_successfully": "Profile updated successfully",
+  "type_to_change": "Type to change",
+  "edit_profile": "Edit Profile"
 }

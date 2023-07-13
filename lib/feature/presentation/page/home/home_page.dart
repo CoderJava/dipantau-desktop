@@ -17,6 +17,8 @@ import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dar
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/user_profile/user_profile_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/edit_profile/edit_profile_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/report_screenshot/report_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
@@ -47,6 +49,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final homeBloc = sl<HomeBloc>();
   final trackingBloc = sl<TrackingBloc>();
+  final userProfileBloc = sl<UserProfileBloc>();
   final helper = sl<Helper>();
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final listTrackTask = <TrackTask>[];
@@ -87,6 +90,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   @override
   void initState() {
+    doLoadDataUserProfile();
     userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
     email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail) ?? '';
     if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIsEnableScreenshotNotification)) {
@@ -102,6 +106,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       doLoadData();
     });
     super.initState();
+  }
+
+  void doLoadDataUserProfile() {
+    userProfileBloc.add(LoadDataUserProfileEvent());
   }
 
   void setupCronTimer() {
@@ -219,6 +227,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           BlocProvider<TrackingBloc>(
             create: (context) => trackingBloc,
           ),
+          BlocProvider<UserProfileBloc>(
+            create: (context) => userProfileBloc,
+          )
         ],
         child: MultiBlocListener(
           listeners: [
@@ -306,6 +317,23 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       }
                     }
                   });
+                }
+              },
+            ),
+            BlocListener<UserProfileBloc, UserProfileState>(
+              listener: (context, state) {
+                if (state is SuccessLoadDataUserProfileState) {
+                  final response = state.response;
+                  final name = response.name ?? '';
+                  final userRole = response.role;
+                  sharedPreferencesManager.putString(
+                    SharedPreferencesManager.keyFullName,
+                    name,
+                  );
+                  sharedPreferencesManager.putString(
+                    SharedPreferencesManager.keyUserRole,
+                    userRole?.name ?? '',
+                  );
                 }
               },
             ),
@@ -600,8 +628,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             child: InkWell(
               borderRadius: BorderRadius.circular(999),
               onTap: () {
-                // TODO: Buat fitur view profile
-                widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+                context.pushNamed(EditProfilePage.routeName);
               },
               child: Padding(
                 padding: const EdgeInsets.all(4.0),

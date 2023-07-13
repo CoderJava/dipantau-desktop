@@ -6,6 +6,7 @@ import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dar
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/add_member/add_edit_member_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/edit_profile/edit_profile_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
@@ -29,8 +30,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
-// TODO: buat fitur ubah password
-
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
 /**
  * 1. CRUD user
@@ -41,7 +40,7 @@ import 'package:window_manager/window_manager.dart';
  * 3. CRUD task
  * 4. CRUD track manual
  * 5. Report screenshot all member (done)
- * 6. Atur discord channel ID (on progress)
+ * 6. Atur discord channel ID (done)
  */
 
 // TODO: buat fitur khusus untuk admin. Admin memiliki fitur berikut:
@@ -227,6 +226,11 @@ class _MyAppState extends State<MyApp> {
         path: SettingDiscordPage.routePath,
         name: SettingDiscordPage.routeName,
         builder: (context, state) => const SettingDiscordPage(),
+      ),
+      GoRoute(
+        path: EditProfilePage.routePath,
+        name: EditProfilePage.routeName,
+        builder: (context, state) => const EditProfilePage(),
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
