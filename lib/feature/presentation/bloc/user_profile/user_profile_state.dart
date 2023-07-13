@@ -40,3 +40,14 @@ class SuccessLoadDataUserProfileState extends UserProfileState {
     return 'SuccessLoadDataUserProfileState{response: $response}';
   }
 }
+
+class SuccessUpdateDataUserProfileState extends UserProfileState {
+  final UpdateUserBody body;
+
+  SuccessUpdateDataUserProfileState({required this.body});
+
+  @override
+  String toString() {
+    return 'SuccessUpdateDataUserProfileState{body: $body}';
+  }
+}

@@ -113,6 +113,7 @@ Future<void> init() async {
     () => UserProfileBloc(
       helper: sl(),
       getProfile: sl(),
+      updateUser: sl(),
     ),
   );
 
