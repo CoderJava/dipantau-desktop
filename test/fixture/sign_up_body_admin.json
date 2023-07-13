@@ -1,0 +1,6 @@
+{
+  "name": "testName",
+  "email": "testEmail",
+  "password": "testPassword",
+  "user_role": "admin"
+}

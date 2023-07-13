@@ -12,7 +12,7 @@ class SignUpBody extends Equatable {
   final String email;
   @JsonKey(name: 'password')
   final String password;
-  @JsonKey(name: 'user_role')
+  @JsonKey(name: 'user_role', toJson: _userRoleToJson)
   final UserRole userRole;
 
   SignUpBody({
@@ -26,13 +26,24 @@ class SignUpBody extends Equatable {
 
   Map<String, dynamic> toJson() => _$SignUpBodyToJson(this);
 
+  static String _userRoleToJson(UserRole value) {
+    switch (value) {
+      case UserRole.superAdmin:
+        return 'super_admin';
+      case UserRole.admin:
+        return 'admin';
+      case UserRole.employee:
+        return 'employee';
+    }
+  }
+
   @override
   List<Object?> get props => [
-    name,
-    email,
-    password,
-    userRole,
-  ];
+        name,
+        email,
+        password,
+        userRole,
+      ];
 
   @override
   String toString() {
