@@ -67,11 +67,11 @@ class Helper {
     FlavorConfig(
       values: FlavorValues(
         baseUrl: domainApi,
-        baseUrlAuth: '$domainApi/auth',
-        baseUrlUser: '$domainApi/user',
-        baseUrlTrack: '$domainApi/track',
-        baseUrlProject: '$domainApi/project',
-        baseUrlSetting: '$domainApi/setting',
+        baseUrlAuth: '$domainApi/api/auth',
+        baseUrlUser: '$domainApi/api/user',
+        baseUrlTrack: '$domainApi/api/track',
+        baseUrlProject: '$domainApi/api/project',
+        baseUrlSetting: '$domainApi/api/setting',
       ),
     );
   }
