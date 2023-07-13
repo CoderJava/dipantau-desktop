@@ -73,13 +73,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var isTimerStart = false;
   ItemProjectResponse? selectedProject;
   TrackTask? selectedTask;
-  Timer? timeTrack, timerCronTrack;
+  Timer? timeTrack, timerCronTrack, timerDate;
   var countTimerInSeconds = 0;
   var isHaveActivity = false;
   var counterActivity = 0;
   DateTime? startTime;
   DateTime? finishTime;
   Track? trackEntity;
+  DateTime? infoDateTime;
 
   @override
   void setState(VoidCallback fn) {
@@ -90,6 +91,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   @override
   void initState() {
+    startTimerDate();
     doLoadDataUserProfile();
     userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
     email = sharedPreferencesManager.getString(SharedPreferencesManager.keyEmail) ?? '';
@@ -106,6 +108,36 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       doLoadData();
     });
     super.initState();
+  }
+
+  void startTimerDate() {
+    final now = DateTime.now();
+    infoDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+    timerDate = Timer.periodic(const Duration(seconds: 1), (_) {
+      final now = DateTime.now();
+      final dateTimeNow = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      );
+      if (!dateTimeNow.isAtSameMomentAs(infoDateTime ?? now)) {
+        infoDateTime = DateTime(
+          dateTimeNow.year,
+          dateTimeNow.month,
+          dateTimeNow.day,
+        );
+        for (final element in listTrackTask) {
+          element.trackedInSeconds = 0;
+        }
+        valueNotifierTotalTracked.value = 0;
+        valueNotifierTaskTracked.value = 0;
+        setState(() {});
+      }
+    });
   }
 
   void doLoadDataUserProfile() {
@@ -202,6 +234,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     windowManager.removeListener(this);
     trayManager.removeListener(this);
     timerCronTrack?.cancel();
+    timerDate?.cancel();
     super.dispose();
   }
 
@@ -405,8 +438,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       );
     }
 
-    final now = DateTime.now();
-    final formattedNow = helper.setDateFormat('EEE, dd MMM yyyy').format(now);
+    final formattedNow = helper.setDateFormat('EEE, dd MMM yyyy').format(infoDateTime ?? DateTime.now());
 
     return Column(
       children: [
@@ -560,6 +592,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     );
                   }
                   valueNotifierTotalTracked.value = 0;
+                  final now = DateTime.now();
+                  infoDateTime = DateTime(
+                    now.year,
+                    now.month,
+                    now.day,
+                  );
+                  setState(() {});
                   doLoadData();
                 }
               },
