@@ -238,6 +238,16 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
       builder: (context, state) {
         if (state is LoadingCenterMemberState) {
           return const WidgetCustomCircularProgressIndicator();
+        } else if (state is FailureMemberState) {
+          final errorMessage = state.errorMessage;
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
+            child: WidgetError(
+              title: 'oops'.tr(),
+              message: errorMessage,
+              onTryAgain: prepareData,
+            ),
+          );
         }
         return Container();
       },
