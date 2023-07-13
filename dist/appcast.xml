@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>Dipantau</title>
+        <description>Most recent updates to Dipantau</description>
+        <language>en</language>
+        <item>
+            <title>Version 1.0.0</title>
+            <sparkle:releaseNotesLink>
+                https://raw.githubusercontent.com/CoderJava/dipantau-desktop/main/release_notes.html
+            </sparkle:releaseNotesLink>
+            <pubDate>Sat, 15 Jul 2023 06:00:00 +0700</pubDate>
+            <enclosure url="https://raw.githubusercontent.com/CoderJava/dipantau-desktop/main/dist/1.0.0%2B1/dipantau_desktop_client-1.0.0%2B1-macos.zip"
+                sparkle:edSignature="bo8LC9VUgRgTMxmLhbdoG3/UH/pdNqx7FG0vIGhi75bCCPNsw5KYlckd9mEQvILFJUVc4vt2cZyR2Tf2mWuDAg=="
+                sparkle:version="1.0.0"
+                sparkle:os="macos"
+                length="20240710"
+                type="application/octet-stream" />
+        </item>
+    </channel>
+</rss>
