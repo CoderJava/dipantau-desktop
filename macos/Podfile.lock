@@ -1,4 +1,7 @@
 PODS:
+  - auto_updater (0.0.1):
+    - FlutterMacOS
+    - Sparkle
   - connectivity_plus (0.0.1):
     - FlutterMacOS
     - ReachabilitySwift
@@ -17,6 +20,7 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - Sparkle (2.4.2)
   - sqflite (0.0.2):
     - FlutterMacOS
     - FMDB (>= 2.7.5)
@@ -26,6 +30,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - auto_updater (from `Flutter/ephemeral/.symlinks/plugins/auto_updater/macos`)
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
   - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -40,8 +45,11 @@ SPEC REPOS:
   trunk:
     - FMDB
     - ReachabilitySwift
+    - Sparkle
 
 EXTERNAL SOURCES:
+  auto_updater:
+    :path: Flutter/ephemeral/.symlinks/plugins/auto_updater/macos
   connectivity_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos
   flutter_local_notifications:
@@ -62,6 +70,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
+  auto_updater: d3c03e9e5f2a00ec78572d9f7473cb8c9a6c0273
   connectivity_plus: 18d3c32514c886e046de60e9c13895109866c747
   flutter_local_notifications: 3805ca215b2fb7f397d78b66db91f6a747af52e4
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
@@ -70,6 +79,7 @@ SPEC CHECKSUMS:
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
   shared_preferences_foundation: e2dae3258e06f44cc55f49d42024fd8dd03c590c
+  Sparkle: 5ef7097e655c60f4aeb23fd1658fc3e8dd50f4ec
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
   tray_manager: 9064e219c56d75c476e46b9a21182087930baf90
   window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8

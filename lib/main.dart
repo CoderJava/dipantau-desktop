@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:auto_updater/auto_updater.dart';
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
@@ -58,6 +59,11 @@ import 'package:window_manager/window_manager.dart';
 /// 4. Report screenshot personal (done)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  String feedURL = 'https://raw.githubusercontent.com/CoderJava/dipantau-desktop/main/dist/appcast.xml';
+  await autoUpdater.setFeedURL(feedURL);
+  await autoUpdater.checkForUpdates();
+  await autoUpdater.setScheduledCheckInterval(3600);
 
   // Easy localization
   await EasyLocalization.ensureInitialized();
