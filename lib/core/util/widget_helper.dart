@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 
 class WidgetHelper {
   void showSnackBar(BuildContext context, String message) {
@@ -67,5 +70,18 @@ class WidgetHelper {
     if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
       FocusManager.instance.primaryFocus?.unfocus();
     }
+  }
+
+  Future<String> getDirectoryApp(String folderName) async {
+    // Users/yudisetiawan/Library
+    final libraryDirectory = await getLibraryDirectory();
+    final directory = Directory('${libraryDirectory.path}/dipantau/$folderName');
+    final directoryPath = directory.path;
+    final isDirectoryExists = directory.existsSync();
+    if (isDirectoryExists) {
+      return directoryPath;
+    }
+    directory.createSync(recursive: true);
+    return directoryPath;
   }
 }
