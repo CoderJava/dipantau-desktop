@@ -125,6 +125,10 @@ dependencies:
   # This plugin allows Flutter desktop apps to automatically update themselves (based on sparkle and winsparkle).
   auto_updater: ^0.1.7
 
+  # Flutter plugin for querying information about the application package, such as CFBundleVersion
+  # on iOS or versionCode on Android.
+  package_info_plus: ^4.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
