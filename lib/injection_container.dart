@@ -5,6 +5,7 @@ import 'package:dipantau_desktop_client/core/util/dio_logging_interceptor_refres
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/setting/setting_remote_data_source.dart';
@@ -45,6 +46,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/settin
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/user_profile/user_profile_bloc.dart';
+import 'package:floor/floor.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -232,16 +234,10 @@ void init() {
   sl.registerLazySingleton(() => NotificationHelper());
 
   // database
-  // final database = await $FloorAppDatabase.databaseBuilder('dipantau.db').build();
-  /*final databasePath = await database.getDatabasePath();
-  debugPrint('database path: $databasePath');*/
-  // sl.registerLazySingleton(() => database.trackDao);
   sl.registerLazySingletonAsync(() async {
+    final directory = await WidgetHelper().getDirectoryApp('database');
+    sqfliteDatabaseFactory.setDatabasesPath(directory);
     final database = await $FloorAppDatabase.databaseBuilder('dipantau.db').build();
     return database;
-  });
-  sl.registerLazySingletonAsync(() async {
-    final database = await sl.getAsync<AppDatabase>();
-    return database.trackDao;
   });
 }
