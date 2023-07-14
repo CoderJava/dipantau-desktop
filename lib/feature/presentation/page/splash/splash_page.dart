@@ -1,7 +1,6 @@
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
@@ -27,7 +26,6 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     Future.delayed(const Duration(seconds: 1)).then((_) async {
       sharedPreferencesManager = await sl.getAsync<SharedPreferencesManager>();
-      trackDao = await sl.getAsync<TrackDao>();
       packageInfo = await PackageInfo.fromPlatform();
       if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyAppearanceMode)) {
         sharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, AppearanceMode.light.name);

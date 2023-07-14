@@ -14,6 +14,7 @@ import 'package:dipantau_desktop_client/feature/data/model/create_track/create_t
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_task/track_task.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
+import 'package:dipantau_desktop_client/feature/database/app_database.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
@@ -32,7 +33,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -101,7 +101,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     setupTray();
     doStartActivityListener();
     notificationHelper.requestPermissionNotification();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final appDatabase = await sl.getAsync<AppDatabase>();
+        trackDao = appDatabase.trackDao;
+      } catch (error) {
+        widgetHelper.showSnackBar(context, 'error: $error');
+      }
       setupCronTimer();
       doLoadData();
     });
@@ -177,9 +183,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           );
         }
 
-        final directory = await getApplicationDocumentsDirectory();
-        final directoryPath = '${directory.path}/dipantau';
-        final isDirectoryExists = platformChannelHelper.checkDirectory(directoryPath);
+        final directoryPath = await widgetHelper.getDirectoryApp('screenshot');
+        final isDirectoryExists = Directory(directoryPath).existsSync();
         BulkCreateTrackImageBody? bodyImage;
         if (isDirectoryExists) {
           final files = <String>[];
