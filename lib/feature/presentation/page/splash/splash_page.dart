@@ -9,6 +9,7 @@ import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custo
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashPage extends StatefulWidget {
   static const routePath = '/splash';
@@ -27,6 +28,7 @@ class _SplashPageState extends State<SplashPage> {
     Future.delayed(const Duration(seconds: 1)).then((_) async {
       sharedPreferencesManager = await sl.getAsync<SharedPreferencesManager>();
       trackDao = await sl.getAsync<TrackDao>();
+      packageInfo = await PackageInfo.fromPlatform();
       if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyAppearanceMode)) {
         sharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, AppearanceMode.light.name);
       }
