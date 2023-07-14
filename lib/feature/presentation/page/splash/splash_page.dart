@@ -1,5 +1,7 @@
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
@@ -19,17 +21,17 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
-
   @override
   void initState() {
     super.initState();
-    if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyAppearanceMode)) {
-      sharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, AppearanceMode.light.name);
-    }
-    Future.delayed(const Duration(seconds: 1)).then((_) {
+    Future.delayed(const Duration(seconds: 1)).then((_) async {
+      sharedPreferencesManager = await sl.getAsync<SharedPreferencesManager>();
+      trackDao = await sl.getAsync<TrackDao>();
+      if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyAppearanceMode)) {
+        sharedPreferencesManager.putString(SharedPreferencesManager.keyAppearanceMode, AppearanceMode.light.name);
+      }
       final domainApi = sharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi) ?? '';
-      if (domainApi.isEmpty) {
+      if (domainApi.isEmpty && mounted) {
         context.go(
           SetupCredentialPage.routePath,
           extra: {
@@ -40,10 +42,12 @@ class _SplashPageState extends State<SplashPage> {
       }
 
       final isLogin = sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsLogin) ?? false;
-      if (isLogin) {
-        context.go(HomePage.routePath);
-      } else {
-        context.go(LoginPage.routePath);
+      if (mounted) {
+        if (isLogin) {
+          context.go(HomePage.routePath);
+        } else {
+          context.go(LoginPage.routePath);
+        }
       }
     });
   }

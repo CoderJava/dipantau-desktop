@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
-import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,7 +19,6 @@ class PlatformChannelHelper {
 
   late MethodChannel _methodChannel;
   late EventChannel _eventChannel;
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final random = Random();
 
   PlatformChannelHelper() {

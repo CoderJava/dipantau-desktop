@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
@@ -13,7 +14,6 @@ import 'package:dipantau_desktop_client/feature/data/model/create_track/create_t
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_task/track_task.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
-import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
@@ -51,7 +51,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final trackingBloc = sl<TrackingBloc>();
   final userProfileBloc = sl<UserProfileBloc>();
   final helper = sl<Helper>();
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final listTrackTask = <TrackTask>[];
   final widgetHelper = WidgetHelper();
   final keyTrayShowTimer = 'tray-show-timer';
@@ -63,7 +62,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
   final notificationHelper = sl<NotificationHelper>();
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
-  final trackDao = sl<TrackDao>();
   final listTrackLocal = <Track>[];
 
   var isWindowVisible = true;

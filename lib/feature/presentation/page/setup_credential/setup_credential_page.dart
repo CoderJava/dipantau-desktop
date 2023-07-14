@@ -1,7 +1,7 @@
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
-import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
@@ -31,7 +31,6 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
   final helper = di.sl<Helper>();
   final controllerHostname = TextEditingController();
   final widgetHelper = WidgetHelper();
-  final sharedPreferencesManager = di.sl<SharedPreferencesManager>();
   final formState = GlobalKey<FormState>();
 
   var isLogin = false;
@@ -152,13 +151,9 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
         final hostname = controllerHostname.text.trim();
         await sharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, hostname);
         helper.setDomainApiToFlavor(hostname);
-        await di.init();
+        di.init();
         if (mounted) {
-          if (isLogin) {
-            context.go(HomePage.routePath);
-          } else {
-            context.go('/');
-          }
+          context.go('/');
         }
       }
     }

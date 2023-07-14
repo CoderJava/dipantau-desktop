@@ -1,4 +1,5 @@
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
@@ -29,7 +30,6 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   final helper = sl<Helper>();
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final valueNotifierIsEnableScreenshotNotification = ValueNotifier(false);
   final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
   final widgetHelper = WidgetHelper();

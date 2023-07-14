@@ -1,3 +1,4 @@
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/password_validator.dart';
@@ -29,7 +30,6 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final userProfileBloc = sl<UserProfileBloc>();
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final widgetHelper = WidgetHelper();
   final controllerName = TextEditingController();
   final controllerEmail = TextEditingController();

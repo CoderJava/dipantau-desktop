@@ -56,7 +56,7 @@ dependencies:
 
   # Simple direct service locator that allows to decouple the interface from a concrete
   # implementation and to access the concrete implementation from everywhere in your app.
-  get_it: ^7.2.0
+  get_it: ^7.6.0
 
   # Functional programming in Dart.
   dartz: ^0.10.1

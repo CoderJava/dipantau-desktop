@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
-import 'package:dipantau_desktop_client/feature/database/dao/track/track_dao.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
@@ -33,9 +33,7 @@ class SyncPage extends StatefulWidget {
 
 class _SyncPageState extends State<SyncPage> {
   final trackingBloc = sl<TrackingBloc>();
-  final trackDao = sl<TrackDao>();
   final listTracks = <Track>[];
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final helper = sl<Helper>();
   final widgetHelper = WidgetHelper();
 

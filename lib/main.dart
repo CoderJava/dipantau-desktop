@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:auto_updater/auto_updater.dart';
+import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
-import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
@@ -23,12 +23,14 @@ import 'package:dipantau_desktop_client/feature/presentation/page/setting_discor
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 // TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
@@ -69,15 +71,14 @@ void main() async {
   await EasyLocalization.ensureInitialized();
 
   // Service locator
+  di.init();
   di.sl.allowReassignment = true;
-  await di.init();
 
   // Window manager
-  final helper = di.sl<Helper>();
-  final defaultWindowSize = helper.getDefaultWindowSize;
+  const defaultWindowSize = 500.0;
   await windowManager.ensureInitialized();
-  final windowSize = Size(defaultWindowSize, defaultWindowSize);
-  final windowOptions = WindowOptions(
+  const windowSize = Size(defaultWindowSize, defaultWindowSize);
+  const windowOptions = WindowOptions(
     size: windowSize,
     center: true,
     skipTaskbar: false,
@@ -95,22 +96,21 @@ void main() async {
     },
   );
 
-  final sharedPreferencesManager = di.sl<SharedPreferencesManager>();
-  if (sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyDomainApi)) {
-    final domainApi = sharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi) ?? '';
-    if (domainApi.isNotEmpty) {
-      helper.setDomainApiToFlavor(domainApi);
-    }
-  }
-
   runApp(
-    EasyLocalization(
-      supportedLocales: const [
-        Locale('en', 'US'),
-      ],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en', 'US'),
-      child: MyApp(),
+    FutureBuilder(
+      future: di.sl.allReady(),
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? EasyLocalization(
+                supportedLocales: const [
+                  Locale('en', 'US'),
+                ],
+                path: 'assets/translations',
+                fallbackLocale: const Locale('en', 'US'),
+                child: MyApp(),
+              )
+            : const WidgetCustomCircularProgressIndicator();
+      },
     ),
   );
 }
@@ -123,8 +123,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final appearanceBloc = di.sl<AppearanceBloc>();
-  final sharedPreferencesManager = di.sl<SharedPreferencesManager>();
+  final appearanceBloc = AppearanceBloc();
   final router = GoRouter(
     routes: [
       GoRoute(
@@ -244,21 +243,41 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final window = View.of(context);
-      updateAppearanceMode(window);
-      window.platformDispatcher.onPlatformBrightnessChanged = () {
-        WidgetsBinding.instance.handlePlatformBrightnessChanged();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final sharedPreferencesManager = SharedPreferencesManager.getInstance(sharedPreferences);
+      if (sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyDomainApi)) {
+        final domainApi = sharedPreferencesManager.getString(SharedPreferencesManager.keyDomainApi) ?? '';
+        if (domainApi.isNotEmpty) {
+          FlavorConfig(
+            values: FlavorValues(
+              baseUrl: domainApi,
+              baseUrlAuth: '$domainApi/api/auth',
+              baseUrlUser: '$domainApi/api/user',
+              baseUrlTrack: '$domainApi/api/track',
+              baseUrlProject: '$domainApi/api/project',
+              baseUrlSetting: '$domainApi/api/setting',
+            ),
+          );
+        }
+      }
 
-        // Callback ini akan selalu terpanggil ketika host system mengalami perubahan theme
-        // Callback ini akan diimplementasikan jika si user pilih pengaturan appearance di app-nya ialah system
-        updateAppearanceMode(window);
-      };
+      if (mounted) {
+        final window = View.of(context);
+        updateAppearanceMode(window, sharedPreferencesManager);
+        window.platformDispatcher.onPlatformBrightnessChanged = () {
+          WidgetsBinding.instance.handlePlatformBrightnessChanged();
+
+          // Callback ini akan selalu terpanggil ketika host system mengalami perubahan theme
+          // Callback ini akan diimplementasikan jika si user pilih pengaturan appearance di app-nya ialah system
+          updateAppearanceMode(window, sharedPreferencesManager);
+        };
+      }
     });
     super.initState();
   }
 
-  void updateAppearanceMode(FlutterView window) {
+  void updateAppearanceMode(FlutterView window, SharedPreferencesManager sharedPreferencesManager) {
     final strAppearanceMode =
         sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
     final appearanceMode = strAppearanceMode.fromStringAppearanceMode;

@@ -50,7 +50,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
 
-Future<void> init() async {
+void init() {
   const dioRefreshToken = 'dio_refresh_token';
   const dioLogging = 'dio_logging';
 
@@ -196,9 +196,11 @@ Future<void> init() async {
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
   // external
-  final sharedPreferences = await SharedPreferences.getInstance();
-  final sharedPreferencesManager = SharedPreferencesManager.getInstance(sharedPreferences);
-  sl.registerLazySingleton(() => sharedPreferencesManager);
+  sl.registerLazySingletonAsync(() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final sharedPreferencesManager = SharedPreferencesManager.getInstance(sharedPreferences);
+    return sharedPreferencesManager;
+  });
   sl.registerLazySingleton(
     () {
       final dio = Dio();
@@ -230,8 +232,16 @@ Future<void> init() async {
   sl.registerLazySingleton(() => NotificationHelper());
 
   // database
-  final database = await $FloorAppDatabase.databaseBuilder('dipantau.db').build();
+  // final database = await $FloorAppDatabase.databaseBuilder('dipantau.db').build();
   /*final databasePath = await database.getDatabasePath();
   debugPrint('database path: $databasePath');*/
-  sl.registerLazySingleton(() => database.trackDao);
+  // sl.registerLazySingleton(() => database.trackDao);
+  sl.registerLazySingletonAsync(() async {
+    final database = await $FloorAppDatabase.databaseBuilder('dipantau.db').build();
+    return database;
+  });
+  sl.registerLazySingletonAsync(() async {
+    final database = await sl.getAsync<AppDatabase>();
+    return database.trackDao;
+  });
 }

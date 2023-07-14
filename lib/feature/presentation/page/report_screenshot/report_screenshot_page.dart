@@ -1,3 +1,4 @@
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
@@ -33,7 +34,6 @@ class ReportScreenshotPage extends StatefulWidget {
 class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
   final reportScreenshotBloc = sl<ReportScreenshotBloc>();
   final memberBloc = sl<MemberBloc>();
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final widgetHelper = WidgetHelper();
   final helper = sl<Helper>();
   final listUserProfile = <UserProfileResponse>[];
