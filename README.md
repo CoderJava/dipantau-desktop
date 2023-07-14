@@ -1,16 +1,16 @@
-# dipantau_desktop_client
+![Dipantau Desktop](https://github.com/CoderJava/dipantau-desktop/blob/main/screenshot/banner.png)
 
-Dipantau project for desktop client
+# Dipantau Desktop
+Dipantau adalah aplikasi yang berfungsi untuk memantau kegiatan pengguna dalam bentuk waktu, screenshot, dan deteksi aktivitas (keyboard & mouse). Aplikasi ini bisa dijadikan pilihan sebagai alternatif dari Cattr dan berbagai aplikasi lainnya yang serupa.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Fitur yang tersedia
+| Fitur                             | MacOS | Windows | Linux |
+| :---                              | :---: | :-----: | :---: |
+| Pelacakan waktu                   |   ✔️   |    ✖️    |   ✖️   |
+| Tangkapan layar                   |   ✔️   |    ✖️    |   ✖️   |
+| Deteksi aktivitas keyboard        |   ✔️   |    ✖️    |   ✖️   |
+| Deteksi aktivitas mouse           |   ✔️   |    ✖️    |   ✖️   |
+| Manajemen pengguna                |   🚧  |    ✖️    |   ✖️   |
+| Manajemen projek                  |   🚧  |    ✖️    |   ✖️   |
+| Manajemen tugas                   |   🚧  |    ✖️    |   ✖️   |
+| Laporan aktivitas pengguna        |   ✔   |    ✖️    |   ✖️   |
