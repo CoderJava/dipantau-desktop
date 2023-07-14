@@ -1,9 +1,7 @@
 import 'dart:ui';
 
-import 'package:auto_updater/auto_updater.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
-import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
@@ -62,11 +60,6 @@ import 'package:window_manager/window_manager.dart';
 /// 4. Report screenshot personal (done)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Auto updater
-  const feedURL = autoUpdaterUrl;
-  autoUpdater.setFeedURL(feedURL);
-  autoUpdater.checkForUpdates();
 
   // Easy localization
   await EasyLocalization.ensureInitialized();
