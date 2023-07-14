@@ -3,9 +3,9 @@ import 'dart:math';
 
 import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 
 class PlatformChannelHelper {
   // Method channel
@@ -37,9 +37,10 @@ class PlatformChannelHelper {
   Future<List<String?>> doTakeScreenshot() async {
     final listPathScreenshots = <String?>[];
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final directoryPath = '${directory.path}/dipantau';
-      final isDirectoryExists = checkDirectory(directoryPath);
+      final directoryPath = await WidgetHelper().getDirectoryApp('screenshot');
+      final directory = Directory(directoryPath);
+      final isDirectoryExists = directory.existsSync();
+
       var userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
       if (userId.isEmpty) {
         userId = random.nextInt(100).toString();
@@ -84,20 +85,6 @@ class PlatformChannelHelper {
       debugPrint('Error do take screenshot: $error');
     }
     return listPathScreenshots;
-  }
-
-  bool checkDirectory(String pathDirectory) {
-    final directory = Directory(pathDirectory);
-    if (pathDirectory.isNotEmpty && !directory.existsSync()) {
-      try {
-        directory.createSync(recursive: true);
-        return true;
-      } catch (error) {
-        debugPrint('Error create directory: $error');
-        return false;
-      }
-    }
-    return true;
   }
 
   void setActivityListener() {
