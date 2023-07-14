@@ -1,3 +1,4 @@
+import 'package:auto_updater/auto_updater.dart';
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
@@ -99,6 +100,8 @@ class _SettingPageState extends State<SettingPage> {
             buildWidgetScreenshotNotification(),
             const SizedBox(height: 16),
             buildWidgetSetHostName(),
+            const SizedBox(height: 16),
+            buildWidgetCheckForUpdate(),
             const SizedBox(height: 16),
             buildWidgetChooseAppearance(),
             buildWidgetCompanySetting(),
@@ -584,6 +587,42 @@ class _SettingPageState extends State<SettingPage> {
               color: Colors.grey,
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetCheckForUpdate() {
+    final versionName = packageInfo.version;
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'update_app'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                '${'current'.tr()}: $versionName',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        WidgetPrimaryButton(
+          onPressed: () {
+            const feedURL = autoUpdaterUrl;
+            autoUpdater.setFeedURL(feedURL);
+            autoUpdater.checkForUpdates();
+          },
+          child: Text('check_for_update'.tr()),
         ),
       ],
     );

@@ -193,5 +193,7 @@
   "example_discord_channel_id": "e.g. 1119234567890123455",
   "profile_updated_successfully": "Profile updated successfully",
   "type_to_change": "Type to change",
-  "edit_profile": "Edit Profile"
+  "edit_profile": "Edit Profile",
+  "update_app": "Update App",
+  "check_for_update": "Check For Update"
 }
