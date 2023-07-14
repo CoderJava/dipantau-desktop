@@ -31,6 +31,7 @@ class _SettingDiscordPageState extends State<SettingDiscordPage> {
 
   var isLoadingButton = false;
   var discordChannelId = '';
+  var isPreparingSuccess = false;
 
   @override
   void setState(VoidCallback fn) {
@@ -65,6 +66,7 @@ class _SettingDiscordPageState extends State<SettingDiscordPage> {
                 return;
               }
             } else if (state is SuccessLoadKvSettingState) {
+              isPreparingSuccess = true;
               discordChannelId = state.response?.discordChannelId ?? '';
               controllerDiscordChannelId.text = discordChannelId;
             } else if (state is FailureSnackBarSettingState) {
@@ -101,7 +103,7 @@ class _SettingDiscordPageState extends State<SettingDiscordPage> {
                   } else if (state is LoadingCenterSettingState) {
                     return const WidgetCustomCircularProgressIndicator();
                   }
-                  return discordChannelId.isEmpty ? Container() : buildWidgetForm();
+                  return !isPreparingSuccess ? Container() : buildWidgetForm();
                 },
               ),
             ),
