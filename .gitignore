@@ -53,3 +53,7 @@ app.*.map.json
 # iOS
 /ios/Podfile.lock
 /ios/build/
+
+# Installer & release output
+/installers/dmg_creator/*.dmg
+/dist/
