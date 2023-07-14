@@ -6,6 +6,3 @@ releases:
         package:
           platform: macos
           target: zip
-          build_args:
-            dart-define:
-              APP_ENV: dev
