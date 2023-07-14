@@ -54,7 +54,7 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
         var listPathImages = [String]()
         for i in 1...displayCount {
             let unixTimestamp = createTimestamp()
-            let fileUrl = URL(fileURLWithPath: folderName + "/\(unixTimestamp)" + "_" + "\(userId)" + "_" + "\(randomNumber)" + "_" + "\(i)" + ".jpg", isDirectory: true)
+            let fileUrl = URL(fileURLWithPath: folderName + "/\(unixTimestamp)" + "_" + "\(userId)" + "_" + "\(randomNumber)" + "_" + "\(i)" + ".jpg", isDirectory: false)
             let screenshot:CGImage = CGDisplayCreateImage(activeDisplays[Int(i-1)])!
             let bitmapRep = NSBitmapImageRep(cgImage: screenshot)
             let jpegData = bitmapRep.representation(using: NSBitmapImageRep.FileType.jpeg, properties: [:])!
