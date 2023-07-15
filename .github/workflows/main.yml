@@ -19,6 +19,8 @@ jobs:
           channel: 'stable'
       - name: Get package
         run: flutter pub get
+      - name: Build runner
+        run: dart run build_runner build
       - name: Analyze
         run: flutter analyze
       - name: Run test
