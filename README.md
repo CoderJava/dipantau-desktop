@@ -1,3 +1,5 @@
+[![Codemagic build status](https://api.codemagic.io/apps/64b241274b3368c037e97308/64b241274b3368c037e97307/status_badge.svg)](https://codemagic.io/apps/64b241274b3368c037e97308/64b241274b3368c037e97307/latest_build)
+
 ![Dipantau Desktop](https://github.com/CoderJava/dipantau-desktop/blob/main/screenshot/banner.png)
 
 # Dipantau Desktop
