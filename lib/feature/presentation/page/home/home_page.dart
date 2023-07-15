@@ -1027,7 +1027,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     if (selectedTask != null) {
       valueNotifierTaskTracked.value += 1;
     }
-    if (countTimerInSeconds == intervalScreenshot) {
+    if (countTimerInSeconds >= intervalScreenshot) {
       finishTime = DateTime.now();
       await doTakeScreenshot();
       resetCountTimer();
