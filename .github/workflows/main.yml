@@ -7,7 +7,7 @@ on:
 env:
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 jobs:
-  tests:
+  create-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -19,8 +19,8 @@ jobs:
           channel: 'stable'
       - name: Get package
         run: flutter pub get
-      - name: Analyze
-        run: flutter analyze
+      - name: Build runner
+        run: dart run build_runner build
       - name: Run test
         run: flutter test --coverage
       - name: Upload coverage reports to Codecov
