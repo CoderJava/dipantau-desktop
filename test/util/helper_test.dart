@@ -110,10 +110,11 @@ void main() {
     () async {
       // arrange
       const baseUrl = 'https://example.com';
-      const baseUrlAuth = '$baseUrl/auth';
-      const baseUrlUser = '$baseUrl/user';
-      const baseUrlTrack = '$baseUrl/track';
-      const baseUrlProject = '$baseUrl/project';
+      const baseUrlAuth = '$baseUrl/api/auth';
+      const baseUrlUser = '$baseUrl/api/user';
+      const baseUrlTrack = '$baseUrl/api/track';
+      const baseUrlProject = '$baseUrl/api/project';
+      const baseUrlSetting = '$baseUrl/api/setting';
 
       // act
       helper.setDomainApiToFlavor('https://example.com');
@@ -124,6 +125,7 @@ void main() {
       expect(FlavorConfig.instance.values.baseUrlUser, baseUrlUser);
       expect(FlavorConfig.instance.values.baseUrlTrack, baseUrlTrack);
       expect(FlavorConfig.instance.values.baseUrlProject, baseUrlProject);
+      expect(FlavorConfig.instance.values.baseUrlSetting, baseUrlSetting);
     },
   );
 
