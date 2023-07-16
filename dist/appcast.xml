@@ -34,6 +34,7 @@
                 <ul>
 	                <li>Handle ketika timer sedang berjalan dan device-nya dalam keadaan sleep.</li>
                     <li>Buat fitur check for update automatically.</li>
+                    <li>Test</li>
                 </ul>
             ]]>
             </description>
