@@ -39,10 +39,10 @@
             </description>
             <pubDate>Sat, 15 Jul 2023 22:00:00 +0700</pubDate>
             <enclosure url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.0.1/dipantau_desktop_client-1.0.1+2-macos.dmg"
-                sparkle:edSignature="PPanBluXd541DakD9Vgd58fo3asVQ5wtg1MNz8tKC+23SnMhqbMo+NrPwXwXalfxMEIfCs0VYiBE7CkR3jAQDQ=="
+                sparkle:edSignature="JqfGaDR3IPPDor3JssjZn5CAxOEO3tjBDV/PZJ+nwt6f3RqQFgnBw01g+SZBODHkwW3nzzEKR5rRv3R8pTtQDw=="
                 sparkle:version="1.0.1"
                 sparkle:os="macos"
-                length="20253874"
+                length="20253986"
                 type="application/octet-stream" />
         </item>
     </channel>
