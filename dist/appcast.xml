@@ -32,9 +32,8 @@
             <title>Version 1.0.1</title>
             <description><![CDATA[
                 <ul>
-	                <li>Handle ketika timer sedang berjalan dan device-nya dalam keadaan sleep.</li>
+	            <li>Handle ketika timer sedang berjalan dan device-nya dalam keadaan sleep.</li>
                     <li>Buat fitur check for update automatically.</li>
-                    <li>Test</li>
                 </ul>
             ]]>
             </description>
