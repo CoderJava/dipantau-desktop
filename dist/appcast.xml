@@ -1,49 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
-        <title>Dipantau</title>
         <description>Most recent updates to Dipantau</description>
         <language>en</language>
-	<item>
-            <title>Version 1.0.0</title>
-            <description><![CDATA[
-                <h1>Dipantau Telah Dirilis!!!</h1>
-                <p>Pada hari ini tgl 15 Juli 2023 secara resmi aplikasi&nbsp;<strong>Dipantau</strong>&nbsp;telah
-                dirilis untuk versi beta. Di versi beta ini masih banyak beberapa fitur yang belum selesai
-                dikembangkan namun, dari fungsi utamanya seperti&nbsp;<em>monitoring system&nbsp;</em>seharusnya
-                sudah bisa diuji coba. Di versi beta ini, ada beberapa fitur yang sudah bisa dicoba yaitu,
-                sebagai berikut:</p>
-                <ul>
-                    <li>Memantau aktivitas pengguna (waktu dan screenshot)</li>
-                    <li>Manajemen user, dan</li>
-                    <li>Laporan aktivitas pengguna (waktu dan screenshot)</li>
-                </ul>
-            ]]>
-            </description>
-            <pubDate>Sat, 15 Jul 2023 06:00:00 +0700</pubDate>
-            <enclosure url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.0.0/dipantau_desktop_client-1.0.0+1-macos.zip"
-                sparkle:edSignature="PPanBluXd541DakD9Vgd58fo3asVQ5wtg1MNz8tKC+23SnMhqbMo+NrPwXwXalfxMEIfCs0VYiBE7CkR3jAQDQ=="
-                sparkle:version="1.0.0"
-                sparkle:os="macos"
-                length="20249738"
-                type="application/octet-stream" />
-        </item>
+        <title>Dipantau</title>
         <item>
-            <title>Version 1.0.1</title>
             <description><![CDATA[
                 <ul>
-	            <li>Handle ketika timer sedang berjalan dan device-nya dalam keadaan sleep.</li>
-                    <li>Buat fitur check for update automatically.</li>
+                    <li>Fitur reminder not track. Notifikasinya akan muncul per 10 menit jika si user lupa menjalankan timer-nya.</li>
+	                <li>Perbaikan waktu track yang tidak sync ke server.</li>
+                    <li>Perbaikan error ketika timer sedang berjalan dan device dalam keadaan sleep.</li>
                 </ul>
             ]]>
             </description>
-            <pubDate>Sat, 15 Jul 2023 22:00:00 +0700</pubDate>
-            <enclosure url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.0.1/dipantau_desktop_client-1.0.1+2-macos.zip"
-                sparkle:edSignature="JqfGaDR3IPPDor3JssjZn5CAxOEO3tjBDV/PZJ+nwt6f3RqQFgnBw01g+SZBODHkwW3nzzEKR5rRv3R8pTtQDw=="
-                sparkle:version="1.0.1"
+            <enclosure
+                length="20514026"
+                type="application/octet-stream"
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.0/dipantau_desktop_client-1.1.0+3-macos.zip"
+                sparkle:edSignature="hM7l/opG6z89g1bvmBK1sxM59218nksvhWMmOWMue4thG53Wa11luey8S8BgUL6iynikfSncD6OPA8M1ubufDA=="
                 sparkle:os="macos"
-                length="20253986"
-                type="application/octet-stream" />
+                sparkle:version="1.1.0" />
+            <pubDate>Mon, 17 Jul 2023 23:00:00 +0700</pubDate>
+            <title>Version 1.1.0</title>
         </item>
     </channel>
 </rss>
