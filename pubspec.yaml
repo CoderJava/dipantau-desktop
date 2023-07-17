@@ -178,6 +178,7 @@ flutter:
     - assets/fake_json/
     - assets/images/
     - assets/animations/
+    - assets/audio/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
