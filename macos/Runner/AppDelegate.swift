@@ -52,6 +52,11 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
         }
         
         var listPathImages = [String]()
+        if (displayCount == 0) {
+            print("display count: \(displayCount)")
+            return [String]()
+        }
+
         for i in 1...displayCount {
             let unixTimestamp = createTimestamp()
             let fileUrl = URL(fileURLWithPath: folderName + "/\(unixTimestamp)" + "_" + "\(userId)" + "_" + "\(randomNumber)" + "_" + "\(i)" + ".jpg", isDirectory: false)
