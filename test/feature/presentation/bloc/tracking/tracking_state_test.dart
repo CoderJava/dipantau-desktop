@@ -18,7 +18,10 @@ void main() {
   });
 
   group('SuccessCreateTimeTrackingState', () {
-    final tState = SuccessCreateTimeTrackingState(files: ['1', '2']);
+    final tState = SuccessCreateTimeTrackingState(
+      files: ['1', '2'],
+      trackEntityId: 1,
+    );
 
     test(
       'pastikan output dari fungsi toString',
@@ -26,7 +29,7 @@ void main() {
         // assert
         expect(
           tState.toString(),
-          'SuccessCreateTimeTrackingState{files: ${tState.files}}',
+          'SuccessCreateTimeTrackingState{files: ${tState.files}, trackEntityId: ${tState.trackEntityId}}',
         );
       },
     );

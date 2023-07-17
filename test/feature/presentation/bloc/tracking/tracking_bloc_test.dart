@@ -56,7 +56,7 @@ void main() {
       ),
     );
     final tParams = ParamsCreateTrack(body: tBody);
-    final tEvent = CreateTimeTrackingEvent(body: tBody);
+    final tEvent = CreateTimeTrackingEvent(body: tBody, trackEntityId: 1);
 
     blocTest(
       'pastikan emit [LoadingTrackingState, SuccessCreateTimeTrackingState] ketika terima event '

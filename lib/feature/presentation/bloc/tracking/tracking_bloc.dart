@@ -42,7 +42,12 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     final response = result.response;
     final failure = result.failure;
     if (response != null) {
-      emit(SuccessCreateTimeTrackingState(files: event.body.files));
+      emit(
+        SuccessCreateTimeTrackingState(
+          files: event.body.files,
+          trackEntityId: event.trackEntityId,
+        ),
+      );
       return;
     }
 
