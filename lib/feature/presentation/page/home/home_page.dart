@@ -77,7 +77,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var counterActivity = 0;
   DateTime? startTime;
   DateTime? finishTime;
-  Track? trackEntity;
   DateTime? infoDateTime;
 
   @override
@@ -329,9 +328,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             BlocListener<TrackingBloc, TrackingState>(
               listener: (context, state) {
                 if (state is FailureTrackingState) {
-                  if (trackEntity != null) {
-                    trackDao.insertTrack(trackEntity!);
-                  }
+                  /* Nothing to do in here */
                 } else if (state is SuccessCreateTimeTrackingState) {
                   final files = state.files;
                   for (final path in files) {
@@ -340,6 +337,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       file.deleteSync();
                     }
                   }
+                  final trackEntityId = state.trackEntityId;
+                  trackDao.deleteTrackById(trackEntityId);
                 } else if (state is SuccessCronTrackingState) {
                   // TODO: tampilkan info last sync at: 22:09 04 Jul 2023
                   // TODO: info ini akan ditampilkan dibagian paling bawah sama seperti tampilan hubstaff
@@ -973,7 +972,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
     final activity = percentActivity.round();
 
-    trackEntity = Track(
+    final trackEntity = Track(
       userId: userId,
       taskId: taskId!,
       startDate: formattedStartDateTime,
@@ -984,6 +983,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       projectName: selectedProject?.name ?? '',
       taskName: selectedTask?.name ?? '',
     );
+    final trackEntityId = await trackDao.insertTrack(trackEntity);
 
     trackingBloc.add(
       CreateTimeTrackingEvent(
@@ -996,6 +996,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           duration: durationInSeconds,
           files: files.split(','),
         ),
+        trackEntityId: trackEntityId,
       ),
     );
   }
