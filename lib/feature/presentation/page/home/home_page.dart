@@ -65,6 +65,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final notificationHelper = sl<NotificationHelper>();
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
   final listTrackLocal = <Track>[];
+  final intervalReminderNotTrack = 60 * 10; // 600 detik (10 menit)
 
   var isWindowVisible = true;
   var userId = '';
@@ -75,6 +76,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   TrackTask? selectedTask;
   Timer? timeTrack, timerCronTrack, timerDate;
   var countTimerInSeconds = 0;
+  var countTimerReminderNotTrack = 0;
   var isHaveActivity = false;
   var counterActivity = 0;
   DateTime? startTime;
@@ -124,6 +126,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       now.day,
     );
     timerDate = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!isTimerStart) {
+        countTimerReminderNotTrack += 1;
+        if (countTimerReminderNotTrack == intervalReminderNotTrack) {
+          countTimerReminderNotTrack = 0;
+          notificationHelper.showReminderNotTrackNotification();
+        }
+      }
+
       final now = DateTime.now();
       final dateTimeNow = DateTime(
         now.year,
@@ -1016,6 +1026,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void startTimer() {
+    countTimerReminderNotTrack = 0;
     stopTimer();
     timeTrack = Timer.periodic(const Duration(seconds: 1), (_) {
       increaseTimerTray();
@@ -1023,6 +1034,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void stopTimer() {
+    countTimerReminderNotTrack = 0;
     if (timeTrack != null && timeTrack!.isActive) {
       timeTrack!.cancel();
     }

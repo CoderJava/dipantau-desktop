@@ -30,4 +30,19 @@ class NotificationHelper {
       ),
     );
   }
+
+  void showReminderNotTrackNotification() {
+    localNotification?.show(
+      DateTime.now().millisecond,
+      'app_name'.tr(),
+      'reminder_not_tracking_time'.tr(),
+      const NotificationDetails(
+        macOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+          sound: 'hasta_la_vista.aiff',
+        ),
+      ),
+    );
+  }
 }
