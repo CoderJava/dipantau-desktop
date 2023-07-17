@@ -55,7 +55,7 @@ class DioLoggingInterceptorRefreshToken extends InterceptorsWrapper {
       );
     }
 
-    if (responseCode == 401 || responseCode == null) {
+    if (responseCode == 401) {
       final strRefreshToken = sharedPreferencesManager.getString(SharedPreferencesManager.keyRefreshToken) ?? '';
       if (strRefreshToken.isEmpty) {
         return handler.next(err);
