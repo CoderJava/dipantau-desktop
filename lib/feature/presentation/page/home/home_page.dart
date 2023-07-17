@@ -888,36 +888,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   Future<void> doTakeScreenshot() async {
-    final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
-    if (listPathScreenshots.isEmpty) {
-      return;
-    }
-    listPathScreenshots.removeWhere((element) => element == null || element.isEmpty);
-    if (listPathScreenshots.isNotEmpty) {
-      final firstElement = listPathScreenshots.first ?? '';
-      final splitBySlash = firstElement.split('/');
-      var baseFilePath = '';
-      if (splitBySlash.isNotEmpty) {
-        for (var index = 0; index < splitBySlash.length - 1; index++) {
-          final element = splitBySlash[index];
-          baseFilePath += '/$element';
-        }
-      }
-      if (baseFilePath.isNotEmpty) {
-        await sharedPreferencesManager.putString(
-          SharedPreferencesManager.keyBaseFilePathScreenshot,
-          baseFilePath,
-        );
-      }
-    }
-    final files = listPathScreenshots.join(',');
-
-    final isShowScreenshotNotification =
-        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
-    if (isShowScreenshotNotification) {
-      notificationHelper.showScreenshotTakenNotification();
-    }
-
     var percentActivity = 0.0;
     if (counterActivity > 0 && countTimerInSeconds > 0) {
       percentActivity = (counterActivity / countTimerInSeconds) * 100;
@@ -971,6 +941,43 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     final durationInSeconds = finishDateTime.difference(startDateTime).inSeconds.abs();
 
     final activity = percentActivity.round();
+
+    final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
+    if (listPathScreenshots.isEmpty) {
+      debugPrint('list path screenshots is empty');
+      valueNotifierTotalTracked.value -= durationInSeconds;
+      valueNotifierTaskTracked.value -= durationInSeconds;
+      isTimerStart = false;
+      stopTimer();
+      selectedTask = null;
+      setState(() {});
+      return;
+    }
+    listPathScreenshots.removeWhere((element) => element == null || element.isEmpty);
+    if (listPathScreenshots.isNotEmpty) {
+      final firstElement = listPathScreenshots.first ?? '';
+      final splitBySlash = firstElement.split('/');
+      var baseFilePath = '';
+      if (splitBySlash.isNotEmpty) {
+        for (var index = 0; index < splitBySlash.length - 1; index++) {
+          final element = splitBySlash[index];
+          baseFilePath += '/$element';
+        }
+      }
+      if (baseFilePath.isNotEmpty) {
+        await sharedPreferencesManager.putString(
+          SharedPreferencesManager.keyBaseFilePathScreenshot,
+          baseFilePath,
+        );
+      }
+    }
+    final files = listPathScreenshots.join(',');
+
+    final isShowScreenshotNotification =
+        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
+    if (isShowScreenshotNotification) {
+      notificationHelper.showScreenshotTakenNotification();
+    }
 
     final trackEntity = Track(
       userId: userId,
