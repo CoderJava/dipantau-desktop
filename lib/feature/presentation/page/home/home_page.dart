@@ -29,10 +29,12 @@ import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -99,6 +101,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     setupWindow();
     setupTray();
     doStartActivityListener();
+    checkAssetAudio();
     notificationHelper.requestPermissionNotification();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
@@ -1058,5 +1061,23 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         );
       },
     );
+  }
+
+  void checkAssetAudio() async {
+    // Copy file audio dari aset ke /Library/Sounds [macOS]
+    final bytes = await rootBundle.load('assets/audio/hasta_la_vista.aiff');
+    final libraryDirectory = await getLibraryDirectory();
+    final directory = Directory('${libraryDirectory.path}/sounds');
+    final pathDirectory = directory.path;
+    final buffer = bytes.buffer;
+    final fileAudioReminderNotTrack = File('$pathDirectory/hasta_la_vista.aiff');
+    if (!fileAudioReminderNotTrack.existsSync()) {
+      fileAudioReminderNotTrack.writeAsBytes(
+        buffer.asUint8List(
+          bytes.offsetInBytes,
+          buffer.lengthInBytes,
+        ),
+      );
+    }
   }
 }
