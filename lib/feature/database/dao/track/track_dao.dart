@@ -7,7 +7,7 @@ abstract class TrackDao {
   Future<List<Track>> findAllTrack(String userId);
 
   @insert
-  Future<void> insertTrack(Track track);
+  Future<int> insertTrack(Track track);
 
   @Query('DELETE FROM track WHERE id = :id')
   Future<void> deleteTrackById(int id);
