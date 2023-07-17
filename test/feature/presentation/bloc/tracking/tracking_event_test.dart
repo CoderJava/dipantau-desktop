@@ -14,7 +14,7 @@ void main() {
         fixture('create_track_body.json'),
       ),
     );
-    final tEvent = CreateTimeTrackingEvent(body: tBody);
+    final tEvent = CreateTimeTrackingEvent(body: tBody, trackEntityId: 0);
 
     test(
       'pastikan output dari fungsi toString',
@@ -22,7 +22,7 @@ void main() {
         // assert
         expect(
           tEvent.toString(),
-          'CreateTimeTrackingEvent{body: ${tEvent.body}}',
+          'CreateTimeTrackingEvent{body: ${tEvent.body}, trackEntityId: ${tEvent.trackEntityId}}',
         );
       },
     );

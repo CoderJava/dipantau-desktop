@@ -21,14 +21,16 @@ class FailureTrackingState extends TrackingState {
 
 class SuccessCreateTimeTrackingState extends TrackingState {
   final List<String> files;
+  final int trackEntityId;
 
   SuccessCreateTimeTrackingState({
     required this.files,
+    required this.trackEntityId,
   });
 
   @override
   String toString() {
-    return 'SuccessCreateTimeTrackingState{files: $files}';
+    return 'SuccessCreateTimeTrackingState{files: $files, trackEntityId: $trackEntityId}';
   }
 }
 
