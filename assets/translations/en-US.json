@@ -195,5 +195,6 @@
   "type_to_change": "Type to change",
   "edit_profile": "Edit Profile",
   "update_app": "Update App",
-  "check_for_update": "Check For Update"
+  "check_for_update": "Check For Update",
+  "reminder_not_tracking_time": "Reminder: You're not tracking time"
 }
