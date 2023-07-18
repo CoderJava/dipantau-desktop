@@ -5,22 +5,22 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.1.1</title>
+            <title>Version 1.1.2</title>
             <description><![CDATA[
                 <ul>
-                    <li>Perbaikan agar setelah update tidak perlu minta permission screen recording.</li>
+                    <li>Konfirmasi perbaikan agar tidak perlu minta permission screen recording lagi setelah update app.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>4</sparkle:version>
-            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
+            <sparkle:version>5</sparkle:version>
+            <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
             <enclosure
-                length="21203660"
+                length="21203619"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.1/dipantau_desktop_client-1.1.1+4-macos.zip"
-                sparkle:edSignature="HBv6yjtmBJ73gz81tphYbD7JbUx8mMn5D8XsdWS/gnx5bb51T4ykXlq36mAK+5JPReI5Ae9ybwvtRZQ47AstCg=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.2/dipantau_desktop_client-1.1.2+5-macos.zip"
+                sparkle:edSignature="Atrh+Q65R9Lqnm+21JI6n8pXfYWUcUmjn82kVMCokHEsYUY/OYBfOzvhQwSo+UhK8QHw82KYWwxf7lPl54XmCw=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 18 Jul 2023 23:00:00 +0700</pubDate>
+            <pubDate>Mon, 18 Jul 2023 23:05:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
