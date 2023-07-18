@@ -2,7 +2,7 @@
 * Update version code dan version name didalam pubspec.yaml.
 * Buat git tag dan push.
 * Jalankan command `flutter build macos --release`.
-* Kemudian, code sign manually file *.app yang berhasil dibuild. Jalankan command `codesign -fs my-code-signing-manual build/macos/Build/Products/Release/Dipantau.app`. Langkah ini bertujuan agar ketika si user update app-nya maka, permission-nya yang lama tidak akan hilang.
+* Kemudian, code sign manually file *.app yang berhasil dibuild. Jalankan command `codesign -fs test-code-sign build/macos/Build/Products/Release/Dipantau.app`. Langkah ini bertujuan agar ketika si user update app-nya maka, permission-nya yang lama tidak akan hilang.
 * Panduan mengenai codesign manual ini bisa dibaca [di sini](https://stackoverflow.com/a/27474942)
 * Lalu, build file dmg-nya. Masuk ke directory `installers/dmg_creator`. Lalu, jalankan command `appdmg ./config.json ./<nama_file_output>.dmg`. Contoh, `appdmg ./config.json ./dipantau.dmg`.
 * Selanjutnya, zip-kan file *.app yang ada didalam directory /build/macos/Build/Products/Release.
