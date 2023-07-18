@@ -21,8 +21,7 @@
                 type="application/octet-stream"
                 url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.0/dipantau_desktop_client-1.1.0+3-macos.zip"
                 sparkle:edSignature="hM7l/opG6z89g1bvmBK1sxM59218nksvhWMmOWMue4thG53Wa11luey8S8BgUL6iynikfSncD6OPA8M1ubufDA=="
-                sparkle:os="macos"
-                sparkle:version="1.1.0" />
+                sparkle:os="macos" />
             <pubDate>Mon, 17 Jul 2023 23:00:00 +0700</pubDate>
         </item>
     </channel>
