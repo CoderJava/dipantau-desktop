@@ -5,22 +5,22 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.1.3</title>
+            <title>Version 1.1.1</title>
             <description><![CDATA[
                 <ul>
-                    <li>Coba build menggunakan code signing yang berbeda dari versi sebelumnya.</li>
+                    <li>Perbaikan agar setelah update tidak perlu minta permission screen recording.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>6</sparkle:version>
-            <sparkle:shortVersionString>1.1.3</sparkle:shortVersionString>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
             <enclosure
-                length="21203818"
+                length="21203799"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.3/dipantau_desktop_client-1.1.3+6-macos.zip"
-                sparkle:edSignature="YKC+EViDSiqSjbXvbmZVRMyr703R8N6umEVs1b0ZKWUFgaquawmXZ4Ydo23fb5VhbchqAFTLQfKkxFMqJbc5Bg=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.1/dipantau_desktop_client-1.1.1+4-macos.zip"
+                sparkle:edSignature="aAMMvBMgAXEQFRvCNDuHi4Y0dVOPImafvFq7+C+Tf0twv/Y5OIyO5drK88SLkBRjuDcbjTaEMhiU5/C1j0exDw=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 19 Jul 2023 06:10:00 +0700</pubDate>
+            <pubDate>Mon, 19 Jul 2023 06:30:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
