@@ -45,4 +45,18 @@ class NotificationHelper {
       ),
     );
   }
+
+  void showPermissionScreenRecordingIssuedNotification() {
+    localNotification?.show(
+      DateTime.now().millisecond,
+      'app_name'.tr(),
+      'screen_recording_issued'.tr(),
+      const NotificationDetails(
+        macOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+        ),
+      ),
+    );
+  }
 }
