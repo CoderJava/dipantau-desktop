@@ -29,6 +29,12 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
                 let randomNumber: String = args["random_number"] as! String
                 let listPathImages = self.takeScreenshots(folderName: path, userId: userId, randomNumber: randomNumber)
                 result(listPathImages)
+            } else if ("check_permission_screen_recording" == call.method) {
+                if CGRequestScreenCaptureAccess() {
+                    result(true)
+                } else {
+                    result(false)
+                }
             }
         })
         
