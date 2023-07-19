@@ -5,22 +5,24 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.1.1</title>
+            <title>Version 1.1.0</title>
             <description><![CDATA[
                 <ul>
-                    <li>Perbaikan agar setelah update tidak perlu minta permission screen recording.</li>
+                    <li>Fitur reminder not track. Notifikasinya akan muncul per 10 menit jika si user lupa menjalankan timer-nya.</li>
+	                <li>Perbaikan waktu track yang tidak sync ke server.</li>
+                    <li>Perbaikan error ketika timer sedang berjalan dan device dalam keadaan sleep.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>4</sparkle:version>
-            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
             <enclosure
-                length="21203799"
+                length="20514026"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.1/dipantau_desktop_client-1.1.1+4-macos.zip"
-                sparkle:edSignature="aAMMvBMgAXEQFRvCNDuHi4Y0dVOPImafvFq7+C+Tf0twv/Y5OIyO5drK88SLkBRjuDcbjTaEMhiU5/C1j0exDw=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.1.0/dipantau_desktop_client-1.1.0+3-macos.zip"
+                sparkle:edSignature="hM7l/opG6z89g1bvmBK1sxM59218nksvhWMmOWMue4thG53Wa11luey8S8BgUL6iynikfSncD6OPA8M1ubufDA=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 19 Jul 2023 06:30:00 +0700</pubDate>
+            <pubDate>Mon, 17 Jul 2023 23:00:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
