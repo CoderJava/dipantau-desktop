@@ -84,4 +84,51 @@ class WidgetHelper {
     directory.createSync(recursive: true);
     return directoryPath;
   }
+
+  void showDialogPermissionScreenRecording(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'title_screen_recording_mac'.tr(),
+          ),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'description_screen_recording_mac'.tr(),
+              ),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '\n${'note'.tr()}',
+                    ),
+                    TextSpan(
+                      text: ' ${'note_description_screen_recording_mac'.tr()}',
+                    ),
+                  ],
+                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('ok'.tr()),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
