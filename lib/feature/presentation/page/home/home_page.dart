@@ -493,6 +493,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
                 return InkWell(
                   onTap: () async {
+                    final isPermissionScreenRecordingGranted =
+                        await platformChannelHelper.checkPermissionScreenRecording();
+                    if (mounted && isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) {
+                      widgetHelper.showDialogPermissionScreenRecording(context);
+                      return;
+                    }
+
                     if (selectedTask != itemTask) {
                       if (selectedTask != null) {
                         selectedTask!.trackedInSeconds = valueNotifierTotalTracked.value;
@@ -956,7 +963,19 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     final activity = percentActivity.round();
 
     final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
-    if (listPathScreenshots.isEmpty) {
+    final isPermissionScreenRecordingGranted =
+    await platformChannelHelper.checkPermissionScreenRecording();
+    if (isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) {
+      debugPrint('screen recording not granted');
+      notificationHelper.showPermissionScreenRecordingIssuedNotification();
+      valueNotifierTotalTracked.value -= durationInSeconds;
+      valueNotifierTaskTracked.value -= durationInSeconds;
+      isTimerStart = false;
+      stopTimer();
+      selectedTask = null;
+      setState(() {});
+      return;
+    } else if (listPathScreenshots.isEmpty) {
       debugPrint('list path screenshots is empty');
       valueNotifierTotalTracked.value -= durationInSeconds;
       valueNotifierTaskTracked.value -= durationInSeconds;
@@ -1077,17 +1096,17 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   void checkAssetAudio() async {
     // Copy file audio dari aset ke /Library/Sounds [macOS]
-    final bytes = await rootBundle.load('assets/audio/hasta_la_vista.aiff');
+    final bytesHastaLaVista = await rootBundle.load('assets/audio/hasta_la_vista.aiff');
     final libraryDirectory = await getLibraryDirectory();
     final directory = Directory('${libraryDirectory.path}/sounds');
     final pathDirectory = directory.path;
-    final buffer = bytes.buffer;
+    final bufferHastaLaVista = bytesHastaLaVista.buffer;
     final fileAudioReminderNotTrack = File('$pathDirectory/hasta_la_vista.aiff');
     if (!fileAudioReminderNotTrack.existsSync()) {
       fileAudioReminderNotTrack.writeAsBytes(
-        buffer.asUint8List(
-          bytes.offsetInBytes,
-          buffer.lengthInBytes,
+        bufferHastaLaVista.asUint8List(
+          bytesHastaLaVista.offsetInBytes,
+          bufferHastaLaVista.lengthInBytes,
         ),
       );
     }
