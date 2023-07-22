@@ -27,6 +27,8 @@ class WidgetHelper {
     FloatingLabelBehavior? floatingLabelBehavior,
     Color? hoverColor,
     BoxConstraints? suffixIconConstraints,
+    bool? filled,
+    Color? fillColor,
   }) {
     return InputDecoration(
       labelText: labelText,
@@ -37,6 +39,8 @@ class WidgetHelper {
       hintText: hintText,
       floatingLabelBehavior: floatingLabelBehavior,
       hoverColor: hoverColor,
+      filled: filled,
+      fillColor: fillColor,
     );
   }
 
