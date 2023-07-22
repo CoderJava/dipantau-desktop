@@ -39,7 +39,6 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
   final listUserProfile = <UserProfileResponse>[];
   final controllerFilterDate = TextEditingController();
   final controllerFilterUser = TextEditingController();
-  final focusNode = FocusNode();
 
   var userId = '';
   var name = '';
@@ -87,61 +86,61 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Focus(
-          focusNode: focusNode,
-          child: Text(
+    return GestureDetector(
+      onTap: () => widgetHelper.unfocus(context),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
             'report_screenshot'.tr(),
           ),
+          centerTitle: false,
         ),
-        centerTitle: false,
-      ),
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider<MemberBloc>(
-            create: (context) => memberBloc,
-          ),
-          BlocProvider<ReportScreenshotBloc>(
-            create: (context) => reportScreenshotBloc,
-          ),
-        ],
-        child: MultiBlocListener(
-          listeners: [
-            BlocListener<MemberBloc, MemberState>(
-              listener: (context, state) {
-                if (state is FailureMemberState) {
-                  final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
-                  if (errorMessage.contains('401')) {
-                    widgetHelper.showDialog401(context);
-                    return;
-                  }
-                } else if (state is SuccessLoadListMemberState) {
-                  listUserProfile.clear();
-                  listUserProfile.addAll(state.response.data ?? []);
-                  isPreparingDataSuccess = true;
-                  setState(() {});
-                }
-              },
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<MemberBloc>(
+              create: (context) => memberBloc,
             ),
-            BlocListener<ReportScreenshotBloc, ReportScreenshotState>(
-              listener: (context, state) {
-                isLoading = state is LoadingCenterReportScreenshotState;
-                if (state is FailureReportScreenshotState) {
-                  final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
-                  if (errorMessage.contains('401')) {
-                    widgetHelper.showDialog401(context);
-                    return;
-                  }
-                }
-              },
+            BlocProvider<ReportScreenshotBloc>(
+              create: (context) => reportScreenshotBloc,
             ),
           ],
-          child: Stack(
-            children: [
-              buildWidgetBody(),
-              buildWidgetLoadingPreparingData(),
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<MemberBloc, MemberState>(
+                listener: (context, state) {
+                  if (state is FailureMemberState) {
+                    final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+                    if (errorMessage.contains('401')) {
+                      widgetHelper.showDialog401(context);
+                      return;
+                    }
+                  } else if (state is SuccessLoadListMemberState) {
+                    listUserProfile.clear();
+                    listUserProfile.addAll(state.response.data ?? []);
+                    isPreparingDataSuccess = true;
+                    setState(() {});
+                  }
+                },
+              ),
+              BlocListener<ReportScreenshotBloc, ReportScreenshotState>(
+                listener: (context, state) {
+                  isLoading = state is LoadingCenterReportScreenshotState;
+                  if (state is FailureReportScreenshotState) {
+                    final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+                    if (errorMessage.contains('401')) {
+                      widgetHelper.showDialog401(context);
+                      return;
+                    }
+                  }
+                },
+              ),
             ],
+            child: Stack(
+              children: [
+                buildWidgetBody(),
+                buildWidgetLoadingPreparingData(),
+              ],
+            ),
           ),
         ),
       ),
@@ -262,6 +261,8 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
           Icons.calendar_month,
           color: Theme.of(context).colorScheme.inverseSurface,
         ),
+        filled: true,
+        fillColor: Colors.transparent,
       ),
       mouseCursor: MaterialStateMouseCursor.clickable,
       readOnly: true,
@@ -293,69 +294,35 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
     final foregroundColor = isEnabled
         ? Theme.of(context).colorScheme.inverseSurface
         : Theme.of(context).colorScheme.inverseSurface.withOpacity(.3);
-    return TextField(
-      controller: controllerFilterUser,
-      decoration: widgetHelper.setDefaultTextFieldDecoration(
-        suffixIcon: FaIcon(
+
+    return SizedBox(
+      height: 42,
+      child: DropdownButtonFormField(
+        value: selectedUser,
+        items: listUserProfile.map((e) {
+          return DropdownMenuItem(
+            value: e,
+            child: Text(e.name ?? '-'),
+          );
+        }).toList(),
+        onChanged: (newValue) {
+          setState(() {
+            selectedUser = newValue;
+          });
+        },
+        isExpanded: true,
+        decoration: widgetHelper.setDefaultTextFieldDecoration(
+          filled: true,
+          fillColor: Colors.transparent,
+        ),
+        icon: FaIcon(
           FontAwesomeIcons.userLarge,
           size: 14,
           color: foregroundColor,
         ),
-        suffixIconConstraints: const BoxConstraints(
-          minWidth: 28,
-          maxWidth: 28,
-        ),
+        padding: EdgeInsets.zero,
+        style: Theme.of(context).textTheme.bodyMedium,
       ),
-      mouseCursor: MaterialStateMouseCursor.clickable,
-      readOnly: true,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: foregroundColor,
-          ),
-      enabled: isEnabled,
-      onTap: !isEnabled
-          ? null
-          : () async {
-              final selectedUserTemp = await showDialog<UserProfileResponse?>(
-                context: context,
-                builder: (context) {
-                  return SimpleDialog(
-                    titlePadding: EdgeInsets.zero,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                    children: listUserProfile.map((element) {
-                      return InkWell(
-                        onTap: () => Navigator.pop(context, element),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 16.0,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(element.name ?? '-'),
-                              ),
-                              const SizedBox(width: 16),
-                              element == selectedUser
-                                  ? Icon(
-                                      Icons.check_circle,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    )
-                                  : Container(),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              );
-              if (selectedUserTemp != null) {
-                selectedUser = selectedUserTemp;
-                setFilterUser();
-                setState(() {});
-              }
-            },
-      maxLines: 1,
     );
   }
 
