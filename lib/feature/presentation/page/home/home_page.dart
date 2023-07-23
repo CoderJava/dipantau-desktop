@@ -151,6 +151,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         }
         valueNotifierTotalTracked.value = 0;
         valueNotifierTaskTracked.value = 0;
+        final strTrackingTimeTemp = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
+        setTrayTitle(title: strTrackingTimeTemp);
         setState(() {});
       }
     });
