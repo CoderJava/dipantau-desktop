@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:auto_updater/auto_updater.dart';
@@ -31,6 +32,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -67,6 +70,14 @@ void main() async {
   const feedURL = autoUpdaterUrl;
   autoUpdater.setFeedURL(feedURL);
   autoUpdater.setScheduledCheckInterval(3600);
+
+  packageInfo = await PackageInfo.fromPlatform();
+
+  // Launch at startup
+  launchAtStartup.setup(
+    appName: packageInfo.appName,
+    appPath: Platform.resolvedExecutable,
+  );
 
   // Easy localization
   await EasyLocalization.ensureInitialized();
@@ -273,6 +284,13 @@ class _MyAppState extends State<MyApp> {
           // Callback ini akan diimplementasikan jika si user pilih pengaturan appearance di app-nya ialah system
           updateAppearanceMode(window, sharedPreferencesManager);
         };
+      }
+
+      final isLaunchAtStartupExists =
+          sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIsLaunchAtStartup);
+      if (!isLaunchAtStartupExists) {
+        await launchAtStartup.enable();
+        sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsLaunchAtStartup, true);
       }
     });
     super.initState();

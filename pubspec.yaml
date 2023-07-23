@@ -129,6 +129,9 @@ dependencies:
   # on iOS or versionCode on Android.
   package_info_plus: ^4.0.2
 
+  # This plugin allow Flutter desktop apps to Auto launch on startup / login.
+  launch_at_startup: ^0.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

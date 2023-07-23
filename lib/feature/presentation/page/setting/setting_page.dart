@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 
 class SettingPage extends StatefulWidget {
   static const routePath = '/setting';
@@ -33,7 +34,9 @@ class _SettingPageState extends State<SettingPage> {
   final helper = sl<Helper>();
   final valueNotifierIsEnableScreenshotNotification = ValueNotifier(false);
   final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
+  final valueNotifierLaunchAtStartup = ValueNotifier(true);
   final widgetHelper = WidgetHelper();
+  final sharedPreferencesManager = sl<SharedPreferencesManager>();
 
   var hostname = '';
   late AppearanceBloc appearanceBloc;
@@ -48,6 +51,9 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   void initState() {
+    launchAtStartup.isEnabled().then((value) {
+      valueNotifierLaunchAtStartup.value = value;
+    });
     appearanceBloc = BlocProvider.of<AppearanceBloc>(context);
     final strUserRole = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserRole) ?? '';
     userRole = strUserRole.fromStringUserRole;
@@ -99,6 +105,8 @@ class _SettingPageState extends State<SettingPage> {
             const SizedBox(height: 8),
             buildWidgetScreenshotNotification(),
             const SizedBox(height: 16),
+            buildWidgetLaunchAtStartup(),
+            const SizedBox(height: 16),
             buildWidgetSetHostName(),
             const SizedBox(height: 16),
             buildWidgetCheckForUpdate(),
@@ -113,8 +121,56 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  Widget buildWidgetLaunchAtStartup() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'launch_at_startup'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'subtitle_launch_at_startup'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        ValueListenableBuilder(
+          valueListenable: valueNotifierLaunchAtStartup,
+          builder: (BuildContext context, bool value, _) {
+            return Switch.adaptive(
+              value: value,
+              onChanged: (newValue) async {
+                if (newValue) {
+                  await launchAtStartup.enable();
+                } else {
+                  await launchAtStartup.disable();
+                }
+                sharedPreferencesManager.putBool(
+                  SharedPreferencesManager.keyIsLaunchAtStartup,
+                  newValue,
+                );
+                valueNotifierLaunchAtStartup.value = newValue;
+              },
+              activeColor: Theme.of(context).colorScheme.primary,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget buildWidgetScreenshotNotification() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(

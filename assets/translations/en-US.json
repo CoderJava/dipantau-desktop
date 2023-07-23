@@ -200,5 +200,7 @@
   "title_screen_recording_mac": "Screen Recording",
   "description_screen_recording_mac": "This app would like to record this computer's screen. Grant access to this app in Security & Privacy preferences. located in System Preferences. If it doesn't exists please add manually or if it exists please delete it.",
   "screen_recording_issued": "Screen recording not granted",
-  "note_description_screen_recording_mac": "Always remember to reopen this app after changing permissions."
+  "note_description_screen_recording_mac": "Always remember to reopen this app after changing permissions.",
+  "launch_at_startup": "Launch at Startup",
+  "subtitle_launch_at_startup": "Dipantau will start running automatically when you turn your computer on"
 }
