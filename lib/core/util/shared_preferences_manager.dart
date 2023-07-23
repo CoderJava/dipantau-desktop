@@ -16,6 +16,7 @@ class SharedPreferencesManager {
   static const keyIsEnableScreenshotNotification = 'is_enable_screenshot_notification';
   static const keyAppearanceMode = 'appearance_mode';
   static const keyBaseFilePathScreenshot = 'base_file_path_screenshot';
+  static const keyIsLaunchAtStartup = 'is_launch_at_startup';
 
   SharedPreferencesManager();
 
