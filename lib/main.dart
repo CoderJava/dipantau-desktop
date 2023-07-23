@@ -292,6 +292,10 @@ class _MyAppState extends State<MyApp> {
         await launchAtStartup.enable();
         sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsLaunchAtStartup, true);
       }
+
+      final isAlwaysOnTop =
+          sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsAlwaysOnTop, defaultValue: true) ?? true;
+      windowManager.setAlwaysOnTop(isAlwaysOnTop);
     });
     super.initState();
   }

@@ -202,5 +202,13 @@
   "screen_recording_issued": "Screen recording not granted",
   "note_description_screen_recording_mac": "Always remember to reopen this app after changing permissions.",
   "launch_at_startup": "Launch at Startup",
-  "subtitle_launch_at_startup": "Dipantau will start running automatically when you turn your computer on"
+  "subtitle_launch_at_startup": "Dipantau will start running automatically when you turn your computer on.",
+  "notification": "Notification",
+  "general_settings": "General Settings",
+  "check": "Check",
+  "version_app": "Version App",
+  "always_on_top": "Always on Top",
+  "subtitle_always_on_top": "Set Dipantau window always on top of other windows",
+  "back_to_main_menu": "Back to Main Menu",
+  "screenshot": "Screenshot"
 }
