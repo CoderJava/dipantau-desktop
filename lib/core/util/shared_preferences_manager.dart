@@ -17,6 +17,7 @@ class SharedPreferencesManager {
   static const keyAppearanceMode = 'appearance_mode';
   static const keyBaseFilePathScreenshot = 'base_file_path_screenshot';
   static const keyIsLaunchAtStartup = 'is_launch_at_startup';
+  static const keyIsAlwaysOnTop = 'is_always_on_top';
 
   SharedPreferencesManager();
 

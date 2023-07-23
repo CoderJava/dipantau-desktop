@@ -19,6 +19,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:window_manager/window_manager.dart';
 
 class SettingPage extends StatefulWidget {
   static const routePath = '/setting';
@@ -32,15 +33,18 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   final helper = sl<Helper>();
+  final navigationRailDestinations = <NavigationRailDestination>[];
+  final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final valueNotifierIsEnableScreenshotNotification = ValueNotifier(false);
   final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
   final valueNotifierLaunchAtStartup = ValueNotifier(true);
+  final valueNotifierAlwaysOnTop = ValueNotifier(true);
   final widgetHelper = WidgetHelper();
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
 
+  var selectedIndexNavigationRail = 0;
+  UserRole? userRole;
   var hostname = '';
   late AppearanceBloc appearanceBloc;
-  UserRole? userRole;
 
   @override
   void setState(VoidCallback fn) {
@@ -58,66 +62,129 @@ class _SettingPageState extends State<SettingPage> {
     final strUserRole = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserRole) ?? '';
     userRole = strUserRole.fromStringUserRole;
     prepareData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setupNavigationRailDestinations();
+      setState(() {});
+    });
     super.initState();
-  }
-
-  void prepareData() {
-    valueNotifierIsEnableScreenshotNotification.value =
-        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
-
-    hostname = sharedPreferencesManager.getString(
-          SharedPreferencesManager.keyDomainApi,
-        ) ??
-        '';
-    if (hostname.isEmpty) {
-      hostname = '-';
-    }
-
-    final strAppearanceMode =
-        sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
-    final appearanceMode = strAppearanceMode.fromStringAppearanceMode;
-    if (appearanceMode != null) {
-      valueNotifierAppearanceMode.value = appearanceMode;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('setting'.tr()),
-        centerTitle: false,
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        child: ListView(
-          padding: EdgeInsets.only(
-            left: helper.getDefaultPaddingLayout,
-            top: helper.getDefaultPaddingLayoutTop,
-            right: helper.getDefaultPaddingLayout,
-            bottom: helper.getDefaultPaddingLayout + 8,
-          ),
-          children: [
-            Text(
-              'general'.tr(),
-              style: Theme.of(context).textTheme.titleLarge,
+      body: navigationRailDestinations.isEmpty
+          ? Container()
+          : Row(
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        width: 172,
+                        child: NavigationRail(
+                          destinations: navigationRailDestinations,
+                          selectedIndex: selectedIndexNavigationRail,
+                          onDestinationSelected: (newValue) {
+                            setState(() => selectedIndexNavigationRail = newValue);
+                          },
+                          extended: true,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: TextButton(
+                        onPressed: () => context.pop(),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'back_to_main_menu'.tr(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const VerticalDivider(
+                  thickness: 1,
+                  width: 1,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: buildWidgetBody(),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            buildWidgetScreenshotNotification(),
-            const SizedBox(height: 16),
-            buildWidgetLaunchAtStartup(),
-            const SizedBox(height: 16),
-            buildWidgetSetHostName(),
-            const SizedBox(height: 16),
-            buildWidgetCheckForUpdate(),
-            const SizedBox(height: 16),
-            buildWidgetChooseAppearance(),
-            buildWidgetCompanySetting(),
-            const SizedBox(height: 24),
-            buildWidgetButtonLogout(),
-          ],
+    );
+  }
+
+  void setupNavigationRailDestinations() {
+    navigationRailDestinations.addAll(
+      [
+        NavigationRailDestination(
+          icon: const Icon(Icons.settings_outlined),
+          selectedIcon: const Icon(Icons.settings),
+          label: Text('general'.tr()),
         ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.notifications_outlined),
+          selectedIcon: const Icon(Icons.notifications),
+          label: Text('notification'.tr()),
+        ),
+      ],
+    );
+    if (userRole == UserRole.superAdmin) {
+      navigationRailDestinations.add(
+        NavigationRailDestination(
+          icon: const Icon(Icons.business_center_outlined),
+          selectedIcon: const Icon(Icons.business_center),
+          label: Text('company'.tr()),
+        ),
+      );
+    }
+  }
+
+  Widget buildWidgetBody() {
+    if (selectedIndexNavigationRail == 0) {
+      return buildWidgetBodyGeneral();
+    } else if (selectedIndexNavigationRail == 1) {
+      return buildWidgetBodyNotification();
+    } else if (selectedIndexNavigationRail == 2) {
+      return buildWidgetBodyCompany();
+    }
+    return Container();
+  }
+
+  Widget buildWidgetBodyGeneral() {
+    return ListView(
+      padding: EdgeInsets.only(
+        left: helper.getDefaultPaddingLayout,
+        top: helper.getDefaultPaddingLayoutTop,
+        right: helper.getDefaultPaddingLayout,
+        bottom: helper.getDefaultPaddingLayout,
       ),
+      children: [
+        buildWidgetLaunchAtStartup(),
+        const SizedBox(height: 16),
+        buildWidgetSetHostName(),
+        const SizedBox(height: 16),
+        buildWidgetAlwaysOnTop(),
+        const SizedBox(height: 16),
+        buildWidgetChooseAppearance(),
+        const SizedBox(height: 16),
+        buildWidgetCheckForUpdate(),
+        const SizedBox(height: 24),
+        buildWidgetButtonLogout(),
+      ],
     );
   }
 
@@ -168,50 +235,65 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Widget buildWidgetScreenshotNotification() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildWidgetBodyNotification() {
+    return ListView(
+      padding: EdgeInsets.only(
+        left: helper.getDefaultPaddingLayout,
+        top: helper.getDefaultPaddingLayoutTop,
+        right: helper.getDefaultPaddingLayout,
+        bottom: helper.getDefaultPaddingLayout,
+      ),
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'screenshot_notification'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                'subtitle_screenshot_notification'.tr(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        ValueListenableBuilder(
-          valueListenable: valueNotifierIsEnableScreenshotNotification,
-          builder: (BuildContext context, bool value, _) {
-            return Switch.adaptive(
-              value: value,
-              onChanged: (newValue) {
-                sharedPreferencesManager.putBool(
-                  SharedPreferencesManager.keyIsEnableScreenshotNotification,
-                  newValue,
-                );
-                valueNotifierIsEnableScreenshotNotification.value = newValue;
-              },
-              activeColor: Theme.of(context).colorScheme.primary,
-            );
-          },
-        ),
+        buildWidgetScreenshotNotification(),
       ],
     );
   }
 
+  Widget buildWidgetBodyCompany() {
+    return ListView(
+      padding: EdgeInsets.only(
+        left: helper.getDefaultPaddingLayout,
+        top: helper.getDefaultPaddingLayoutTop,
+        right: helper.getDefaultPaddingLayout,
+        bottom: helper.getDefaultPaddingLayout,
+      ),
+      children: [
+        buildWidgetMember(),
+        const SizedBox(height: 16),
+        buildWidgetProject(),
+        const SizedBox(height: 16),
+        buildWidgetTask(),
+        const SizedBox(height: 16),
+        buildWidgetDiscordChannelId(),
+      ],
+    );
+  }
+
+  void prepareData() {
+    valueNotifierIsEnableScreenshotNotification.value =
+        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
+    valueNotifierAlwaysOnTop.value =
+        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsAlwaysOnTop, defaultValue: true) ?? true;
+
+    hostname = sharedPreferencesManager.getString(
+          SharedPreferencesManager.keyDomainApi,
+        ) ??
+        '';
+    if (hostname.isEmpty) {
+      hostname = '-';
+    }
+
+    final strAppearanceMode =
+        sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
+    final appearanceMode = strAppearanceMode.fromStringAppearanceMode;
+    if (appearanceMode != null) {
+      valueNotifierAppearanceMode.value = appearanceMode;
+    }
+  }
+
   Widget buildWidgetSetHostName() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(
@@ -222,7 +304,7 @@ class _SettingPageState extends State<SettingPage> {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                '${'current'.tr()}: $hostname',
+                hostname,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
@@ -261,8 +343,46 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  Widget buildWidgetCheckForUpdate() {
+    final versionName = packageInfo.version;
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'version_app'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                versionName,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        WidgetPrimaryButton(
+          onPressed: () {
+            const feedURL = autoUpdaterUrl;
+            autoUpdater.setFeedURL(feedURL);
+            autoUpdater.checkForUpdates();
+          },
+          child: Text(
+            'check'.tr(),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget buildWidgetChooseAppearance() {
-    const height = 128.0;
+    const height = 64.0;
     final primaryColor = Theme.of(context).colorScheme.primary;
     return ValueListenableBuilder(
       valueListenable: valueNotifierAppearanceMode,
@@ -435,8 +555,98 @@ class _SettingPageState extends State<SettingPage> {
     }
   }
 
+  Widget buildWidgetAlwaysOnTop() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'always_on_top'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'subtitle_always_on_top'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        ValueListenableBuilder(
+          valueListenable: valueNotifierAlwaysOnTop,
+          builder: (BuildContext context, bool value, _) {
+            return Switch.adaptive(
+              value: value,
+              onChanged: (newValue) async {
+                if (newValue) {
+                  await windowManager.setAlwaysOnTop(newValue);
+                } else {
+                  await windowManager.setAlwaysOnTop(newValue);
+                }
+                sharedPreferencesManager.putBool(
+                  SharedPreferencesManager.keyIsAlwaysOnTop,
+                  newValue,
+                );
+                valueNotifierAlwaysOnTop.value = newValue;
+              },
+              activeColor: Theme.of(context).colorScheme.primary,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetScreenshotNotification() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'screenshot'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'subtitle_screenshot_notification'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        ValueListenableBuilder(
+          valueListenable: valueNotifierIsEnableScreenshotNotification,
+          builder: (BuildContext context, bool value, _) {
+            return Switch.adaptive(
+              value: value,
+              onChanged: (newValue) {
+                sharedPreferencesManager.putBool(
+                  SharedPreferencesManager.keyIsEnableScreenshotNotification,
+                  newValue,
+                );
+                valueNotifierIsEnableScreenshotNotification.value = newValue;
+              },
+              activeColor: Theme.of(context).colorScheme.primary,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget buildWidgetMember() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(
@@ -451,8 +661,6 @@ class _SettingPageState extends State<SettingPage> {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -483,6 +691,7 @@ class _SettingPageState extends State<SettingPage> {
 
   Widget buildWidgetProject() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(
@@ -497,8 +706,6 @@ class _SettingPageState extends State<SettingPage> {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -530,6 +737,7 @@ class _SettingPageState extends State<SettingPage> {
 
   Widget buildWidgetTask() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(
@@ -544,8 +752,6 @@ class _SettingPageState extends State<SettingPage> {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -575,35 +781,9 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Widget buildWidgetCompanySetting() {
-    if (userRole == null || userRole != UserRole.superAdmin) {
-      return Container();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        const Divider(),
-        const SizedBox(height: 16),
-        Text(
-          'company'.tr(),
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        buildWidgetMember(),
-        const SizedBox(height: 16),
-        buildWidgetProject(),
-        const SizedBox(height: 16),
-        buildWidgetTask(),
-        const SizedBox(height: 16),
-        buildWidgetDiscordChannelId(),
-      ],
-    );
-  }
-
   Widget buildWidgetDiscordChannelId() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(
@@ -618,8 +798,6 @@ class _SettingPageState extends State<SettingPage> {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -647,40 +825,96 @@ class _SettingPageState extends State<SettingPage> {
       ],
     );
   }
+}
 
-  Widget buildWidgetCheckForUpdate() {
-    final versionName = packageInfo.version;
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'update_app'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                '${'current'.tr()}: $versionName',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+/*class _SettingPageState extends State<SettingPage> {
+  final helper = sl<Helper>();
+  final valueNotifierIsEnableScreenshotNotification = ValueNotifier(false);
+  final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
+  final valueNotifierLaunchAtStartup = ValueNotifier(true);
+  final widgetHelper = WidgetHelper();
+  final sharedPreferencesManager = sl<SharedPreferencesManager>();
+
+  var hostname = '';
+  late AppearanceBloc appearanceBloc;
+  UserRole? userRole;
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
+  void initState() {
+    launchAtStartup.isEnabled().then((value) {
+      valueNotifierLaunchAtStartup.value = value;
+    });
+    appearanceBloc = BlocProvider.of<AppearanceBloc>(context);
+    final strUserRole = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserRole) ?? '';
+    userRole = strUserRole.fromStringUserRole;
+    prepareData();
+    super.initState();
+  }
+
+  void prepareData() {
+    valueNotifierIsEnableScreenshotNotification.value =
+        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
+
+    hostname = sharedPreferencesManager.getString(
+          SharedPreferencesManager.keyDomainApi,
+        ) ??
+        '';
+    if (hostname.isEmpty) {
+      hostname = '-';
+    }
+
+    final strAppearanceMode =
+        sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
+    final appearanceMode = strAppearanceMode.fromStringAppearanceMode;
+    if (appearanceMode != null) {
+      valueNotifierAppearanceMode.value = appearanceMode;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('setting'.tr()),
+        centerTitle: false,
+      ),
+      body: SizedBox(
+        width: double.infinity,
+        child: ListView(
+          padding: EdgeInsets.only(
+            left: helper.getDefaultPaddingLayout,
+            top: helper.getDefaultPaddingLayoutTop,
+            right: helper.getDefaultPaddingLayout,
+            bottom: helper.getDefaultPaddingLayout + 8,
           ),
+          children: [
+            Text(
+              'general'.tr(),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            buildWidgetScreenshotNotification(),
+            const SizedBox(height: 16),
+            buildWidgetLaunchAtStartup(),
+            const SizedBox(height: 16),
+            buildWidgetSetHostName(),
+            const SizedBox(height: 16),
+            buildWidgetCheckForUpdate(),
+            const SizedBox(height: 16),
+            buildWidgetChooseAppearance(),
+            buildWidgetCompanySetting(),
+            const SizedBox(height: 24),
+            buildWidgetButtonLogout(),
+          ],
         ),
-        const SizedBox(width: 16),
-        WidgetPrimaryButton(
-          onPressed: () {
-            const feedURL = autoUpdaterUrl;
-            autoUpdater.setFeedURL(feedURL);
-            autoUpdater.checkForUpdates();
-          },
-          child: Text('check_for_update'.tr()),
-        ),
-      ],
+      ),
     );
   }
-}
+}*/
