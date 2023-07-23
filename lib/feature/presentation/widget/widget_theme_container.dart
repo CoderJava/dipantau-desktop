@@ -62,6 +62,7 @@ class _WidgetThemeContainerState extends State<WidgetThemeContainer> {
               ),
               customBorderRadiusInner: const BorderRadius.only(
                 topLeft: Radius.circular(borderRadius),
+                bottomLeft: Radius.circular(borderRadius - 8),
               ),
             ),
           ),
@@ -73,6 +74,7 @@ class _WidgetThemeContainerState extends State<WidgetThemeContainer> {
               ),
               customBorderRadiusInner: const BorderRadius.only(
                 topLeft: Radius.circular(borderRadius),
+                topRight: Radius.circular(borderRadius - 8),
                 bottomRight: Radius.circular(borderRadius),
               ),
             ),
@@ -87,7 +89,7 @@ class _WidgetThemeContainerState extends State<WidgetThemeContainer> {
     BorderRadius? customBorderRadiusInner,
   }) {
     const borderColor = Color(0xFFE3E3E3);
-    const backgroundOuterContainer = Color(0xFFF3F3F3);
+    final backgroundOuterContainer = Colors.grey[300]!;
     const backgroundInsideContainer = Colors.white;
     const textColor = Color(0xFF020202);
     const borderRadius = 16.0;
@@ -143,15 +145,10 @@ class _WidgetThemeContainerState extends State<WidgetThemeContainer> {
       decoration: BoxDecoration(
         color: backgroundOuterContainer,
         borderRadius: borderRadiusOuter ?? BorderRadius.circular(borderRadius),
-        /*border: widget.isShowBorder
-            ? Border.all(
-                color: borderColor,
-              )
-            : null,*/
       ),
       padding: const EdgeInsets.only(
-        left: 16,
-        top: 16,
+        left: 8,
+        top: 8,
       ),
       child: Container(
         width: double.infinity,
@@ -161,7 +158,9 @@ class _WidgetThemeContainerState extends State<WidgetThemeContainer> {
           borderRadius: borderRadiusInner ??
               BorderRadius.only(
                 topLeft: Radius.circular(borderRadius),
+                topRight: Radius.circular(borderRadius - 8),
                 bottomRight: Radius.circular(borderRadius),
+                bottomLeft: Radius.circular(borderRadius - 8),
               ),
         ),
         alignment: Alignment.topLeft,
@@ -171,7 +170,7 @@ class _WidgetThemeContainerState extends State<WidgetThemeContainer> {
         ),
         child: Text(
           'Aa',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: textColor,
               ),
         ),
