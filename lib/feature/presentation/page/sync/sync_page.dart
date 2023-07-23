@@ -153,7 +153,7 @@ class _SyncPageState extends State<SyncPage> {
         return AlertDialog(
           title: LottieBuilder.asset(
             BaseAnimation.animationUpload,
-            repeat: false,
+            repeat: true,
             width: 92,
             height: 92,
           ),
