@@ -23,6 +23,7 @@ class SharedPreferencesManager {
   static const keyFinishTimeReminderTrack = 'finish_time_reminder_track';
   static const keyDayReminderTrack = 'day_reminder_track';
   static const keyIntervalReminderTrack = 'interval_reminder_track';
+  static const keyIsEnableSoundScreenshotNotification = 'is_enable_sound_screenshot_notification';
 
   SharedPreferencesManager();
 
