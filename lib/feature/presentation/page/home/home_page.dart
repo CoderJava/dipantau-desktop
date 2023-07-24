@@ -99,6 +99,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIsEnableScreenshotNotification)) {
       sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsEnableScreenshotNotification, true);
     }
+    if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIsEnableSoundScreenshotNotification)) {
+      sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsEnableSoundScreenshotNotification, true);
+    }
     initDefaultSelectedProject();
     setupWindow();
     setupTray();
