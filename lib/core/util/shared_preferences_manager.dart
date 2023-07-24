@@ -18,6 +18,11 @@ class SharedPreferencesManager {
   static const keyBaseFilePathScreenshot = 'base_file_path_screenshot';
   static const keyIsLaunchAtStartup = 'is_launch_at_startup';
   static const keyIsAlwaysOnTop = 'is_always_on_top';
+  static const keyIsEnableReminderTrack = 'is_enable_reminder_track';
+  static const keyStartTimeReminderTrack = 'start_time_reminder_track';
+  static const keyFinishTimeReminderTrack = 'finish_time_reminder_track';
+  static const keyDayReminderTrack = 'day_reminder_track';
+  static const keyIntervalReminderTrack = 'interval_reminder_track';
 
   SharedPreferencesManager();
 

@@ -38,6 +38,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
+var countTimeReminderTrackInSeconds = 0;
+
 class HomePage extends StatefulWidget {
   static const routePath = '/home';
   static const routeName = 'home';
@@ -65,7 +67,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final notificationHelper = sl<NotificationHelper>();
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
   final listTrackLocal = <Track>[];
-  final intervalReminderNotTrack = 60 * 10; // 600 detik (10 menit)
 
   var isWindowVisible = true;
   var userId = '';
@@ -76,7 +77,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   TrackTask? selectedTask;
   Timer? timeTrack, timerCronTrack, timerDate;
   var countTimerInSeconds = 0;
-  var countTimerReminderNotTrack = 0;
   var isHaveActivity = false;
   var counterActivity = 0;
   DateTime? startTime;
@@ -127,13 +127,93 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
     timerDate = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!isTimerStart) {
-        countTimerReminderNotTrack += 1;
-        if (countTimerReminderNotTrack == intervalReminderNotTrack) {
-          countTimerReminderNotTrack = 0;
-          notificationHelper.showReminderNotTrackNotification();
+        // reminder track
+        var isShowReminderTrack = false;
+        final now = DateTime.now();
+        countTimeReminderTrackInSeconds += 1;
+        final isEnableReminderTrack =
+            sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableReminderTrack) ?? false;
+        if (isEnableReminderTrack) {
+          DateTime? startReminderTrack, finishReminderTrack;
+          final strStartReminderTrack = sharedPreferencesManager.getString(
+                SharedPreferencesManager.keyStartTimeReminderTrack,
+              ) ??
+              '';
+          if (strStartReminderTrack.contains(':') && strStartReminderTrack.split(':').length == 2) {
+            final splitStrStartReminderTrack = strStartReminderTrack.split(':');
+            final strStartHourReminderTrack = splitStrStartReminderTrack.first;
+            final strStartMinuteReminderTrack = splitStrStartReminderTrack.last;
+            final startHourReminderTrack = int.tryParse(strStartHourReminderTrack);
+            final startMinuteReminderTrack = int.tryParse(strStartMinuteReminderTrack);
+            if (startHourReminderTrack != null && startMinuteReminderTrack != null) {
+              startReminderTrack = DateTime(
+                now.year,
+                now.month,
+                now.day,
+                startHourReminderTrack,
+                startMinuteReminderTrack,
+              );
+            }
+          }
+
+          final strFinishReminderTrack = sharedPreferencesManager.getString(
+                SharedPreferencesManager.keyFinishTimeReminderTrack,
+              ) ??
+              '';
+          if (strFinishReminderTrack.contains(':') && strFinishReminderTrack.split(':').length == 2) {
+            final splitStrFinishReminderTrack = strFinishReminderTrack.split(':');
+            final strFinishHourReminderTrack = splitStrFinishReminderTrack.first;
+            final strFinishMinuteReminderTrack = splitStrFinishReminderTrack.last;
+            final finishHourReminderTrack = int.tryParse(strFinishHourReminderTrack);
+            final finishMinuteReminderTrack = int.tryParse(strFinishMinuteReminderTrack);
+            if (finishHourReminderTrack != null && finishMinuteReminderTrack != null) {
+              finishReminderTrack = DateTime(
+                now.year,
+                now.month,
+                now.day,
+                finishHourReminderTrack,
+                finishMinuteReminderTrack,
+              );
+            }
+          }
+
+          final daysReminderTrack =
+              sharedPreferencesManager.getStringList(SharedPreferencesManager.keyDayReminderTrack) ?? [];
+          final nowWeekday = now.weekday;
+          final isTodayReminderTrackEnabled =
+              daysReminderTrack.where((element) => element == nowWeekday.toString()).isNotEmpty;
+
+          int? intervalReminderTrackInSeconds;
+          final intervalReminderTrackInMinutes =
+              sharedPreferencesManager.getInt(SharedPreferencesManager.keyIntervalReminderTrack) ?? -1;
+          if (intervalReminderTrackInMinutes != -1 && intervalReminderTrackInMinutes > 0) {
+            intervalReminderTrackInSeconds = intervalReminderTrackInMinutes * 60;
+          }
+
+          if (startReminderTrack != null &&
+              finishReminderTrack != null &&
+              isTodayReminderTrackEnabled &&
+              countTimeReminderTrackInSeconds == intervalReminderTrackInSeconds) {
+            if (now.isAfter(startReminderTrack) && now.isBefore(finishReminderTrack) ||
+                (now.isAtSameMomentAs(startReminderTrack) || now.isAtSameMomentAs(finishReminderTrack))) {
+              isShowReminderTrack = true;
+            }
+          }
+
+          if (countTimeReminderTrackInSeconds == intervalReminderTrackInSeconds ||
+              intervalReminderTrackInSeconds == null) {
+            countTimeReminderTrackInSeconds = 0;
+          }
+
+          if (isShowReminderTrack) {
+            notificationHelper.showReminderNotTrackNotification();
+          }
+        } else {
+          countTimeReminderTrackInSeconds = 0;
         }
       }
 
+      // reset timer jika berpindah hari
       final now = DateTime.now();
       final dateTimeNow = DateTime(
         now.year,
@@ -965,8 +1045,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     final activity = percentActivity.round();
 
     final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
-    final isPermissionScreenRecordingGranted =
-    await platformChannelHelper.checkPermissionScreenRecording();
+    final isPermissionScreenRecordingGranted = await platformChannelHelper.checkPermissionScreenRecording();
     if (isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) {
       debugPrint('screen recording not granted');
       notificationHelper.showPermissionScreenRecordingIssuedNotification();
@@ -1047,7 +1126,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void startTimer() {
-    countTimerReminderNotTrack = 0;
+    countTimeReminderTrackInSeconds = 0;
     stopTimer();
     timeTrack = Timer.periodic(const Duration(seconds: 1), (_) {
       increaseTimerTray();
@@ -1055,7 +1134,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void stopTimer() {
-    countTimerReminderNotTrack = 0;
+    countTimeReminderTrackInSeconds = 0;
     if (timeTrack != null && timeTrack!.isActive) {
       timeTrack!.cancel();
     }

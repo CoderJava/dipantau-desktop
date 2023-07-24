@@ -286,6 +286,7 @@ class _MyAppState extends State<MyApp> {
         };
       }
 
+      // set default launch at startup
       final isLaunchAtStartupExists =
           sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIsLaunchAtStartup);
       if (!isLaunchAtStartupExists) {
@@ -293,9 +294,35 @@ class _MyAppState extends State<MyApp> {
         sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsLaunchAtStartup, true);
       }
 
+      // set default value always on top
       final isAlwaysOnTop =
           sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsAlwaysOnTop, defaultValue: true) ?? true;
       windowManager.setAlwaysOnTop(isAlwaysOnTop);
+
+      // set default value reminder not track
+      if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIsEnableReminderTrack)) {
+        sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsEnableReminderTrack, false);
+      }
+      if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyStartTimeReminderTrack)) {
+        sharedPreferencesManager.putString(SharedPreferencesManager.keyStartTimeReminderTrack, '08:30');
+      }
+      if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyFinishTimeReminderTrack)) {
+        sharedPreferencesManager.putString(SharedPreferencesManager.keyFinishTimeReminderTrack, '17:00');
+      }
+      if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyDayReminderTrack)) {
+        final defaultDays = [
+          DateTime.monday.toString(),
+          DateTime.tuesday.toString(),
+          DateTime.wednesday.toString(),
+          DateTime.thursday.toString(),
+          DateTime.friday.toString(),
+        ];
+        sharedPreferencesManager.putStringList(SharedPreferencesManager.keyDayReminderTrack, defaultDays);
+      }
+      if (!sharedPreferencesManager.isKeyExists(SharedPreferencesManager.keyIntervalReminderTrack)) {
+        // 15 menit
+        sharedPreferencesManager.putInt(SharedPreferencesManager.keyIntervalReminderTrack, 15);
+      }
     });
     super.initState();
   }
