@@ -227,5 +227,6 @@
   "alias_minutes": "minutes",
   "n_minute": "{} minutes",
   "choose": "Choose",
-  "finish_time_must_be_after_start_time": "Finish time must be after start time"
+  "finish_time_must_be_after_start_time": "Finish time must be after start time",
+  "play_sound": "Play sound"
 }
