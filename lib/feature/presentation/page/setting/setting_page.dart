@@ -38,6 +38,7 @@ class _SettingPageState extends State<SettingPage> {
   final navigationRailDestinations = <NavigationRailDestination>[];
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final valueNotifierIsEnableScreenshotNotification = ValueNotifier(false);
+  final valueNotifierIsEnableSoundScreenshotNotification = ValueNotifier(true);
   final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
   final valueNotifierLaunchAtStartup = ValueNotifier(true);
   final valueNotifierAlwaysOnTop = ValueNotifier(true);
@@ -258,6 +259,7 @@ class _SettingPageState extends State<SettingPage> {
       ),
       children: [
         buildWidgetScreenshotNotification(),
+        buildWidgetPlaySoundScreenshotNotification(),
         const SizedBox(height: 16),
         buildWidgetReminderNotTrackNotification(),
         const SizedBox(height: 8),
@@ -686,6 +688,8 @@ class _SettingPageState extends State<SettingPage> {
   void prepareData() {
     valueNotifierIsEnableScreenshotNotification.value =
         sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
+    valueNotifierIsEnableSoundScreenshotNotification.value =
+        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableSoundScreenshotNotification) ?? false;
     valueNotifierAlwaysOnTop.value =
         sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsAlwaysOnTop, defaultValue: true) ?? true;
 
@@ -1067,6 +1071,37 @@ class _SettingPageState extends State<SettingPage> {
               activeColor: Theme.of(context).colorScheme.primary,
             );
           },
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetPlaySoundScreenshotNotification() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 24,
+          child: ValueListenableBuilder(
+            valueListenable: valueNotifierIsEnableSoundScreenshotNotification,
+            builder: (BuildContext context, bool isEnable, _) {
+              return Checkbox(
+                value: isEnable,
+                onChanged: (newValue) {
+                  if (newValue != null) {
+                    valueNotifierIsEnableSoundScreenshotNotification.value = newValue;
+                    sharedPreferencesManager.putBool(
+                      SharedPreferencesManager.keyIsEnableSoundScreenshotNotification,
+                      newValue,
+                    );
+                  }
+                },
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          'play_sound'.tr(),
         ),
       ],
     );

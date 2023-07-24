@@ -1,3 +1,5 @@
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -18,14 +20,19 @@ class NotificationHelper {
   }
 
   void showScreenshotTakenNotification() {
+    final presentSound = sharedPreferencesManager.getBool(
+          SharedPreferencesManager.keyIsEnableSoundScreenshotNotification,
+          defaultValue: true,
+        ) ??
+        true;
     localNotification?.show(
       DateTime.now().millisecond,
       'app_name'.tr(),
       'screenshot_taken'.tr(),
-      const NotificationDetails(
+      NotificationDetails(
         macOS: DarwinNotificationDetails(
           presentAlert: true,
-          presentSound: true,
+          presentSound: presentSound,
         ),
       ),
     );
