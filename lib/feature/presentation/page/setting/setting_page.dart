@@ -6,6 +6,7 @@ import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting_discord/setting_discord_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
@@ -14,6 +15,7 @@ import 'package:dipantau_desktop_client/feature/presentation/widget/widget_prima
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_theme_container.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,12 +41,23 @@ class _SettingPageState extends State<SettingPage> {
   final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
   final valueNotifierLaunchAtStartup = ValueNotifier(true);
   final valueNotifierAlwaysOnTop = ValueNotifier(true);
+  final valueNotifierIsEnableReminderTrack = ValueNotifier(false);
   final widgetHelper = WidgetHelper();
+  final controllerStartTimeReminderTrackNotification = TextEditingController();
+  final controllerFinishTimeReminderTrackNotification = TextEditingController();
+  final controllerIntervalReminderTrackNotification = TextEditingController();
 
   var selectedIndexNavigationRail = 0;
   UserRole? userRole;
   var hostname = '';
   late AppearanceBloc appearanceBloc;
+  var isEnableReminderTrackMon = true;
+  var isEnableReminderTrackTue = true;
+  var isEnableReminderTrackWed = true;
+  var isEnableReminderTrackThu = true;
+  var isEnableReminderTrackFri = true;
+  var isEnableReminderTrackSat = false;
+  var isEnableReminderTrackSun = false;
 
   @override
   void setState(VoidCallback fn) {
@@ -245,6 +258,407 @@ class _SettingPageState extends State<SettingPage> {
       ),
       children: [
         buildWidgetScreenshotNotification(),
+        const SizedBox(height: 16),
+        buildWidgetReminderNotTrackNotification(),
+        const SizedBox(height: 8),
+        buildWidgetSetupReminderNotTrackNotification(),
+      ],
+    );
+  }
+
+  Widget buildWidgetSetupReminderNotTrackNotification() {
+    final isEnabled = valueNotifierIsEnableReminderTrack.value;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'from'.tr(),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 64,
+              height: 24,
+              child: TextField(
+                controller: controllerStartTimeReminderTrackNotification,
+                decoration: widgetHelper.setDefaultTextFieldDecoration().copyWith(
+                      isDense: true,
+                      counterText: '',
+                      contentPadding: const EdgeInsets.only(
+                        top: 8,
+                      ),
+                    ),
+                enabled: isEnabled,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                maxLength: 5,
+                readOnly: true,
+                onTap: !isEnabled
+                    ? null
+                    : () async {
+                        final strStart = controllerStartTimeReminderTrackNotification.text.trim();
+                        var initialTime = TimeOfDay.now();
+                        if (strStart.contains(':')) {
+                          final strStartHour = strStart.split(':').first;
+                          final strStartMinute = strStart.split(':').last;
+                          final startHour = int.tryParse(strStartHour);
+                          final startMinute = int.tryParse(strStartMinute);
+                          if (startHour != null && startMinute != null) {
+                            initialTime = TimeOfDay(hour: startHour, minute: startMinute);
+                          }
+                        }
+                        final result = await showTimePicker(
+                          context: context,
+                          initialTime: initialTime,
+                          initialEntryMode: TimePickerEntryMode.input,
+                        );
+                        if (result != null) {
+                          final hour = result.hour;
+                          final minute = result.minute;
+                          var strResult = hour < 10 ? '0$hour' : hour.toString();
+                          strResult += ':';
+                          strResult += minute < 10 ? '0$minute' : minute.toString();
+                          controllerStartTimeReminderTrackNotification.text = strResult;
+                          updateReminderTrack();
+                          setState(() {});
+                        }
+                      },
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'to'.tr(),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 64,
+              height: 24,
+              child: TextField(
+                controller: controllerFinishTimeReminderTrackNotification,
+                decoration: widgetHelper.setDefaultTextFieldDecoration().copyWith(
+                      isDense: true,
+                      counterText: '',
+                      contentPadding: const EdgeInsets.only(
+                        top: 8,
+                      ),
+                    ),
+                enabled: isEnabled,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                maxLength: 5,
+                readOnly: true,
+                onTap: !isEnabled
+                    ? null
+                    : () async {
+                        final strFinish = controllerFinishTimeReminderTrackNotification.text.trim();
+                        var initialTime = TimeOfDay.now();
+                        if (strFinish.contains(':')) {
+                          final strFinishHour = strFinish.split(':').first;
+                          final strFinishMinute = strFinish.split(':').last;
+                          final finishHour = int.tryParse(strFinishHour);
+                          final finishMinute = int.tryParse(strFinishMinute);
+                          if (finishHour != null && finishMinute != null) {
+                            initialTime = TimeOfDay(hour: finishHour, minute: finishMinute);
+                          }
+                        }
+                        final result = await showTimePicker(
+                          context: context,
+                          initialTime: initialTime,
+                          initialEntryMode: TimePickerEntryMode.input,
+                        );
+                        if (result != null) {
+                          final finishHour = result.hour;
+                          final finishMinute = result.minute;
+                          final now = DateTime.now();
+                          final strStart = controllerStartTimeReminderTrackNotification.text.trim();
+                          if (strStart.contains(':')) {
+                            final strStartHour = strStart.split(':').first;
+                            final strStartMinute = strStart.split(':').last;
+                            final startHour = int.tryParse(strStartHour);
+                            final startMinute = int.tryParse(strStartMinute);
+                            if (startHour != null && startMinute != null) {
+                              final startReminderDateTime = DateTime(
+                                now.year,
+                                now.month,
+                                now.day,
+                                startHour,
+                                startMinute,
+                              );
+                              final finishReminderDateTime = DateTime(
+                                now.year,
+                                now.month,
+                                now.day,
+                                finishHour,
+                                finishMinute,
+                              );
+                              if ((finishReminderDateTime.isBefore(startReminderDateTime) ||
+                                      finishReminderDateTime.isAtSameMomentAs(startReminderDateTime)) &&
+                                  mounted) {
+                                widgetHelper.showSnackBar(context, 'finish_time_must_be_after_start_time'.tr());
+                                return;
+                              }
+                            }
+                          }
+
+                          var strResult = finishHour < 10 ? '0$finishHour' : finishHour.toString();
+                          strResult += ':';
+                          strResult += finishMinute < 10 ? '0$finishMinute' : finishMinute.toString();
+                          controllerFinishTimeReminderTrackNotification.text = strResult;
+                          updateReminderTrack();
+                          setState(() {});
+                        }
+                      },
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'on_these_days'.tr(),
+        ),
+        Wrap(
+          spacing: 8,
+          children: [
+            buildWidgetItemDay(
+              'mon'.tr(),
+              isEnableReminderTrackMon,
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() => isEnableReminderTrackMon = newValue);
+                }
+              },
+            ),
+            buildWidgetItemDay(
+              'tue'.tr(),
+              isEnableReminderTrackTue,
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() => isEnableReminderTrackTue = newValue);
+                }
+              },
+            ),
+            buildWidgetItemDay(
+              'wed'.tr(),
+              isEnableReminderTrackWed,
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() => isEnableReminderTrackWed = newValue);
+                }
+              },
+            ),
+            buildWidgetItemDay(
+              'thu'.tr(),
+              isEnableReminderTrackThu,
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() => isEnableReminderTrackThu = newValue);
+                }
+              },
+            ),
+            buildWidgetItemDay(
+              'fri'.tr(),
+              isEnableReminderTrackFri,
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() => isEnableReminderTrackFri = newValue);
+                }
+              },
+            ),
+            buildWidgetItemDay(
+              'sat'.tr(),
+              isEnableReminderTrackSat,
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() => isEnableReminderTrackSat = newValue);
+                }
+              },
+            ),
+            buildWidgetItemDay(
+              'sun'.tr(),
+              isEnableReminderTrackSun,
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() => isEnableReminderTrackSun = newValue);
+                }
+              },
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Text(
+              'if_i_havent_tracked_time_in'.tr(),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 36,
+              height: 24,
+              child: TextField(
+                controller: controllerIntervalReminderTrackNotification,
+                decoration: widgetHelper.setDefaultTextFieldDecoration().copyWith(
+                      isDense: true,
+                      counterText: '',
+                      contentPadding: const EdgeInsets.only(
+                        top: 8,
+                      ),
+                    ),
+                enabled: isEnabled,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                maxLength: 2,
+                keyboardType: TextInputType.number,
+                readOnly: true,
+                onTap: !isEnabled
+                    ? null
+                    : () async {
+                        final elements = <int>[];
+                        var counter = 0;
+                        for (var number = 1; number <= 12; number++) {
+                          counter += 5;
+                          elements.add(counter);
+                        }
+                        final result = await showCupertinoModalPopup<int?>(
+                          context: context,
+                          builder: (context) {
+                            final strInterval = controllerIntervalReminderTrackNotification.text.trim();
+                            var indexSelected = elements.indexWhere((element) => element.toString() == strInterval);
+                            if (indexSelected == -1) {
+                              indexSelected = 0;
+                            }
+                            return Container(
+                              height: 192,
+                              padding: const EdgeInsets.all(16),
+                              color: CupertinoColors.systemBackground.resolveFrom(context),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: CupertinoPicker(
+                                      squeeze: 1,
+                                      itemExtent: 28,
+                                      useMagnifier: true,
+                                      scrollController: FixedExtentScrollController(
+                                        initialItem: indexSelected,
+                                      ),
+                                      onSelectedItemChanged: (int value) {
+                                        indexSelected = value;
+                                      },
+                                      children: elements.map(
+                                        (e) {
+                                          return Text(
+                                            'n_minute'.tr(
+                                              args: [
+                                                e.toString(),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ).toList(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: WidgetPrimaryButton(
+                                      onPressed: () => context.pop(elements[indexSelected]),
+                                      child: Text('choose'.tr()),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                        if (result != null) {
+                          controllerIntervalReminderTrackNotification.text = result.toString();
+                          updateReminderTrack();
+                          setState(() {});
+                        }
+                      },
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'alias_minutes'.tr(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetItemDay(String label, bool value, {ValueChanged<bool?>? onChanged}) {
+    final isEnabled = valueNotifierIsEnableReminderTrack.value;
+    return SizedBox(
+      width: 60,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 24,
+            child: Checkbox(
+              value: value,
+              onChanged: !isEnabled
+                  ? null
+                  : (newValue) {
+                      onChanged?.call(newValue);
+                      updateReminderTrack();
+                    },
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildWidgetReminderNotTrackNotification() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'remind_me_to_track_time'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'subtitle_remind_me_to_track_time'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        ValueListenableBuilder(
+          valueListenable: valueNotifierIsEnableReminderTrack,
+          builder: (BuildContext context, bool value, _) {
+            return Switch.adaptive(
+              value: value,
+              onChanged: (newValue) {
+                sharedPreferencesManager.putBool(
+                  SharedPreferencesManager.keyIsEnableReminderTrack,
+                  newValue,
+                );
+                valueNotifierIsEnableReminderTrack.value = newValue;
+                updateReminderTrack();
+                setState(() {});
+              },
+              activeColor: Theme.of(context).colorScheme.primary,
+            );
+          },
+        ),
       ],
     );
   }
@@ -289,6 +703,20 @@ class _SettingPageState extends State<SettingPage> {
     if (appearanceMode != null) {
       valueNotifierAppearanceMode.value = appearanceMode;
     }
+
+    valueNotifierIsEnableReminderTrack.value =
+        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableReminderTrack) ?? false;
+    controllerStartTimeReminderTrackNotification.text =
+        sharedPreferencesManager.getString(SharedPreferencesManager.keyStartTimeReminderTrack, defaultValue: '08:30') ??
+            '08:30';
+    controllerFinishTimeReminderTrackNotification.text = sharedPreferencesManager
+            .getString(SharedPreferencesManager.keyFinishTimeReminderTrack, defaultValue: '17:00') ??
+        '17:00';
+    controllerIntervalReminderTrackNotification.text = (sharedPreferencesManager.getInt(
+              SharedPreferencesManager.keyIntervalReminderTrack,
+            ) ??
+            15)
+        .toString();
   }
 
   Widget buildWidgetSetHostName() {
@@ -825,96 +1253,82 @@ class _SettingPageState extends State<SettingPage> {
       ],
     );
   }
-}
 
-/*class _SettingPageState extends State<SettingPage> {
-  final helper = sl<Helper>();
-  final valueNotifierIsEnableScreenshotNotification = ValueNotifier(false);
-  final valueNotifierAppearanceMode = ValueNotifier(AppearanceMode.light);
-  final valueNotifierLaunchAtStartup = ValueNotifier(true);
-  final widgetHelper = WidgetHelper();
-  final sharedPreferencesManager = sl<SharedPreferencesManager>();
+  void updateReminderTrack() async {
+    final isEnableReminderNotTrack = valueNotifierIsEnableReminderTrack.value;
+    await sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsEnableReminderTrack, isEnableReminderNotTrack);
 
-  var hostname = '';
-  late AppearanceBloc appearanceBloc;
-  UserRole? userRole;
-
-  @override
-  void setState(VoidCallback fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void initState() {
-    launchAtStartup.isEnabled().then((value) {
-      valueNotifierLaunchAtStartup.value = value;
-    });
-    appearanceBloc = BlocProvider.of<AppearanceBloc>(context);
-    final strUserRole = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserRole) ?? '';
-    userRole = strUserRole.fromStringUserRole;
-    prepareData();
-    super.initState();
-  }
-
-  void prepareData() {
-    valueNotifierIsEnableScreenshotNotification.value =
-        sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
-
-    hostname = sharedPreferencesManager.getString(
-          SharedPreferencesManager.keyDomainApi,
-        ) ??
-        '';
-    if (hostname.isEmpty) {
-      hostname = '-';
+    final strStart = controllerStartTimeReminderTrackNotification.text.trim();
+    if (strStart.contains(':') && strStart.split(':').length == 2) {
+      final splitStrStart = strStart.split(':');
+      final strStartHour = splitStrStart.first;
+      final strStartMinute = splitStrStart.last;
+      final startHour = int.tryParse(strStartHour);
+      final startMinute = int.tryParse(strStartMinute);
+      if (startHour != null && startMinute != null) {
+        var formattedStart = startHour < 10 ? '0$startHour' : startHour.toString();
+        formattedStart += ':';
+        formattedStart += startMinute < 10 ? '0$startMinute' : startMinute.toString();
+        await sharedPreferencesManager.putString(
+          SharedPreferencesManager.keyStartTimeReminderTrack,
+          formattedStart,
+        );
+      }
     }
 
-    final strAppearanceMode =
-        sharedPreferencesManager.getString(SharedPreferencesManager.keyAppearanceMode) ?? AppearanceMode.light.name;
-    final appearanceMode = strAppearanceMode.fromStringAppearanceMode;
-    if (appearanceMode != null) {
-      valueNotifierAppearanceMode.value = appearanceMode;
+    final strFinish = controllerFinishTimeReminderTrackNotification.text.trim();
+    if (strFinish.contains(':') && strFinish.split(':').length == 2) {
+      final splitStrFinish = strFinish.split(':');
+      final strFinishHour = splitStrFinish.first;
+      final strFinishMinute = splitStrFinish.last;
+      final finishHour = int.tryParse(strFinishHour);
+      final finishMinute = int.tryParse(strFinishMinute);
+      if (finishHour != null && finishMinute != null) {
+        var formattedFinish = finishHour < 10 ? '0$finishHour' : finishHour.toString();
+        formattedFinish += ':';
+        formattedFinish += finishMinute < 10 ? '0$finishMinute' : finishMinute.toString();
+        await sharedPreferencesManager.putString(
+          SharedPreferencesManager.keyFinishTimeReminderTrack,
+          formattedFinish,
+        );
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('setting'.tr()),
-        centerTitle: false,
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        child: ListView(
-          padding: EdgeInsets.only(
-            left: helper.getDefaultPaddingLayout,
-            top: helper.getDefaultPaddingLayoutTop,
-            right: helper.getDefaultPaddingLayout,
-            bottom: helper.getDefaultPaddingLayout + 8,
-          ),
-          children: [
-            Text(
-              'general'.tr(),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            buildWidgetScreenshotNotification(),
-            const SizedBox(height: 16),
-            buildWidgetLaunchAtStartup(),
-            const SizedBox(height: 16),
-            buildWidgetSetHostName(),
-            const SizedBox(height: 16),
-            buildWidgetCheckForUpdate(),
-            const SizedBox(height: 16),
-            buildWidgetChooseAppearance(),
-            buildWidgetCompanySetting(),
-            const SizedBox(height: 24),
-            buildWidgetButtonLogout(),
-          ],
-        ),
-      ),
+    final reminderDays = <String>[];
+    if (isEnableReminderTrackMon) {
+      reminderDays.add(DateTime.monday.toString());
+    }
+    if (isEnableReminderTrackTue) {
+      reminderDays.add(DateTime.tuesday.toString());
+    }
+    if (isEnableReminderTrackWed) {
+      reminderDays.add(DateTime.wednesday.toString());
+    }
+    if (isEnableReminderTrackThu) {
+      reminderDays.add(DateTime.thursday.toString());
+    }
+    if (isEnableReminderTrackFri) {
+      reminderDays.add(DateTime.friday.toString());
+    }
+    if (isEnableReminderTrackSat) {
+      reminderDays.add(DateTime.saturday.toString());
+    }
+    if (isEnableReminderTrackSun) {
+      reminderDays.add(DateTime.sunday.toString());
+    }
+    await sharedPreferencesManager.putStringList(
+      SharedPreferencesManager.keyDayReminderTrack,
+      reminderDays,
     );
+
+    final strIntervalReminderTrack = controllerIntervalReminderTrackNotification.text.trim();
+    final intervalReminderTrack = int.tryParse(strIntervalReminderTrack);
+    if (intervalReminderTrack != null) {
+      await sharedPreferencesManager.putInt(
+        SharedPreferencesManager.keyIntervalReminderTrack,
+        intervalReminderTrack,
+      );
+    }
+    countTimeReminderTrackInSeconds = 0;
   }
-}*/
+}
