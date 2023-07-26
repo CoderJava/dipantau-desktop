@@ -13,6 +13,7 @@ class PlatformChannelHelper {
   final _keyInvokeMethodQuitApp = 'quit_app';
   final _keyInvokeMethodTakeScreenshot = 'take_screenshot';
   final _keyInvokeMethodCheckPermissionScreenRecording = 'check_permission_screen_recording';
+  final _keyInvokeMethodCheckPermissionAccessibility = 'check_permission_accessibility';
 
   // Event channel
   final _eventChannelName = 'dipantau/event';
@@ -106,6 +107,16 @@ class PlatformChannelHelper {
       return result;
     } catch (error) {
       debugPrint('Error check permission screen recording: $error');
+      return false;
+    }
+  }
+
+  Future<bool?> checkPermissionAccessibility() async {
+    try {
+      final result = await _methodChannel.invokeMethod<bool>(_keyInvokeMethodCheckPermissionAccessibility);
+      return result;
+    } catch (error) {
+      debugPrint('Error check permission accessibility: $error');
       return false;
     }
   }
