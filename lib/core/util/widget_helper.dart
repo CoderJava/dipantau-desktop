@@ -112,7 +112,7 @@ class WidgetHelper {
                       text: '\n${'note'.tr()}',
                     ),
                     TextSpan(
-                      text: ' ${'note_description_screen_recording_mac'.tr()}',
+                      text: ' ${'note_description_permission'.tr()}',
                     ),
                   ],
                 ),
@@ -120,6 +120,53 @@ class WidgetHelper {
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w500,
                     ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('ok'.tr()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showDialogPermissionAccessibility(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'title_accessibility_mac'.tr(),
+          ),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'description_accessibility_mac'.tr(),
+              ),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '\n${'note'.tr()}',
+                    ),
+                    TextSpan(
+                      text: ' ${'note_description_permission'.tr()}',
+                    ),
+                  ],
+                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),

@@ -595,6 +595,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       return;
                     }
 
+                    if (isPermissionScreenRecordingGranted!) {
+                      final isPermissionAccessibilityGranted = await platformChannelHelper.checkPermissionAccessibility();
+                      if (mounted && isPermissionAccessibilityGranted != null && !isPermissionAccessibilityGranted) {
+                        widgetHelper.showDialogPermissionAccessibility(context);
+                        return;
+                      }
+                    }
+
                     if (selectedTask != itemTask) {
                       if (selectedTask != null) {
                         selectedTask!.trackedInSeconds = valueNotifierTotalTracked.value;
