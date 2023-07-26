@@ -37,6 +37,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/se
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
@@ -121,6 +122,13 @@ void init() {
     () => SyncManualBloc(
       helper: sl(),
       bulkCreateTrackData: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => CronTrackingBloc(
+      helper: sl(),
+      bulkCreateTrackData: sl(),
+      bulkCreateTrackImage: sl(),
     ),
   );
 
