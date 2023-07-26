@@ -8,7 +8,7 @@ import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
-import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/sync_manual/sync_manual_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
@@ -32,7 +32,7 @@ class SyncPage extends StatefulWidget {
 }
 
 class _SyncPageState extends State<SyncPage> {
-  final trackingBloc = sl<TrackingBloc>();
+  final syncManualBloc = sl<SyncManualBloc>();
   final listTracks = <Track>[];
   final helper = sl<Helper>();
   final widgetHelper = WidgetHelper();
@@ -66,27 +66,27 @@ class _SyncPageState extends State<SyncPage> {
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
     widthScreen = mediaQueryData.size.width;
-    return BlocProvider<TrackingBloc>(
-      create: (context) => trackingBloc,
-      child: BlocListener<TrackingBloc, TrackingState>(
+    return BlocProvider<SyncManualBloc>(
+      create: (context) => syncManualBloc,
+      child: BlocListener<SyncManualBloc, SyncManualState>(
         listener: (context, state) {
-          if (state is! LoadingTrackingState) {
+          if (state is! LoadingSyncManualState) {
             // untuk menutup dialog loading
             Navigator.pop(context);
           }
 
-          if (state is FailureTrackingState) {
+          if (state is FailureSyncManualState) {
             final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
             if (errorMessage.contains('401')) {
               widgetHelper.showDialog401(context);
               return;
             }
             widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
-          } else if (state is SuccessSyncManualTrackingState) {
+          } else if (state is SuccessRunSyncManualState) {
             final ids = listTracks.where((element) => element.id != null).map((e) => e.id!).toList();
             trackDao.deleteMultipleTrackByIds(ids).then((_) => doLoadData());
             showDialogSuccessfully();
-          } else if (state is LoadingTrackingState) {
+          } else if (state is LoadingSyncManualState) {
             showDialogLoading();
           }
         },
@@ -126,8 +126,8 @@ class _SyncPageState extends State<SyncPage> {
                               );
                             }).toList(),
                           );
-                          trackingBloc.add(
-                            SyncManualTrackingEvent(
+                          syncManualBloc.add(
+                            RunSyncManualEvent(
                               body: body,
                             ),
                           );
