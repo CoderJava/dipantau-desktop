@@ -40,6 +40,14 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
                 } else {
                     result(true)
                 }
+            } else if ("check_permission_accessibility" == call.method) {
+                var hasAccessibility = AXIsProcessTrusted()
+                if (hasAccessibility) {
+                    result(true)
+                } else {
+                    NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
+                    result(false)
+                }
             }
         })
         
