@@ -26,22 +26,4 @@ void main() {
       },
     );
   });
-
-  group('CronTrackingEvent', () {
-    final tEvent = CronTrackingEvent(
-      bodyData: null,
-      bodyImage: null,
-    );
-
-    test(
-      'pastikan output dari fungsi toString',
-      () async {
-        // assert
-        expect(
-          tEvent.toString(),
-          'CronTrackingEvent{bodyData: ${tEvent.bodyData}, bodyImage: ${tEvent.bodyImage}}',
-        );
-      },
-    );
-  });
 }

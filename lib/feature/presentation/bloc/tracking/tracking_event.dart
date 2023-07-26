@@ -18,18 +18,3 @@ class CreateTimeTrackingEvent extends TrackingEvent {
     return 'CreateTimeTrackingEvent{body: $body, trackEntityId: $trackEntityId}';
   }
 }
-
-class CronTrackingEvent extends TrackingEvent {
-  final BulkCreateTrackDataBody? bodyData;
-  final BulkCreateTrackImageBody? bodyImage;
-
-  CronTrackingEvent({
-    required this.bodyData,
-    required this.bodyImage,
-  });
-
-  @override
-  String toString() {
-    return 'CronTrackingEvent{bodyData: $bodyData, bodyImage: $bodyImage}';
-  }
-}

@@ -2,12 +2,8 @@ import 'dart:convert';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
-import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
-import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
-import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_data/bulk_create_track_data.dart';
-import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_image/bulk_create_track_image.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,20 +15,14 @@ import '../../../../helper/mock_helper.mocks.dart';
 void main() {
   late TrackingBloc bloc;
   late MockCreateTrack mockCreateTrack;
-  late MockBulkCreateTrackData mockBulkCreateTrackData;
   late MockHelper mockHelper;
-  late MockBulkCreateTrackImage mockBulkCreateTrackImage;
 
   setUp(() {
     mockCreateTrack = MockCreateTrack();
-    mockBulkCreateTrackData = MockBulkCreateTrackData();
     mockHelper = MockHelper();
-    mockBulkCreateTrackImage = MockBulkCreateTrackImage();
     bloc = TrackingBloc(
       createTrack: mockCreateTrack,
-      bulkCreateTrackData: mockBulkCreateTrackData,
       helper: mockHelper,
-      bulkCreateTrackImage: mockBulkCreateTrackImage,
     );
   });
 
@@ -141,50 +131,6 @@ void main() {
       ],
       verify: (_) {
         verify(mockCreateTrack(tParams));
-      },
-    );
-  });
-
-  group('cron tracking', () {
-    final bodyData = BulkCreateTrackDataBody.fromJson(
-      json.decode(
-        fixture('bulk_create_track_data_body.json'),
-      ),
-    );
-    final bodyImage = BulkCreateTrackImageBody.fromJson(
-      json.decode(
-        fixture('bulk_create_track_image_body.json'),
-      ),
-    );
-    final tEvent = CronTrackingEvent(
-      bodyData: bodyData,
-      bodyImage: bodyImage,
-    );
-    final paramsData = ParamsBulkCreateTrackData(body: bodyData);
-    final paramsImage = ParamsBulkCreateTrackImage(body: bodyImage);
-    final tResponse = GeneralResponse.fromJson(
-      json.decode(
-        fixture('general_response.json'),
-      ),
-    );
-
-    blocTest(
-      'pastikan emit [SuccessCronTrackingState] ketika terima event CronTrackingEvent dengan proses berhasil',
-      build: () {
-        final result = (failure: null, response: tResponse);
-        when(mockBulkCreateTrackData(any)).thenAnswer((_) async => result);
-        when(mockBulkCreateTrackImage(any)).thenAnswer((_) async => result);
-        return bloc;
-      },
-      act: (TrackingBloc bloc) {
-        return bloc.add(tEvent);
-      },
-      expect: () => [
-        isA<SuccessCronTrackingState>(),
-      ],
-      verify: (_) {
-        verify(mockBulkCreateTrackData(paramsData));
-        verify(mockBulkCreateTrackImage(paramsImage));
       },
     );
   });

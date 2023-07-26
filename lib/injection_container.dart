@@ -72,9 +72,7 @@ void init() {
   sl.registerFactory(
     () => TrackingBloc(
       createTrack: sl(),
-      bulkCreateTrackData: sl(),
       helper: sl(),
-      bulkCreateTrackImage: sl(),
     ),
   );
   sl.registerFactory(
