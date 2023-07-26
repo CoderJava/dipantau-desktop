@@ -589,7 +589,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       if (selectedTask != null) {
                         selectedTask!.trackedInSeconds = valueNotifierTotalTracked.value;
                         finishTime = DateTime.now();
-                        await doTakeScreenshot();
+                        doTakeScreenshot(startTime, finishTime);
                       }
                       startTime = DateTime.now();
                       selectedTask = itemTask;
@@ -602,7 +602,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
                       finishTime = DateTime.now();
                       stopTimer();
-                      await doTakeScreenshot();
+                      doTakeScreenshot(startTime, finishTime);
                       selectedTask = null;
                     }
                     setState(() {});
@@ -992,7 +992,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     });
   }
 
-  Future<void> doTakeScreenshot() async {
+  void doTakeScreenshot(DateTime? startTime, DateTime? finishTime) async {
     var percentActivity = 0.0;
     if (counterActivity > 0 && countTimerInSeconds > 0) {
       percentActivity = (counterActivity / countTimerInSeconds) * 100;
@@ -1010,22 +1010,22 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     }
 
     final startDateTime = DateTime(
-      startTime!.year,
-      startTime!.month,
-      startTime!.day,
-      startTime!.hour,
-      startTime!.minute,
-      startTime!.second,
+      startTime.year,
+      startTime.month,
+      startTime.day,
+      startTime.hour,
+      startTime.minute,
+      startTime.second,
     );
     final finishDateTime = DateTime(
-      finishTime!.year,
-      finishTime!.month,
-      finishTime!.day,
-      finishTime!.hour,
-      finishTime!.minute,
-      finishTime!.second,
+      finishTime.year,
+      finishTime.month,
+      finishTime.day,
+      finishTime.hour,
+      finishTime.minute,
+      finishTime.second,
     );
-    final timezoneOffsetInSeconds = startTime!.timeZoneOffset.inSeconds;
+    final timezoneOffsetInSeconds = startTime.timeZoneOffset.inSeconds;
     final timezoneOffset = helper.convertSecondToHms(timezoneOffsetInSeconds);
     var strTimezoneOffset = timezoneOffsetInSeconds >= 0 ? '+' : '-';
     strTimezoneOffset += timezoneOffset.hour < 10 ? '0${timezoneOffset.hour}' : timezoneOffset.hour.toString();
@@ -1155,7 +1155,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     }
     if (countTimerInSeconds >= intervalScreenshot) {
       finishTime = DateTime.now();
-      await doTakeScreenshot();
+      doTakeScreenshot(startTime, finishTime);
       resetCountTimer();
       startTime = DateTime.now();
       finishTime = null;
