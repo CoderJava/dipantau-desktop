@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,44 +22,6 @@ void main() {
         expect(
           tEvent.toString(),
           'CreateTimeTrackingEvent{body: ${tEvent.body}, trackEntityId: ${tEvent.trackEntityId}}',
-        );
-      },
-    );
-  });
-
-  group('SyncManualTrackingEvent', () {
-    final tBody = BulkCreateTrackDataBody.fromJson(
-      json.decode(
-        fixture('bulk_create_track_data_body.json'),
-      ),
-    );
-    final tEvent = SyncManualTrackingEvent(body: tBody);
-
-    test(
-      'pastikan output dari fungsi toString',
-      () async {
-        // assert
-        expect(
-          tEvent.toString(),
-          'SyncManualTrackingEvent{body: ${tEvent.body}}',
-        );
-      },
-    );
-  });
-
-  group('CronTrackingEvent', () {
-    final tEvent = CronTrackingEvent(
-      bodyData: null,
-      bodyImage: null,
-    );
-
-    test(
-      'pastikan output dari fungsi toString',
-      () async {
-        // assert
-        expect(
-          tEvent.toString(),
-          'CronTrackingEvent{bodyData: ${tEvent.bodyData}, bodyImage: ${tEvent.bodyImage}}',
         );
       },
     );

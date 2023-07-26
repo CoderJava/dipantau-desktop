@@ -33,20 +33,3 @@ class SuccessCreateTimeTrackingState extends TrackingState {
     return 'SuccessCreateTimeTrackingState{files: $files, trackEntityId: $trackEntityId}';
   }
 }
-
-class SuccessSyncManualTrackingState extends TrackingState {}
-
-class SuccessCronTrackingState extends TrackingState {
-  final List<int> ids;
-  final List<String> files;
-
-  SuccessCronTrackingState({
-    required this.ids,
-    required this.files,
-  });
-
-  @override
-  String toString() {
-    return 'SuccessCronTrackingState{ids: $ids, files: $files}';
-  }
-}

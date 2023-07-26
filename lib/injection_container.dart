@@ -37,6 +37,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/se
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
@@ -44,6 +45,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/project/projec
 import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screenshot/report_screenshot_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/setting_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/sync_manual/sync_manual_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/user_profile/user_profile_bloc.dart';
 import 'package:floor/floor.dart';
@@ -71,9 +73,7 @@ void init() {
   sl.registerFactory(
     () => TrackingBloc(
       createTrack: sl(),
-      bulkCreateTrackData: sl(),
       helper: sl(),
-      bulkCreateTrackImage: sl(),
     ),
   );
   sl.registerFactory(
@@ -116,6 +116,19 @@ void init() {
       helper: sl(),
       getProfile: sl(),
       updateUser: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => SyncManualBloc(
+      helper: sl(),
+      bulkCreateTrackData: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => CronTrackingBloc(
+      helper: sl(),
+      bulkCreateTrackData: sl(),
+      bulkCreateTrackImage: sl(),
     ),
   );
 

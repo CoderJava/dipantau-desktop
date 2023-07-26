@@ -16,6 +16,7 @@ import 'package:dipantau_desktop_client/feature/data/model/track_task/track_task
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:dipantau_desktop_client/feature/database/app_database.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/user_profile/user_profile_bloc.dart';
@@ -54,6 +55,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final homeBloc = sl<HomeBloc>();
   final trackingBloc = sl<TrackingBloc>();
   final userProfileBloc = sl<UserProfileBloc>();
+  final cronTrackingBloc = sl<CronTrackingBloc>();
   final helper = sl<Helper>();
   final listTrackTask = <TrackTask>[];
   final widgetHelper = WidgetHelper();
@@ -308,8 +310,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             bodyImage = BulkCreateTrackImageBody(files: files);
           }
         }
-        trackingBloc.add(
-          CronTrackingEvent(
+        cronTrackingBloc.add(
+          RunCronTrackingEvent(
             bodyData: bodyData,
             bodyImage: bodyImage,
           ),
@@ -362,7 +364,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           ),
           BlocProvider<UserProfileBloc>(
             create: (context) => userProfileBloc,
-          )
+          ),
+          BlocProvider<CronTrackingBloc>(
+            create: (context) => cronTrackingBloc,
+          ),
         ],
         child: MultiBlocListener(
           listeners: [
@@ -437,19 +442,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   }
                   final trackEntityId = state.trackEntityId;
                   trackDao.deleteTrackById(trackEntityId);
-                } else if (state is SuccessCronTrackingState) {
-                  // TODO: tampilkan info last sync at: 22:09 04 Jul 2023
-                  // TODO: info ini akan ditampilkan dibagian paling bawah sama seperti tampilan hubstaff
-                  final ids = state.ids;
-                  final files = state.files;
-                  trackDao.deleteMultipleTrackByIds(ids).then((value) {
-                    for (final itemFile in files) {
-                      final file = File(itemFile);
-                      if (file.existsSync()) {
-                        file.deleteSync();
-                      }
-                    }
-                  });
                 }
               },
             ),
@@ -467,6 +459,24 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     SharedPreferencesManager.keyUserRole,
                     userRole?.name ?? '',
                   );
+                }
+              },
+            ),
+            BlocListener<CronTrackingBloc, CronTrackingState>(
+              listener: (context, state) {
+                if (state is SuccessRunCronTrackingState) {
+                  // TODO: tampilkan info last sync at: 22:09 04 Jul 2023
+                  // TODO: info ini akan ditampilkan dibagian paling bawah sama seperti tampilan hubstaff
+                  final ids = state.ids;
+                  final files = state.files;
+                  trackDao.deleteMultipleTrackByIds(ids).then((value) {
+                    for (final itemFile in files) {
+                      final file = File(itemFile);
+                      if (file.existsSync()) {
+                        file.deleteSync();
+                      }
+                    }
+                  });
                 }
               },
             ),
@@ -589,7 +599,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       if (selectedTask != null) {
                         selectedTask!.trackedInSeconds = valueNotifierTotalTracked.value;
                         finishTime = DateTime.now();
-                        await doTakeScreenshot();
+                        doTakeScreenshot(startTime, finishTime);
                       }
                       startTime = DateTime.now();
                       selectedTask = itemTask;
@@ -602,7 +612,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
                       finishTime = DateTime.now();
                       stopTimer();
-                      await doTakeScreenshot();
+                      doTakeScreenshot(startTime, finishTime);
                       selectedTask = null;
                     }
                     setState(() {});
@@ -992,7 +1002,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     });
   }
 
-  Future<void> doTakeScreenshot() async {
+  void doTakeScreenshot(DateTime? startTime, DateTime? finishTime) async {
     var percentActivity = 0.0;
     if (counterActivity > 0 && countTimerInSeconds > 0) {
       percentActivity = (counterActivity / countTimerInSeconds) * 100;
@@ -1010,22 +1020,22 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     }
 
     final startDateTime = DateTime(
-      startTime!.year,
-      startTime!.month,
-      startTime!.day,
-      startTime!.hour,
-      startTime!.minute,
-      startTime!.second,
+      startTime.year,
+      startTime.month,
+      startTime.day,
+      startTime.hour,
+      startTime.minute,
+      startTime.second,
     );
     final finishDateTime = DateTime(
-      finishTime!.year,
-      finishTime!.month,
-      finishTime!.day,
-      finishTime!.hour,
-      finishTime!.minute,
-      finishTime!.second,
+      finishTime.year,
+      finishTime.month,
+      finishTime.day,
+      finishTime.hour,
+      finishTime.minute,
+      finishTime.second,
     );
-    final timezoneOffsetInSeconds = startTime!.timeZoneOffset.inSeconds;
+    final timezoneOffsetInSeconds = startTime.timeZoneOffset.inSeconds;
     final timezoneOffset = helper.convertSecondToHms(timezoneOffsetInSeconds);
     var strTimezoneOffset = timezoneOffsetInSeconds >= 0 ? '+' : '-';
     strTimezoneOffset += timezoneOffset.hour < 10 ? '0${timezoneOffset.hour}' : timezoneOffset.hour.toString();
@@ -1155,7 +1165,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     }
     if (countTimerInSeconds >= intervalScreenshot) {
       finishTime = DateTime.now();
-      await doTakeScreenshot();
+      doTakeScreenshot(startTime, finishTime);
       resetCountTimer();
       startTime = DateTime.now();
       finishTime = null;
