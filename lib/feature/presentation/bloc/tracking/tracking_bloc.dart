@@ -28,8 +28,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   }) : super(InitialTrackingState()) {
     on<CreateTimeTrackingEvent>(_onCreateTimeTrackingEvent, transformer: sequential());
 
-    on<SyncManualTrackingEvent>(_onSyncManualTrackingEvent, transformer: sequential());
-
     on<CronTrackingEvent>(_onCronTrackingEvent, transformer: sequential());
   }
 
@@ -48,22 +46,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
           trackEntityId: event.trackEntityId,
         ),
       );
-      return;
-    }
-
-    final errorMessage = helper.getErrorMessageFromFailure(failure);
-    emit(FailureTrackingState(errorMessage: errorMessage));
-  }
-
-  FutureOr<void> _onSyncManualTrackingEvent(
-    SyncManualTrackingEvent event,
-    Emitter<TrackingState> emit,
-  ) async {
-    emit(LoadingTrackingState());
-    await Future.delayed(const Duration(milliseconds: 2500));
-    final (:response, :failure) = await bulkCreateTrackData(ParamsBulkCreateTrackData(body: event.body));
-    if (response != null) {
-      emit(SuccessSyncManualTrackingState());
       return;
     }
 

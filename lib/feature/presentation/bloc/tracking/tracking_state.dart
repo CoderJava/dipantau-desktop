@@ -34,8 +34,6 @@ class SuccessCreateTimeTrackingState extends TrackingState {
   }
 }
 
-class SuccessSyncManualTrackingState extends TrackingState {}
-
 class SuccessCronTrackingState extends TrackingState {
   final List<int> ids;
   final List<String> files;
