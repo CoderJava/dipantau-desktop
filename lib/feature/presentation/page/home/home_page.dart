@@ -69,6 +69,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final notificationHelper = sl<NotificationHelper>();
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
   final listTrackLocal = <Track>[];
+  final listPathStartScreenshots = <String?>[];
 
   var isWindowVisible = true;
   var userId = '';
@@ -84,6 +85,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   DateTime? startTime;
   DateTime? finishTime;
   DateTime? infoDateTime;
+  DateTime? now;
 
   @override
   void setState(VoidCallback fn) {
@@ -596,7 +598,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     }
 
                     if (isPermissionScreenRecordingGranted!) {
-                      final isPermissionAccessibilityGranted = await platformChannelHelper.checkPermissionAccessibility();
+                      final isPermissionAccessibilityGranted =
+                          await platformChannelHelper.checkPermissionAccessibility();
                       if (mounted && isPermissionAccessibilityGranted != null && !isPermissionAccessibilityGranted) {
                         widgetHelper.showDialogPermissionAccessibility(context);
                         return;
@@ -618,8 +621,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     } else {
                       isTimerStart = false;
                       itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
-                      finishTime = DateTime.now();
                       stopTimer();
+                      finishTime = DateTime.now();
                       doTakeScreenshot(startTime, finishTime);
                       selectedTask = null;
                     }
@@ -1004,13 +1007,28 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     platformChannelHelper.startEventChannel().listen((Object? event) {
       if (event != null) {
         if (event is String) {
-          isHaveActivity = true;
+          final strEvent = event.toLowerCase();
+          if (strEvent == 'triggered') {
+            // update flag activity menjadi true
+            isHaveActivity = true;
+          } else if (strEvent == 'screen_is_locked') {
+            // auto stop timer dan ambil screenshot-nya
+            isTimerStart = false;
+            stopTimer();
+            finishTime = DateTime.now();
+            doTakeScreenshot(startTime, finishTime, isForceStop: true);
+            selectedTask = null;
+            setState(() {});
+          } else if (strEvent == 'screen_is_unlocked') {
+            // muat ulang datanya setelah user unlock screen
+            doLoadData();
+          }
         }
       }
     });
   }
 
-  void doTakeScreenshot(DateTime? startTime, DateTime? finishTime) async {
+  void doTakeScreenshot(DateTime? startTime, DateTime? finishTime, {bool isForceStop = false}) async {
     var percentActivity = 0.0;
     if (counterActivity > 0 && countTimerInSeconds > 0) {
       percentActivity = (counterActivity / countTimerInSeconds) * 100;
@@ -1065,28 +1083,35 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
     final activity = percentActivity.round();
 
-    final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
-    final isPermissionScreenRecordingGranted = await platformChannelHelper.checkPermissionScreenRecording();
-    if (isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) {
-      debugPrint('screen recording not granted');
-      notificationHelper.showPermissionScreenRecordingIssuedNotification();
-      valueNotifierTotalTracked.value -= durationInSeconds;
-      valueNotifierTaskTracked.value -= durationInSeconds;
-      isTimerStart = false;
-      stopTimer();
-      selectedTask = null;
-      setState(() {});
-      return;
-    } else if (listPathScreenshots.isEmpty) {
-      debugPrint('list path screenshots is empty');
-      valueNotifierTotalTracked.value -= durationInSeconds;
-      valueNotifierTaskTracked.value -= durationInSeconds;
-      isTimerStart = false;
-      stopTimer();
-      selectedTask = null;
-      setState(() {});
-      return;
+    final listPathScreenshots = <String?>[];
+    String files;
+    if (!isForceStop) {
+      listPathScreenshots.clear();
+      listPathScreenshots.addAll(await platformChannelHelper.doTakeScreenshot());
+      final isPermissionScreenRecordingGranted = await platformChannelHelper.checkPermissionScreenRecording();
+      if ((isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) ||
+          listPathScreenshots.isEmpty) {
+        stopTimer();
+        isTimerStart = false;
+        selectedTask = null;
+        setState(() {});
+        final fileDefaultScreenshot = await widgetHelper.getImageFileFromAssets(BaseImage.imageFileNotFound);
+        listPathScreenshots.add(fileDefaultScreenshot.path);
+      }
+    } else {
+      listPathScreenshots.clear();
+      if (listPathStartScreenshots.isNotEmpty) {
+        listPathScreenshots.addAll(listPathStartScreenshots);
+      } else {
+        stopTimer();
+        isTimerStart = false;
+        selectedTask = null;
+        setState(() {});
+        final fileDefaultScreenshot = await widgetHelper.getImageFileFromAssets(BaseImage.imageFileNotFound);
+        listPathScreenshots.add(fileDefaultScreenshot.path);
+      }
     }
+
     listPathScreenshots.removeWhere((element) => element == null || element.isEmpty);
     if (listPathScreenshots.isNotEmpty) {
       final firstElement = listPathScreenshots.first ?? '';
@@ -1105,7 +1130,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         );
       }
     }
-    final files = listPathScreenshots.join(',');
+    files = listPathScreenshots.join(',');
 
     final isShowScreenshotNotification =
         sharedPreferencesManager.getBool(SharedPreferencesManager.keyIsEnableScreenshotNotification) ?? false;
@@ -1149,8 +1174,42 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   void startTimer() {
     countTimeReminderTrackInSeconds = 0;
     stopTimer();
-    timeTrack = Timer.periodic(const Duration(seconds: 1), (_) {
-      increaseTimerTray();
+
+    now = DateTime.now();
+    platformChannelHelper.checkPermissionScreenRecording().then((isGranted) async {
+      if (isGranted != null && isGranted) {
+        final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
+        if (listPathScreenshots.isNotEmpty) {
+          listPathStartScreenshots.clear();
+          listPathStartScreenshots.addAll(listPathScreenshots);
+        }
+      }
+    });
+    timeTrack = Timer.periodic(const Duration(milliseconds: 1), (timer) {
+      // intervalnya dibuat milliseconds agar bisa mengikuti dengan date time device-nya.
+      final newNow = DateTime.now();
+      final newNowDate = DateTime(
+        newNow.year,
+        newNow.month,
+        newNow.day,
+        newNow.hour,
+        newNow.minute,
+        newNow.second,
+      );
+      if (now != null) {
+        final nowDate = DateTime(
+          now!.year,
+          now!.month,
+          now!.day,
+          now!.hour,
+          now!.minute,
+          now!.second,
+        );
+        if (!nowDate.isAtSameMomentAs(newNowDate)) {
+          now = newNowDate;
+          increaseTimerTray();
+        }
+      }
     });
   }
 
