@@ -5,32 +5,26 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.2.0</title>
+            <title>Version 1.2.1</title>
             <description><![CDATA[
-                <h3>Feature</h3>
+                <h3>Hotfix</h3>
                 <ul>
-                    <li>Reset timer system tray ketika berpindah hari.</li>
-                    <li>Pengaturan launch at startup.</li>
-                    <li>Pengaturan reminder track time.</li>
-                    <li>Pengaturan play sound pada notifikasi screenshot.</li>
-                </ul>
-
-                <h3>Bugfix</h3>
-                <ul>
-                    <li>Ubah widget dialog menjadi dropdown ketika pilih user di halaman report screenshot.</li>
-                    <li>Animasi sync yang tidak berulang di halaman sync.</li>
+                    <li>Handle nilai timer ketika device lock screen.</li>
+                    <li>Muat ulang data timer ketika device unlock screen.</li>
+                    <li>Perbaikan nilai timer yang selisih 1-2 detik ketika distop.</li>
+                    <li>Buat default screenshot jika gagal mengambil screenshot.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>5</sparkle:version>
-            <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+            <sparkle:version>6</sparkle:version>
+            <sparkle:shortVersionString>1.2.1</sparkle:shortVersionString>
             <enclosure
-                length="21600098"
+                length="21609126"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.2.0/dipantau_desktop_client-1.2.0+5-macos.zip"
-                sparkle:edSignature="/bFUKNKDqhT8azRvewtLg91LKBQCQO9/FqiyVPrjZU4vdYHdsUuJjtDVw59kxOqD5cLT00vYPXzxVMD+hDQ9Dw=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.2.1/dipantau_desktop_client-1.2.1+6-macos.zip"
+                sparkle:edSignature="Kz070pqph0hvBpF4DOwi9kgpyJC4Qp2uBkTjk1Z1R3ET93J+V1J1tOE5mOkCyrTHg2dTyvke7wrp82uWPR+iCw=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 24 Jul 2023 23:00:00 +0700</pubDate>
+            <pubDate>Sun, 06 Aug 2023 21:00:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
