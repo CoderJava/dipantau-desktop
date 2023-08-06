@@ -9,6 +9,7 @@ class BaseIconTray {
 class BaseImage {
   static const _path = 'assets/images';
   static const imagePlaceholder = '$_path/image_placeholder.jpeg';
+  static const imageFileNotFound = '$_path/image_file_not_found.png';
 }
 
 class BaseAnimation {

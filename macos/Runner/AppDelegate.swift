@@ -4,13 +4,13 @@ import FlutterMacOS
 @NSApplicationMain
 class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
     private var eventSink: FlutterEventSink?
+    private let dnc = DistributedNotificationCenter.default()
     
     override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         // Set quit while window is minimized
         // return true
         return false
     }
-    
     
     override func applicationDidFinishLaunching(_ notification: Notification) {
         let controller: FlutterViewController = mainFlutterWindow?.contentViewController as! FlutterViewController
@@ -41,7 +41,7 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
                     result(true)
                 }
             } else if ("check_permission_accessibility" == call.method) {
-                var hasAccessibility = AXIsProcessTrusted()
+                let hasAccessibility = AXIsProcessTrusted()
                 if (hasAccessibility) {
                     result(true)
                 } else {
@@ -100,12 +100,30 @@ class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
     func onListen(withArguments arguments: Any?, eventSink: @escaping FlutterEventSink) -> FlutterError? {
         self.eventSink = eventSink
         setActivityListener()
+        setScreenLockedListener()
         return nil
     }
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
         eventSink = nil
         return nil
+    }
+    
+    func setScreenLockedListener() {
+        dnc.addObserver(forName: .init("com.apple.screenIsLocked"), object: nil, queue: .main) { _ in
+            guard let eventSink = self.eventSink else {
+                return
+            }
+            
+            eventSink("screen_is_locked")
+        }
+        dnc.addObserver(forName: .init("com.apple.screenIsUnlocked"), object: nil, queue: .main) { _ in
+            guard let eventSink = self.eventSink else {
+                return
+            }
+            
+            eventSink("screen_is_unlocked")
+        }
     }
     
     func setActivityListener() {
