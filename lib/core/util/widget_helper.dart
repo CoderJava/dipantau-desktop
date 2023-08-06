@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -181,5 +185,28 @@ class WidgetHelper {
         );
       },
     );
+  }
+
+  Future<File> getImageFileFromAssets(String path) async {
+    final byteData = await rootBundle.load(path);
+
+    final directoryPath = await getDirectoryApp('screenshot');
+    var userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
+    final random = Random();
+    if (userId.isEmpty) {
+      userId = random.nextInt(100).toString();
+    }
+    final strRandomNumber = random.nextInt(100).toString();
+
+    final now = DateTime.now();
+    final timeInMillis = now.millisecondsSinceEpoch;
+    final timeInSeconds = Duration(milliseconds: timeInMillis).inSeconds;
+    final pathString = '${timeInSeconds}_${userId}_${strRandomNumber}_1.jpg';
+    final file = File('$directoryPath/$pathString');
+
+    await file.create(recursive: true);
+    await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+    return file;
   }
 }
