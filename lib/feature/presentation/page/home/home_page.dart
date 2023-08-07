@@ -1082,7 +1082,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     final durationInSeconds = finishDateTime.difference(startDateTime).inSeconds.abs();
 
     final activity = percentActivity.round();
-
     final listPathScreenshots = <String?>[];
     String files;
     if (!isForceStop) {
@@ -1091,6 +1090,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       final isPermissionScreenRecordingGranted = await platformChannelHelper.checkPermissionScreenRecording();
       if ((isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) ||
           listPathScreenshots.isEmpty) {
+        // stop timer-nya jika permission screen recording-nya tidak diallow-kan atau
+        // gagal ambil screenshot-nya di end time
         stopTimer();
         isTimerStart = false;
         selectedTask = null;
@@ -1098,15 +1099,40 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         final fileDefaultScreenshot = await widgetHelper.getImageFileFromAssets(BaseImage.imageFileNotFound);
         listPathScreenshots.add(fileDefaultScreenshot.path);
       }
-    } else {
-      listPathScreenshots.clear();
       if (listPathStartScreenshots.isNotEmpty) {
-        listPathScreenshots.addAll(listPathStartScreenshots);
+        // hapus file list path start screenshot karena tidak pakai file tersebut
+        // jika file screenshot-nya dapat pas di end time
+        final filtered =
+            listPathStartScreenshots.where((element) => element != null && element.isNotEmpty).map((e) => e!).toList();
+        for (final element in filtered) {
+          final file = File(element);
+          if (file.existsSync()) {
+            file.deleteSync();
+          }
+        }
+      }
+    } else {
+      // stop timer-nya jika isForceStop bernilai true
+      listPathScreenshots.clear();
+      stopTimer();
+      isTimerStart = false;
+      selectedTask = null;
+      setState(() {});
+
+      if (listPathStartScreenshots.isNotEmpty) {
+        final listFileStartScreenshotValid = listPathStartScreenshots
+            .where((element) => element != null && element.isNotEmpty && File(element).existsSync())
+            .toList();
+        if (listFileStartScreenshotValid.isNotEmpty) {
+          // masukkan file start screenshot yang valid
+          listPathScreenshots.addAll(listFileStartScreenshotValid);
+        } else {
+          // gunakan file default screenshot jika file start screenshot-nya tidak ada yang valid
+          final fileDefaultScreenshot = await widgetHelper.getImageFileFromAssets(BaseImage.imageFileNotFound);
+          listPathScreenshots.add(fileDefaultScreenshot.path);
+        }
       } else {
-        stopTimer();
-        isTimerStart = false;
-        selectedTask = null;
-        setState(() {});
+        // gunakan file default screenshot jika file start screensho-nya empty
         final fileDefaultScreenshot = await widgetHelper.getImageFileFromAssets(BaseImage.imageFileNotFound);
         listPathScreenshots.add(fileDefaultScreenshot.path);
       }
@@ -1176,15 +1202,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     stopTimer();
 
     now = DateTime.now();
-    platformChannelHelper.checkPermissionScreenRecording().then((isGranted) async {
-      if (isGranted != null && isGranted) {
-        final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
-        if (listPathScreenshots.isNotEmpty) {
-          listPathStartScreenshots.clear();
-          listPathStartScreenshots.addAll(listPathScreenshots);
-        }
-      }
-    });
+    doTakeScreenshotStart();
     timeTrack = Timer.periodic(const Duration(milliseconds: 1), (timer) {
       // intervalnya dibuat milliseconds agar bisa mengikuti dengan date time device-nya.
       final newNow = DateTime.now();
@@ -1213,6 +1231,18 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     });
   }
 
+  void doTakeScreenshotStart() {
+    platformChannelHelper.checkPermissionScreenRecording().then((isGranted) async {
+      if (isGranted != null && isGranted) {
+        final listPathScreenshots = await platformChannelHelper.doTakeScreenshot();
+        if (listPathScreenshots.isNotEmpty) {
+          listPathStartScreenshots.clear();
+          listPathStartScreenshots.addAll(listPathScreenshots);
+        }
+      }
+    });
+  }
+
   void stopTimer() {
     countTimeReminderTrackInSeconds = 0;
     if (timeTrack != null && timeTrack!.isActive) {
@@ -1234,6 +1264,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       finishTime = DateTime.now();
       doTakeScreenshot(startTime, finishTime);
       resetCountTimer();
+      doTakeScreenshotStart();
       startTime = DateTime.now();
       finishTime = null;
     }
