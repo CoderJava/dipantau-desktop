@@ -5,32 +5,23 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.2.0</title>
+            <title>Version 1.2.2</title>
             <description><![CDATA[
-                <h3>Feature</h3>
+                <h3>Hotfix</h3>
                 <ul>
-                    <li>Reset timer system tray ketika berpindah hari.</li>
-                    <li>Pengaturan launch at startup.</li>
-                    <li>Pengaturan reminder track time.</li>
-                    <li>Pengaturan play sound pada notifikasi screenshot.</li>
-                </ul>
-
-                <h3>Bugfix</h3>
-                <ul>
-                    <li>Ubah widget dialog menjadi dropdown ketika pilih user di halaman report screenshot.</li>
-                    <li>Animasi sync yang tidak berulang di halaman sync.</li>
+                    <li>Perbaki flow penggunaan file screenshot ketika start timer.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>5</sparkle:version>
-            <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+            <sparkle:version>7</sparkle:version>
+            <sparkle:shortVersionString>1.2.2</sparkle:shortVersionString>
             <enclosure
-                length="21600098"
+                length="21610409"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.2.0/dipantau_desktop_client-1.2.0+5-macos.zip"
-                sparkle:edSignature="/bFUKNKDqhT8azRvewtLg91LKBQCQO9/FqiyVPrjZU4vdYHdsUuJjtDVw59kxOqD5cLT00vYPXzxVMD+hDQ9Dw=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.2.2/dipantau_desktop_client-1.2.2+7-macos.zip"
+                sparkle:edSignature="b7dmDQphhVA8h5BaHZs6/fs+X0ROwfoHawlD0mDS6ZGexD4RBkF4/atPrw8+QhX69u+VtYvRhjhSh412rBzLCQ=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 24 Jul 2023 23:00:00 +0700</pubDate>
+            <pubDate>Mon, 07 Aug 2023 10:00:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
