@@ -40,7 +40,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           }
           return FailureHomeState(errorMessage: errorMessage);
         },
-        (response) => SuccessLoadDataHomeState(trackUserLiteResponse: response),
+        (response) => SuccessLoadDataHomeState(
+          trackUserLiteResponse: response,
+          isAutoStart: event.isAutoStart,
+        ),
       ),
     );
   }

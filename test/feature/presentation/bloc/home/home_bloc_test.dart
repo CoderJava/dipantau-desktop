@@ -45,7 +45,11 @@ void main() {
       date: tDate,
       projectId: tProjectId,
     );
-    final tEvent = LoadDataHomeEvent(date: tDate, projectId: tProjectId);
+    final tEvent = LoadDataHomeEvent(
+      date: tDate,
+      projectId: tProjectId,
+      isAutoStart: false,
+    );
     final tResponse = TrackUserLiteResponse.fromJson(
       json.decode(
         fixture('track_user_lite_response.json'),
@@ -64,7 +68,10 @@ void main() {
       },
       expect: () => [
         LoadingHomeState(),
-        SuccessLoadDataHomeState(trackUserLiteResponse: tResponse),
+        SuccessLoadDataHomeState(
+          trackUserLiteResponse: tResponse,
+          isAutoStart: tEvent.isAutoStart,
+        ),
       ],
       verify: (_) {
         verify(mockGetTrackUserLite(tParams));

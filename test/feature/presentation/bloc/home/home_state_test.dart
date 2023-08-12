@@ -41,7 +41,10 @@ void main() {
         fixture('track_user_lite_response.json'),
       ),
     );
-    final tState = SuccessLoadDataHomeState(trackUserLiteResponse: tResponse);
+    final tState = SuccessLoadDataHomeState(
+      trackUserLiteResponse: tResponse,
+      isAutoStart: false,
+    );
 
     test(
       'pastikan output dari nilai props',
@@ -51,6 +54,7 @@ void main() {
           tState.props,
           [
             tState.trackUserLiteResponse,
+            tState.isAutoStart,
           ],
         );
       },
@@ -62,7 +66,8 @@ void main() {
         // assert
         expect(
           tState.toString(),
-          'SuccessLoadDataHomeState{trackUserLiteResponse: ${tState.trackUserLiteResponse}}',
+          'SuccessLoadDataHomeState{trackUserLiteResponse: ${tState.trackUserLiteResponse}, '
+          'isAutoStart: ${tState.isAutoStart}}',
         );
       },
     );

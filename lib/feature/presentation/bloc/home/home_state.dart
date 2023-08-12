@@ -29,18 +29,21 @@ class FailureHomeState extends HomeState {
 
 class SuccessLoadDataHomeState extends HomeState {
   final TrackUserLiteResponse trackUserLiteResponse;
+  final bool isAutoStart;
 
   SuccessLoadDataHomeState({
     required this.trackUserLiteResponse,
+    required this.isAutoStart,
   });
 
   @override
   List<Object?> get props => [
-    trackUserLiteResponse,
-  ];
+        trackUserLiteResponse,
+        isAutoStart,
+      ];
 
   @override
   String toString() {
-    return 'SuccessLoadDataHomeState{trackUserLiteResponse: $trackUserLiteResponse}';
+    return 'SuccessLoadDataHomeState{trackUserLiteResponse: $trackUserLiteResponse, isAutoStart: $isAutoStart}';
   }
 }
