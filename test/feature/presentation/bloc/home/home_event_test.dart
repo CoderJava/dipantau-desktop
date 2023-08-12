@@ -6,6 +6,7 @@ void main() {
     final tEvent = LoadDataHomeEvent(
       date: 'testDate',
       projectId: 'testProjectId',
+      isAutoStart: false,
     );
 
     test(
@@ -17,6 +18,7 @@ void main() {
           [
             tEvent.date,
             tEvent.projectId,
+            tEvent.isAutoStart,
           ],
         );
       },
@@ -28,7 +30,7 @@ void main() {
         // assert
         expect(
           tEvent.toString(),
-          'LoadDataHomeEvent{date: ${tEvent.date}, projectId: ${tEvent.projectId}}',
+          'LoadDataHomeEvent{date: ${tEvent.date}, projectId: ${tEvent.projectId}, isAutoStart: ${tEvent.isAutoStart}}',
         );
       },
     );
