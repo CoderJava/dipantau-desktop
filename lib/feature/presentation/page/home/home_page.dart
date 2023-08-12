@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dipantau_desktop_client/core/network/network_info.dart';
 import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
@@ -70,6 +71,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final intervalScreenshot = 60 * 5; // 300 detik (5 menit)
   final listTrackLocal = <Track>[];
   final listPathStartScreenshots = <String?>[];
+  final networkInfo = sl<NetworkInfo>();
 
   var isWindowVisible = true;
   var userId = '';
@@ -96,6 +98,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   @override
   void initState() {
+    sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsAutoStartTask, false);
     startTimerDate();
     doLoadDataUserProfile();
     userId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
@@ -109,7 +112,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     initDefaultSelectedProject();
     setupWindow();
     setupTray();
-    doStartActivityListener();
+    doStartEventListener();
     checkAssetAudio();
     notificationHelper.requestPermissionNotification();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -427,6 +430,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     }
                     listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
                   }
+
+                  final isAutoStart = state.isAutoStart;
+                  if (isAutoStart) {
+                    autoStartSelectedTask();
+                  }
                 }
               },
             ),
@@ -490,6 +498,28 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         ),
       ),
     );
+  }
+
+  Future<void> autoStartSelectedTask() async {
+    final selectedTaskName = sharedPreferencesManager.getString(SharedPreferencesManager.keySelectedTaskName) ?? '';
+    final selectedTaskId = sharedPreferencesManager.getInt(SharedPreferencesManager.keySelectedTaskId) ?? -1;
+    if (selectedTaskName.isNotEmpty && selectedTaskId != -1) {
+      final filteredTask = listTrackTask.where((element) {
+        return element.id == selectedTaskId && element.name == selectedTaskName;
+      });
+      await sharedPreferencesManager.clearKey(SharedPreferencesManager.keySelectedTaskName);
+      await sharedPreferencesManager.clearKey(SharedPreferencesManager.keySelectedTaskId);
+      if (filteredTask.isNotEmpty) {
+        final firstTask = filteredTask.first;
+        startTime = DateTime.now();
+        selectedTask = firstTask;
+        isTimerStart = true;
+        valueNotifierTaskTracked.value = firstTask.trackedInSeconds;
+        resetCountTimer();
+        startTimer();
+        setState(() {});
+      }
+    }
   }
 
   Widget buildWidgetBody() {
@@ -881,7 +911,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
-  Future<void> doLoadData() async {
+  Future<void> doLoadData({bool isAutoStart = false}) async {
     listTrackTask.clear();
     final now = DateTime.now();
     final formattedNow = helper.setDateFormat('yyyy-MM-dd').format(now);
@@ -898,6 +928,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       LoadDataHomeEvent(
         date: formattedNow,
         projectId: selectedProjectId.toString(),
+        isAutoStart: isAutoStart,
       ),
     );
   }
@@ -1002,9 +1033,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
-  void doStartActivityListener() {
+  void doStartEventListener() {
     platformChannelHelper.setActivityListener();
-    platformChannelHelper.startEventChannel().listen((Object? event) {
+    platformChannelHelper.startEventChannel().listen((Object? event) async {
       if (event != null) {
         if (event is String) {
           final strEvent = event.toLowerCase();
@@ -1013,15 +1044,57 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             isHaveActivity = true;
           } else if (strEvent == 'screen_is_locked') {
             // auto stop timer dan ambil screenshot-nya
-            isTimerStart = false;
-            stopTimer();
-            finishTime = DateTime.now();
-            doTakeScreenshot(startTime, finishTime, isForceStop: true);
-            selectedTask = null;
-            setState(() {});
+            if (isTimerStart) {
+              isTimerStart = false;
+              stopTimer();
+              finishTime = DateTime.now();
+              final selectedTaskName = selectedTask?.name;
+              final selectedTaskId = selectedTask?.id;
+              doTakeScreenshot(startTime, finishTime, isForceStop: true);
+              await sharedPreferencesManager.putString(
+                SharedPreferencesManager.keySelectedTaskName,
+                selectedTaskName ?? '',
+              );
+              await sharedPreferencesManager.putInt(
+                SharedPreferencesManager.keySelectedTaskId,
+                selectedTaskId ?? -1,
+              );
+              await sharedPreferencesManager.putBool(
+                SharedPreferencesManager.keyIsAutoStartTask,
+                true,
+              );
+              await sharedPreferencesManager.putInt(
+                SharedPreferencesManager.keySleepTime,
+                DateTime.now().millisecondsSinceEpoch,
+              );
+
+              selectedTask = null;
+              setState(() {});
+            }
           } else if (strEvent == 'screen_is_unlocked') {
             // muat ulang datanya setelah user unlock screen
-            doLoadData();
+            // dan setelah termuat datanya timer-nya dibuat auto start
+            final sleepTime = sharedPreferencesManager.getInt(SharedPreferencesManager.keySleepTime) ?? 0;
+            final dateTimeSleep = DateTime.fromMillisecondsSinceEpoch(sleepTime);
+            final durationSleepInMinutes = DateTime.now().difference(dateTimeSleep).inMinutes.abs();
+            final isAutoStartTask = sharedPreferencesManager.getBool(
+                  SharedPreferencesManager.keyIsAutoStartTask,
+                ) ??
+                false;
+            if (durationSleepInMinutes <= 30 && isAutoStartTask) {
+              await sharedPreferencesManager.putBool(
+                SharedPreferencesManager.keyIsAutoStartTask,
+                false,
+              );
+              await sharedPreferencesManager.clearKey(SharedPreferencesManager.keySleepTime);
+              networkInfo.isConnected.then((isConnected) {
+                if (isConnected) {
+                  doLoadData(isAutoStart: true);
+                } else {
+                  autoStartSelectedTask();
+                }
+              });
+            }
           }
         }
       }

@@ -24,6 +24,10 @@ class SharedPreferencesManager {
   static const keyDayReminderTrack = 'day_reminder_track';
   static const keyIntervalReminderTrack = 'interval_reminder_track';
   static const keyIsEnableSoundScreenshotNotification = 'is_enable_sound_screenshot_notification';
+  static const keySelectedTaskName = 'selected_task_name';
+  static const keySelectedTaskId = 'selected_task_id';
+  static const keyIsAutoStartTask = 'is_auto_start_task';
+  static const keySleepTime = 'sleep_time';
 
   SharedPreferencesManager();
 
