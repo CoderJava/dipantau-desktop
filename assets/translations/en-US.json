@@ -230,5 +230,7 @@
   "finish_time_must_be_after_start_time": "Finish time must be after start time",
   "play_sound": "Play sound",
   "title_accessibility_mac": "Accessibility",
-  "description_accessibility_mac": "This app would like to get keyboard & mouse activity. Grant access to this app in Security & Privacy preferences. Located in System Preferences. If it doesn't exists please add manually of if it exists please delete it."
+  "description_accessibility_mac": "This app would like to get keyboard & mouse activity. Grant access to this app in Security & Privacy preferences. Located in System Preferences. If it doesn't exists please add manually of if it exists please delete it.",
+  "start_working": "Start working",
+  "stop_working": "Stop working"
 }
