@@ -62,6 +62,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final widgetHelper = WidgetHelper();
   final keyTrayShowTimer = 'tray-show-timer';
   final keyTrayHideTimer = 'tray-hide-timer';
+  final keyTrayStartWorking = 'tray-start-working';
+  final keyTrayStopWorking = 'tray-stop-working';
   final keyTrayQuitApp = 'tray-quit-app';
   final platformChannelHelper = PlatformChannelHelper();
   final valueNotifierTotalTracked = ValueNotifier<int>(0);
@@ -430,10 +432,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     }
                     listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
                   }
+                  setTrayContextMenu();
 
                   final isAutoStart = state.isAutoStart;
                   if (isAutoStart) {
-                    autoStartSelectedTask();
+                    autoStartFromSleep();
                   }
                 }
               },
@@ -500,20 +503,19 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
-  Future<void> autoStartSelectedTask() async {
+  Future<void> autoStartFromSleep() async {
     final selectedTaskName = sharedPreferencesManager.getString(SharedPreferencesManager.keySelectedTaskName) ?? '';
     final selectedTaskId = sharedPreferencesManager.getInt(SharedPreferencesManager.keySelectedTaskId) ?? -1;
     if (selectedTaskName.isNotEmpty && selectedTaskId != -1) {
       final filteredTask = listTrackTask.where((element) {
         return element.id == selectedTaskId && element.name == selectedTaskName;
       });
-      await sharedPreferencesManager.clearKey(SharedPreferencesManager.keySelectedTaskName);
-      await sharedPreferencesManager.clearKey(SharedPreferencesManager.keySelectedTaskId);
       if (filteredTask.isNotEmpty) {
         final firstTask = filteredTask.first;
         startTime = DateTime.now();
         selectedTask = firstTask;
         isTimerStart = true;
+        setTrayContextMenu();
         valueNotifierTaskTracked.value = firstTask.trackedInSeconds;
         resetCountTimer();
         startTimer();
@@ -645,16 +647,12 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       startTime = DateTime.now();
                       selectedTask = itemTask;
                       isTimerStart = true;
+                      setTrayContextMenu();
                       valueNotifierTaskTracked.value = itemTask.trackedInSeconds;
                       resetCountTimer();
                       startTimer();
                     } else {
-                      isTimerStart = false;
-                      itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
-                      stopTimer();
-                      finishTime = DateTime.now();
-                      doTakeScreenshot(startTime, finishTime);
-                      selectedTask = null;
+                      stopTimerFromButton(itemTask);
                     }
                     setState(() {});
                   },
@@ -712,6 +710,16 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         ),
       ],
     );
+  }
+
+  void stopTimerFromButton(TrackTask itemTask) {
+    isTimerStart = false;
+    setTrayContextMenu();
+    itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
+    stopTimer();
+    finishTime = DateTime.now();
+    doTakeScreenshot(startTime, finishTime);
+    selectedTask = null;
   }
 
   Widget buildWidgetFieldProject() {
@@ -944,6 +952,24 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   void setTrayContextMenu() {
     final items = <MenuItem>[];
+    if (listTrackTask.isNotEmpty) {
+      if (!isTimerStart) {
+        items.add(
+          MenuItem(
+            key: keyTrayStartWorking,
+            label: 'start_working'.tr(),
+          ),
+        );
+      } else {
+        items.add(
+          MenuItem(
+            key: keyTrayStopWorking,
+            label: 'stop_working'.tr(),
+          ),
+        );
+      }
+    }
+
     if (isWindowVisible) {
       items.add(
         MenuItem(
@@ -1002,7 +1028,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   @override
   void onTrayMenuItemClick(MenuItem menuItem) {
     final keyMenuItem = menuItem.key;
-    if (keyMenuItem == keyTrayShowTimer) {
+    if (keyMenuItem == keyTrayStartWorking) {
+      startTaskFromSystemTray();
+    } else if (keyMenuItem == keyTrayStopWorking) {
+      stopTimerFromSystemTray();
+    } else if (keyMenuItem == keyTrayShowTimer) {
       windowManager.show();
       isWindowVisible = true;
     } else if (keyMenuItem == keyTrayHideTimer) {
@@ -1011,6 +1041,48 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     } else if (keyMenuItem == keyTrayQuitApp) {
       platformChannelHelper.doQuitApp();
     }
+  }
+
+  void startTaskFromSystemTray() {
+    final lastSelectedTaskName = sharedPreferencesManager.getString(SharedPreferencesManager.keySelectedTaskName) ?? '';
+    final lastSelectedTaskId = sharedPreferencesManager.getInt(SharedPreferencesManager.keySelectedTaskId) ?? -1;
+    final filteredTask = listTrackTask.where((element) {
+      return element.id == lastSelectedTaskId && element.name == lastSelectedTaskName;
+    });
+    if (filteredTask.isEmpty) {
+      // start task pertama yang ada
+      final task = listTrackTask.first;
+      startTime = DateTime.now();
+      selectedTask = task;
+      isTimerStart = true;
+      setTrayContextMenu();
+      valueNotifierTaskTracked.value = task.trackedInSeconds;
+      resetCountTimer();
+      startTimer();
+      setState(() {});
+    } else {
+      // start task terakhir kali yang dijalankan (jika ada)
+      final task = filteredTask.first;
+      startTime = DateTime.now();
+      selectedTask = task;
+      isTimerStart = true;
+      setTrayContextMenu();
+      valueNotifierTaskTracked.value = task.trackedInSeconds;
+      resetCountTimer();
+      startTimer();
+      setState(() {});
+    }
+  }
+
+  void stopTimerFromSystemTray() {
+    isTimerStart = false;
+    setTrayContextMenu();
+    selectedTask?.trackedInSeconds = valueNotifierTaskTracked.value;
+    stopTimer();
+    finishTime = DateTime.now();
+    doTakeScreenshot(startTime, finishTime);
+    selectedTask = null;
+    setState(() {});
   }
 
   Widget buildWidgetTextEmail() {
@@ -1046,19 +1118,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             // auto stop timer dan ambil screenshot-nya
             if (isTimerStart) {
               isTimerStart = false;
+              setTrayContextMenu();
               stopTimer();
               finishTime = DateTime.now();
-              final selectedTaskName = selectedTask?.name;
-              final selectedTaskId = selectedTask?.id;
               doTakeScreenshot(startTime, finishTime, isForceStop: true);
-              await sharedPreferencesManager.putString(
-                SharedPreferencesManager.keySelectedTaskName,
-                selectedTaskName ?? '',
-              );
-              await sharedPreferencesManager.putInt(
-                SharedPreferencesManager.keySelectedTaskId,
-                selectedTaskId ?? -1,
-              );
               await sharedPreferencesManager.putBool(
                 SharedPreferencesManager.keyIsAutoStartTask,
                 true,
@@ -1091,7 +1154,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 if (isConnected) {
                   doLoadData(isAutoStart: true);
                 } else {
-                  autoStartSelectedTask();
+                  autoStartFromSleep();
                 }
               });
             }
@@ -1167,6 +1230,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         // gagal ambil screenshot-nya di end time
         stopTimer();
         isTimerStart = false;
+        setTrayContextMenu();
         selectedTask = null;
         setState(() {});
         final fileDefaultScreenshot = await widgetHelper.getImageFileFromAssets(BaseImage.imageFileNotFound);
@@ -1189,6 +1253,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       listPathScreenshots.clear();
       stopTimer();
       isTimerStart = false;
+      setTrayContextMenu();
       selectedTask = null;
       setState(() {});
 
@@ -1271,6 +1336,16 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void startTimer() {
+    final selectedTaskName = selectedTask?.name;
+    final selectedTaskId = selectedTask?.id;
+    sharedPreferencesManager.putString(
+      SharedPreferencesManager.keySelectedTaskName,
+      selectedTaskName ?? '',
+    );
+    sharedPreferencesManager.putInt(
+      SharedPreferencesManager.keySelectedTaskId,
+      selectedTaskId ?? -1,
+    );
     countTimeReminderTrackInSeconds = 0;
     stopTimer();
 
