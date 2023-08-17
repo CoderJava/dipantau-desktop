@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/data/model/update_user/update_us
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remoteDataSource;
@@ -92,6 +93,36 @@ class UserRepositoryImpl implements UserRepository {
     if (isConnected) {
       try {
         response = await remoteDataSource.updateUser(body, id);
+      } on DioException catch (error) {
+        final message = error.message ?? error.toString();
+        if (error.response == null) {
+          failure = ServerFailure(message);
+        } else {
+          final errorMessage = getErrorMessageFromEndpoint(
+            error.response?.data,
+            message,
+            error.response?.statusCode,
+          );
+          failure = ServerFailure(errorMessage);
+        }
+      } on TypeError catch (error) {
+        final errorMessage = error.toString();
+        failure = ParsingFailure(errorMessage);
+      }
+    } else {
+      failure = ConnectionFailure();
+    }
+    return (failure: failure, response: response);
+  }
+
+  @override
+  Future<({Failure? failure, bool? response})> sendAppVersion(UserVersionBody body) async {
+    Failure? failure;
+    bool? response;
+    final isConnected = await networkInfo.isConnected;
+    if (isConnected) {
+      try {
+        response = await remoteDataSource.sendAppVersion(body);
       } on DioException catch (error) {
         final message = error.message ?? error.toString();
         if (error.response == null) {
