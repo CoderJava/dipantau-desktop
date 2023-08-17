@@ -17,4 +17,6 @@ abstract class TrackRepository {
   Future<({Failure? failure, GeneralResponse? response})> bulkCreateTrackImage(BulkCreateTrackImageBody body);
 
   Future<({Failure? failure, TrackUserResponse? response})> getTrackUser(String userId, String date);
+
+  Future<({Failure? failure, GeneralResponse? response})> deleteTrackUser(int trackId);
 }

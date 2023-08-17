@@ -176,4 +176,34 @@ class TrackRepositoryImpl implements TrackRepository {
     }
     return (failure: failure, response: response);
   }
+
+  @override
+  Future<({Failure? failure, GeneralResponse? response})> deleteTrackUser(int trackId) async {
+    Failure? failure;
+    GeneralResponse? response;
+    final isConnected = await networkInfo.isConnected;
+    if (isConnected) {
+      try {
+        response = await remoteDataSource.deleteTrackUser(trackId);
+      } on DioException catch (error) {
+        final message = error.message ?? error.toString();
+        if (error.response == null) {
+          failure = ServerFailure(message);
+        } else {
+          final errorMessage = getErrorMessageFromEndpoint(
+            error.response?.data,
+            message,
+            error.response?.statusCode,
+          );
+          failure = ServerFailure(errorMessage);
+        }
+      } on TypeError catch (error) {
+        final errorMessage = error.toString();
+        failure = ParsingFailure(errorMessage);
+      }
+    } else {
+      failure = ConnectionFailure();
+    }
+    return (failure: failure, response: response);
+  }
 }
