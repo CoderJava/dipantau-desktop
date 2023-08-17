@@ -428,4 +428,75 @@ void main() {
       },
     );
   });
+
+  group('deleteTrackUser', () {
+    const trackId = 1;
+    const tPathResponse = 'general_response.json';
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.delete(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint deleteTrackUser benar-benar terpanggil dengan method DELETE',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.deleteTrackUser(trackId);
+
+        // assert
+        verify(mockDio.delete('$baseUrl/$trackId', options: anyNamed('options')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model GeneralResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.deleteTrackUser(trackId);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.delete(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.deleteTrackUser(trackId);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
 }

@@ -43,6 +43,13 @@ abstract class TrackRemoteDataSource {
   late String pathGetTrackUser;
 
   Future<TrackUserResponse> getTrackUser(String userId, String date);
+
+  /// Panggil endpoint [host]/track/:id
+  ///
+  /// Throws [DioException] untuk semua error kode
+  late String pathDeleteTrack;
+
+  Future<GeneralResponse> deleteTrackUser(int trackId);
 }
 
 class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
@@ -192,6 +199,27 @@ class TrackRemoteDataSourceImpl implements TrackRemoteDataSource {
       return TrackUserResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathGetTrackUser));
+    }
+  }
+
+  @override
+  String pathDeleteTrack = '';
+
+  @override
+  Future<GeneralResponse> deleteTrackUser(int trackId) async {
+    pathDeleteTrack = '$baseUrl/$trackId';
+    final response = await dio.delete(
+      pathDeleteTrack,
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return GeneralResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathDeleteTrack));
     }
   }
 }
