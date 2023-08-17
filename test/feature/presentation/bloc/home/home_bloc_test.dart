@@ -5,6 +5,8 @@ import 'package:dartz/dartz.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -15,11 +17,14 @@ import '../../../../helper/mock_helper.mocks.dart';
 void main() {
   late HomeBloc bloc;
   late MockGetTrackUserLite mockGetTrackUserLite;
+  late MockSendAppVersion mockSendAppVersion;
 
   setUp(() {
     mockGetTrackUserLite = MockGetTrackUserLite();
+    mockSendAppVersion = MockSendAppVersion();
     bloc = HomeBloc(
       getTrackUserLite: mockGetTrackUserLite,
+      sendAppVersion: mockSendAppVersion,
     );
   });
 
@@ -45,7 +50,19 @@ void main() {
       date: tDate,
       projectId: tProjectId,
     );
+    final userVersionBody = UserVersionBody.fromJson(
+      json.decode(
+        fixture('user_version_body.json'),
+      ),
+    );
+    final paramsSendAppVersion = ParamsSendAppVersion(body: userVersionBody);
     final tEvent = LoadDataHomeEvent(
+      date: tDate,
+      projectId: tProjectId,
+      isAutoStart: false,
+      userVersionBody: userVersionBody,
+    );
+    final tEvent2 = LoadDataHomeEvent(
       date: tDate,
       projectId: tProjectId,
       isAutoStart: false,
@@ -60,6 +77,7 @@ void main() {
       'pastikan emit [LoadingHomeState, SuccessLoadDataHomeState] ketika terima event '
       'LoadDataHomeEvent dengan proses berhasil',
       build: () {
+        when(mockSendAppVersion(any)).thenAnswer((_) async => (failure: null, response: true));
         when(mockGetTrackUserLite(any)).thenAnswer((_) async => Right(tResponse));
         return bloc;
       },
@@ -74,6 +92,7 @@ void main() {
         ),
       ],
       verify: (_) {
+        verify(mockSendAppVersion(paramsSendAppVersion));
         verify(mockGetTrackUserLite(tParams));
       },
     );
@@ -86,7 +105,7 @@ void main() {
         return bloc;
       },
       act: (HomeBloc bloc) {
-        return bloc.add(tEvent);
+        return bloc.add(tEvent2);
       },
       expect: () => [
         LoadingHomeState(),
@@ -105,7 +124,7 @@ void main() {
         return bloc;
       },
       act: (HomeBloc bloc) {
-        return bloc.add(tEvent);
+        return bloc.add(tEvent2);
       },
       expect: () => [
         LoadingHomeState(),
@@ -124,7 +143,7 @@ void main() {
         return bloc;
       },
       act: (HomeBloc bloc) {
-        return bloc.add(tEvent);
+        return bloc.add(tEvent2);
       },
       expect: () => [
         LoadingHomeState(),
