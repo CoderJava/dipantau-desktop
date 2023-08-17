@@ -4,6 +4,7 @@ import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/model/update_user/update_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
 
 abstract class UserRemoteDataSource {
   /// Panggil endpoint [host]/profile
@@ -26,6 +27,11 @@ abstract class UserRemoteDataSource {
   late String pathUpdateUser;
 
   Future<bool> updateUser(UpdateUserBody body, int id);
+
+  /// Panggil endpoint [host]/version
+  late String pathSendAppVersion;
+
+  Future<bool> sendAppVersion(UserVersionBody body);
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -99,6 +105,28 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       return true;
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathUpdateUser));
+    }
+  }
+
+  @override
+  String pathSendAppVersion = '';
+
+  @override
+  Future<bool> sendAppVersion(UserVersionBody body) async {
+    pathSendAppVersion = '$baseUrl/version';
+    final response = await dio.post(
+      pathSendAppVersion,
+      data: body.toJson(),
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return true;
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathSendAppVersion));
     }
   }
 }

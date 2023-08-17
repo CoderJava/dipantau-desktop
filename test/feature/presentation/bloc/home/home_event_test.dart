@@ -19,6 +19,7 @@ void main() {
             tEvent.date,
             tEvent.projectId,
             tEvent.isAutoStart,
+            tEvent.userVersionBody,
           ],
         );
       },
@@ -30,7 +31,8 @@ void main() {
         // assert
         expect(
           tEvent.toString(),
-          'LoadDataHomeEvent{date: ${tEvent.date}, projectId: ${tEvent.projectId}, isAutoStart: ${tEvent.isAutoStart}}',
+          'LoadDataHomeEvent{date: ${tEvent.date}, projectId: ${tEvent.projectId}, isAutoStart: ${tEvent.isAutoStart}, '
+          'userVersionBody: ${tEvent.userVersionBody}}',
         );
       },
     );

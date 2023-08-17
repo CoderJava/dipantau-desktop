@@ -17,6 +17,7 @@ import 'package:dipantau_desktop_client/feature/data/model/track_task/track_task
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:dipantau_desktop_client/feature/database/app_database.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
@@ -125,7 +126,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         widgetHelper.showSnackBar(context, 'error: $error');
       }
       setupCronTimer();
-      doLoadData();
+      doLoadDataTask();
     });
     super.initState();
   }
@@ -555,7 +556,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   return WidgetError(
                     title: 'oops'.tr(),
                     message: errorMessage,
-                    onTryAgain: doLoadData,
+                    onTryAgain: doLoadDataTask,
                   );
                 }
                 return buildWidgetListTrack();
@@ -765,7 +766,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     now.day,
                   );
                   setState(() {});
-                  doLoadData();
+                  doLoadDataTask();
                 }
               },
         child: Container(
@@ -919,7 +920,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     );
   }
 
-  Future<void> doLoadData({bool isAutoStart = false}) async {
+  Future<void> doLoadDataTask({bool isAutoStart = false}) async {
     listTrackTask.clear();
     final now = DateTime.now();
     final formattedNow = helper.setDateFormat('yyyy-MM-dd').format(now);
@@ -932,11 +933,25 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     final newListTrackLocal = await trackDao.findAllTrackLikeDate('$formattedNow%');
     listTrackLocal.addAll(newListTrackLocal);
 
+    UserVersionBody? userVersionBody;
+    final versionCode = packageInfo.buildNumber;
+    final versionName = packageInfo.version;
+    final strUserId = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserId) ?? '';
+    final userId = int.tryParse(strUserId);
+    if (strUserId.isNotEmpty && userId != null) {
+      userVersionBody = UserVersionBody(
+        code: versionCode,
+        name: versionName,
+        userId: userId,
+      );
+    }
+
     homeBloc.add(
       LoadDataHomeEvent(
         date: formattedNow,
         projectId: selectedProjectId.toString(),
         isAutoStart: isAutoStart,
+        userVersionBody: userVersionBody,
       ),
     );
   }
@@ -1152,7 +1167,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               await sharedPreferencesManager.clearKey(SharedPreferencesManager.keySleepTime);
               networkInfo.isConnected.then((isConnected) {
                 if (isConnected) {
-                  doLoadData(isAutoStart: true);
+                  doLoadDataTask(isAutoStart: true);
                 } else {
                   autoStartFromSleep();
                 }

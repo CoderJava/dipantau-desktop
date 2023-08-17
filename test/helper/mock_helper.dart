@@ -24,6 +24,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/set_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
@@ -62,5 +63,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<GetTrackUser>(),
   MockSpec<GetKvSetting>(),
   MockSpec<SetKvSetting>(),
+  MockSpec<SendAppVersion>(),
 ])
 void main() {}

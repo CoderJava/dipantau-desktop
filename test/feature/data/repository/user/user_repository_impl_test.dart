@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/data/model/update_user/update_us
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -428,5 +429,93 @@ void main() {
     );
 
     testDisconnected2(() => repository.updateUser(tBody, tId));
+  });
+
+  group('sendAppVersion', () {
+    final tBody = UserVersionBody.fromJson(
+      json.decode(
+        fixture('user_version_body.json'),
+      ),
+    );
+    const tResponse = true;
+
+    test(
+      'pastikan mengembalikan boolean true ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.sendAppVersion(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.sendAppVersion(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.sendAppVersion(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.sendAppVersion(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.sendAppVersion(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.sendAppVersion(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.sendAppVersion(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.sendAppVersion(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.sendAppVersion(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.sendAppVersion(any),
+      () => repository.sendAppVersion(tBody),
+      () => mockRemoteDataSource.sendAppVersion(tBody),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.sendAppVersion(any),
+      () => repository.sendAppVersion(tBody),
+      () => mockRemoteDataSource.sendAppVersion(tBody),
+    );
+
+    testDisconnected2(() => repository.sendAppVersion(tBody));
   });
 }
