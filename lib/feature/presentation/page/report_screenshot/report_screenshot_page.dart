@@ -373,7 +373,7 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
 
     return SizedBox(
       height: 42,
-      child: DropdownButtonFormField(
+      child: DropdownButtonFormField<UserProfileResponse?>(
         value: selectedUser,
         items: listUserProfile.map((e) {
           return DropdownMenuItem(
@@ -381,11 +381,13 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
             child: Text(e.name ?? '-'),
           );
         }).toList(),
-        onChanged: (newValue) {
-          setState(() {
-            selectedUser = newValue;
-          });
-        },
+        onChanged: isEnabled
+            ? (newValue) {
+                setState(() {
+                  selectedUser = newValue;
+                });
+              }
+            : null,
         isExpanded: true,
         decoration: widgetHelper.setDefaultTextFieldDecoration(
           filled: true,
