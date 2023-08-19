@@ -33,3 +33,14 @@ class SuccessCreateTimeTrackingState extends TrackingState {
     return 'SuccessCreateTimeTrackingState{files: $files, trackEntityId: $trackEntityId}';
   }
 }
+
+class SuccessDeleteTrackUserTrackingState extends TrackingState {
+  final int trackId;
+
+  SuccessDeleteTrackUserTrackingState({required this.trackId});
+
+  @override
+  String toString() {
+    return 'SuccessDeleteTrackUserTrackingState{trackId: $trackId}';
+  }
+}

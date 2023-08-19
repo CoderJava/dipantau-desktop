@@ -72,7 +72,7 @@ class _SyncPageState extends State<SyncPage> {
         listener: (context, state) {
           if (state is! LoadingSyncManualState) {
             // untuk menutup dialog loading
-            Navigator.pop(context);
+            context.pop();
           }
 
           if (state is FailureSyncManualState) {
@@ -484,51 +484,66 @@ class _SyncPageState extends State<SyncPage> {
   }
 
   Widget buildWidgetIconDelete(int? id, double heightImage) {
-    return Positioned(
-      right: -4,
-      top: heightImage - 4,
-      child: IconButton(
-        onPressed: () {
-          if (id == null) {
-            widgetHelper.showSnackBar(context, 'invalid_id_track'.tr());
-          }
+    return Align(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: EdgeInsets.only(top: heightImage),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Material(
+              borderRadius: BorderRadius.circular(999),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(999),
+                onTap: () {
+                  if (id == null) {
+                    widgetHelper.showSnackBar(context, 'invalid_id_track'.tr());
+                  }
 
-          showDialog<bool?>(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('title_delete_track'.tr()),
-                content: Text('content_delete_track'.tr()),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: Text('cancel'.tr()),
+                  showDialog<bool?>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('title_delete_track'.tr()),
+                        content: Text('content_delete_track'.tr()),
+                        actions: [
+                          TextButton(
+                            onPressed: () => context.pop(false),
+                            child: Text('cancel'.tr()),
+                          ),
+                          TextButton(
+                            onPressed: () => context.pop(true),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.red,
+                            ),
+                            child: Text('delete'.tr()),
+                          ),
+                        ],
+                      );
+                    },
+                  ).then((value) async {
+                    if (value != null && value) {
+                      await trackDao.deleteTrackById(id!);
+                      listTracks.removeWhere((element) => element.id != null && element.id == id);
+                      setState(() {});
+                      if (mounted) {
+                        widgetHelper.showSnackBar(context, 'track_data_deleted_successfully'.tr());
+                      }
+                    }
+                  });
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: FaIcon(
+                    FontAwesomeIcons.trashCan,
+                    color: Colors.red,
+                    size: 14,
                   ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.red,
-                    ),
-                    child: Text('delete'.tr()),
-                  ),
-                ],
-              );
-            },
-          ).then((value) async {
-            if (value != null && value) {
-              await trackDao.deleteTrackById(id!);
-              listTracks.removeWhere((element) => element.id != null && element.id == id);
-              setState(() {});
-              if (mounted) {
-                widgetHelper.showSnackBar(context, 'track_data_deleted_successfully'.tr());
-              }
-            }
-          });
-        },
-        icon: const FaIcon(
-          FontAwesomeIcons.trashCan,
-          size: 14,
-          color: Colors.red,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/delete_track_user/delete_track_user.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -16,13 +17,16 @@ void main() {
   late TrackingBloc bloc;
   late MockCreateTrack mockCreateTrack;
   late MockHelper mockHelper;
+  late MockDeleteTrackUser mockDeleteTrackUser;
 
   setUp(() {
     mockCreateTrack = MockCreateTrack();
     mockHelper = MockHelper();
+    mockDeleteTrackUser = MockDeleteTrackUser();
     bloc = TrackingBloc(
       createTrack: mockCreateTrack,
       helper: mockHelper,
+      deleteTrackUser: mockDeleteTrackUser,
     );
   });
 
@@ -131,6 +135,101 @@ void main() {
       ],
       verify: (_) {
         verify(mockCreateTrack(tParams));
+      },
+    );
+  });
+
+  group('delete track user', () {
+    const trackId = 1;
+    final params = ParamsDeleteTrackUser(trackId: trackId);
+    final response = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+    final event = DeleteTrackUserTrackingEvent(trackId: trackId);
+
+    blocTest(
+      'pastikan emit [LoadingTrackingState, SuccessDeleteTrackingUserTrackingState] ketika terima event '
+      'DeleteTrackUserTrackingEvent dengan proses berhasil',
+      build: () {
+        final result = (failure: null, response: response);
+        when(mockDeleteTrackUser(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (TrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      wait: const Duration(seconds: 3),
+      expect: () => [
+        isA<LoadingTrackingState>(),
+        isA<SuccessDeleteTrackUserTrackingState>(),
+      ],
+      verify: (_) {
+        verify(mockDeleteTrackUser(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingTrackingState, FailureTrackingState] ketika terima event '
+      'DeleteTrackUserTrackingEvent dengan proses gagal dari API',
+      build: () {
+        final result = (failure: ServerFailure(tErrorMessage), response: null);
+        when(mockDeleteTrackUser(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (TrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      wait: const Duration(seconds: 3),
+      expect: () => [
+        isA<LoadingTrackingState>(),
+        isA<FailureTrackingState>(),
+      ],
+      verify: (_) {
+        verify(mockDeleteTrackUser(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingTrackingState, FailureTrackingState] ketika terima event '
+      'DeleteTrackUserTrackingEvent dengan kondisi internet tidak terhubung',
+      build: () {
+        final result = (failure: ConnectionFailure(), response: null);
+        when(mockDeleteTrackUser(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (TrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      wait: const Duration(seconds: 3),
+      expect: () => [
+        isA<LoadingTrackingState>(),
+        isA<FailureTrackingState>(),
+      ],
+      verify: (_) {
+        verify(mockDeleteTrackUser(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingTrackingState, FailureTrackingState] ketika terima event '
+      'DeleteTrackUserTrackingEvent dengan proses gagal parsing respon JSON dari API',
+      build: () {
+        final result = (failure: ParsingFailure(tErrorMessage), response: null);
+        when(mockDeleteTrackUser(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (TrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      wait: const Duration(seconds: 3),
+      expect: () => [
+        isA<LoadingTrackingState>(),
+        isA<FailureTrackingState>(),
+      ],
+      verify: (_) {
+        verify(mockDeleteTrackUser(params));
       },
     );
   });

@@ -34,4 +34,19 @@ void main() {
       },
     );
   });
+
+  group('SuccessDeleteTrackUserTrackingState', () {
+    final tState = SuccessDeleteTrackUserTrackingState(trackId: 1);
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tState.toString(),
+          'SuccessDeleteTrackUserTrackingState{trackId: ${tState.trackId}}',
+        );
+      },
+    );
+  });
 }

@@ -26,4 +26,19 @@ void main() {
       },
     );
   });
+
+  group('DeleteTrackUserTrackingEvent', () {
+    final tEvent = DeleteTrackUserTrackingEvent(trackId: 1);
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tEvent.toString(),
+          'DeleteTrackUserTrackingEvent{trackId: ${tEvent.trackId}}',
+        );
+      },
+    );
+  });
 }

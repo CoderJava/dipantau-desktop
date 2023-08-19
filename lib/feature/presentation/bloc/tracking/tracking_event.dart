@@ -18,3 +18,14 @@ class CreateTimeTrackingEvent extends TrackingEvent {
     return 'CreateTimeTrackingEvent{body: $body, trackEntityId: $trackEntityId}';
   }
 }
+
+class DeleteTrackUserTrackingEvent extends TrackingEvent {
+  final int trackId;
+
+  DeleteTrackUserTrackingEvent({required this.trackId});
+
+  @override
+  String toString() {
+    return 'DeleteTrackUserTrackingEvent{trackId: $trackId}';
+  }
+}

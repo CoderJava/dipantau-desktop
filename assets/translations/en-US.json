@@ -232,5 +232,9 @@
   "title_accessibility_mac": "Accessibility",
   "description_accessibility_mac": "This app would like to get keyboard & mouse activity. Grant access to this app in Security & Privacy preferences. Located in System Preferences. If it doesn't exists please add manually of if it exists please delete it.",
   "start_working": "Start working",
-  "stop_working": "Stop working"
+  "stop_working": "Stop working",
+  "track_id_invalid": "Invalid track ID",
+  "deleting_track": "Please wait a moment track data is\nbeing deleted",
+  "dismiss": "Dismiss",
+  "track_data_successfully_deleted": "Track data successfully deleted"
 }

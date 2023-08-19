@@ -623,4 +623,92 @@ void main() {
 
     testDisconnected2(() => repository.getTrackUser(tUserId, tDate));
   });
+
+  group('deleteTrackUser', () {
+    const trackId = 1;
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.deleteTrackUser(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.deleteTrackUser(trackId);
+
+        // assert
+        verify(mockRemoteDataSource.deleteTrackUser(trackId));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.deleteTrackUser(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.deleteTrackUser(trackId);
+
+        // assert
+        verify(mockRemoteDataSource.deleteTrackUser(trackId));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.deleteTrackUser(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.deleteTrackUser(trackId);
+
+        // assert
+        verify(mockRemoteDataSource.deleteTrackUser(trackId));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.deleteTrackUser(any),
+      () => repository.deleteTrackUser(trackId),
+      () => mockRemoteDataSource.deleteTrackUser(trackId),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.deleteTrackUser(any),
+      () => repository.deleteTrackUser(trackId),
+      () => mockRemoteDataSource.deleteTrackUser(trackId),
+    );
+
+    testDisconnected2(() => repository.deleteTrackUser(trackId));
+  });
 }

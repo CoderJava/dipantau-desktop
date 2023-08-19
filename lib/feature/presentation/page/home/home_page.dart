@@ -79,8 +79,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var isWindowVisible = true;
   var userId = '';
   var email = '';
-  TrackUserLiteResponse? trackUserLite;
   var isTimerStart = false;
+  var isTimerStartTemp = false;
+  TrackUserLiteResponse? trackUserLite;
   ItemProjectResponse? selectedProject;
   TrackTask? selectedTask;
   Timer? timeTrack, timerCronTrack, timerDate;
@@ -91,6 +92,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   DateTime? finishTime;
   DateTime? infoDateTime;
   DateTime? now;
+  var isLoading = false;
 
   @override
   void setState(VoidCallback fn) {
@@ -381,6 +383,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           listeners: [
             BlocListener<HomeBloc, HomeState>(
               listener: (context, state) async {
+                isLoading = state is LoadingHomeState;
                 if (state is FailureHomeState) {
                   final errorMessage = state.errorMessage;
                   if (errorMessage.contains('401')) {
@@ -388,6 +391,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     return;
                   }
                 } else if (state is SuccessLoadDataHomeState) {
+                  isTimerStartTemp = false;
                   trackUserLite = state.trackUserLiteResponse;
                   valueNotifierTotalTracked.value = trackUserLite?.trackedInSeconds ?? 0;
 
@@ -479,8 +483,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             BlocListener<CronTrackingBloc, CronTrackingState>(
               listener: (context, state) {
                 if (state is SuccessRunCronTrackingState) {
-                  // TODO: tampilkan info last sync at: 22:09 04 Jul 2023
-                  // TODO: info ini akan ditampilkan dibagian paling bawah sama seperti tampilan hubstaff
                   final ids = state.ids;
                   final files = state.files;
                   trackDao.deleteMultipleTrackByIds(ids).then((value) {
@@ -549,7 +551,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           Expanded(
             child: BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
-                if (state is LoadingHomeState) {
+                if (state is LoadingHomeState || isLoading) {
                   return const WidgetCustomCircularProgressIndicator();
                 } else if (state is FailureHomeState) {
                   final errorMessage = state.errorMessage;
@@ -639,9 +641,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       }
                     }
 
-                    if (selectedTask != itemTask) {
+                    if (selectedTask?.id != itemTask.id) {
                       if (selectedTask != null) {
-                        selectedTask!.trackedInSeconds = valueNotifierTotalTracked.value;
+                        selectedTask!.trackedInSeconds = valueNotifierTaskTracked.value;
                         finishTime = DateTime.now();
                         doTakeScreenshot(startTime, finishTime);
                       }
@@ -728,7 +730,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: isTimerStart
+        onTap: isTimerStart || isTimerStartTemp
             ? null
             : () async {
                 final selectedProjectTemp = await showModalBottomSheet(
@@ -787,7 +789,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 height: 8,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isTimerStart ? Colors.green : Colors.grey,
+                  color: isTimerStart || isTimerStartTemp ? Colors.green : Colors.grey,
                 ),
               ),
               const SizedBox(width: 4),
@@ -803,7 +805,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 ),
               ),
               const SizedBox(width: 16),
-              isTimerStart
+              isTimerStart || isTimerStartTemp
                   ? Container()
                   : const Icon(
                       Icons.keyboard_arrow_down,
@@ -880,7 +882,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             child: InkWell(
               borderRadius: BorderRadius.circular(999),
               onTap: () {
-                context.pushNamed(ReportScreenshotPage.routeName);
+                context.pushNamed<bool?>(ReportScreenshotPage.routeName).then((value) async {
+                  if (value != null && value) {
+                    setState(() => isLoading = true);
+                    isTimerStartTemp = isTimerStart;
+                    stopTimerFromSystemTray();
+                    doLoadDataTask(isAutoStart: isTimerStartTemp);
+                  }
+                });
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(
