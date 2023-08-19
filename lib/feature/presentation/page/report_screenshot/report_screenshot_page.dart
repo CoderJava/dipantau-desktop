@@ -9,6 +9,7 @@ import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screenshot/report_screenshot_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_error.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
 class ReportScreenshotPage extends StatefulWidget {
   static const routePath = '/report-screenshot';
@@ -39,6 +41,8 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
   final listUserProfile = <UserProfileResponse>[];
   final controllerFilterDate = TextEditingController();
   final controllerFilterUser = TextEditingController();
+  final trackingBloc = sl<TrackingBloc>();
+  final listTracks = <ItemTrackUserResponse>[];
 
   var userId = '';
   var name = '';
@@ -48,6 +52,7 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
   UserProfileResponse? selectedUser;
   var isLoading = false;
   var isPreparingDataSuccess = false;
+  var isRefreshPreviousPage = false;
 
   @override
   void setState(VoidCallback fn) {
@@ -86,60 +91,132 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => widgetHelper.unfocus(context),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'report_screenshot'.tr(),
+    return WillPopScope(
+      onWillPop: () async {
+        context.pop(isRefreshPreviousPage);
+        return false;
+      },
+      child: GestureDetector(
+        onTap: () => widgetHelper.unfocus(context),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'report_screenshot'.tr(),
+            ),
+            centerTitle: false,
           ),
-          centerTitle: false,
-        ),
-        body: MultiBlocProvider(
-          providers: [
-            BlocProvider<MemberBloc>(
-              create: (context) => memberBloc,
-            ),
-            BlocProvider<ReportScreenshotBloc>(
-              create: (context) => reportScreenshotBloc,
-            ),
-          ],
-          child: MultiBlocListener(
-            listeners: [
-              BlocListener<MemberBloc, MemberState>(
-                listener: (context, state) {
-                  if (state is FailureMemberState) {
-                    final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
-                    if (errorMessage.contains('401')) {
-                      widgetHelper.showDialog401(context);
-                      return;
-                    }
-                  } else if (state is SuccessLoadListMemberState) {
-                    listUserProfile.clear();
-                    listUserProfile.addAll(state.response.data ?? []);
-                    isPreparingDataSuccess = true;
-                    setState(() {});
-                  }
-                },
+          body: MultiBlocProvider(
+            providers: [
+              BlocProvider<MemberBloc>(
+                create: (context) => memberBloc,
               ),
-              BlocListener<ReportScreenshotBloc, ReportScreenshotState>(
-                listener: (context, state) {
-                  isLoading = state is LoadingCenterReportScreenshotState;
-                  if (state is FailureReportScreenshotState) {
-                    final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
-                    if (errorMessage.contains('401')) {
-                      widgetHelper.showDialog401(context);
-                      return;
-                    }
-                  }
-                },
+              BlocProvider<ReportScreenshotBloc>(
+                create: (context) => reportScreenshotBloc,
+              ),
+              BlocProvider<TrackingBloc>(
+                create: (context) => trackingBloc,
               ),
             ],
-            child: Stack(
-              children: [
-                buildWidgetBody(),
-                buildWidgetLoadingPreparingData(),
+            child: MultiBlocListener(
+              listeners: [
+                BlocListener<MemberBloc, MemberState>(
+                  listener: (context, state) {
+                    if (state is FailureMemberState) {
+                      final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+                      if (errorMessage.contains('401')) {
+                        widgetHelper.showDialog401(context);
+                        return;
+                      }
+                    } else if (state is SuccessLoadListMemberState) {
+                      listUserProfile.clear();
+                      listUserProfile.addAll(state.response.data ?? []);
+                      isPreparingDataSuccess = true;
+                      setState(() {});
+                    }
+                  },
+                ),
+                BlocListener<ReportScreenshotBloc, ReportScreenshotState>(
+                  listener: (context, state) {
+                    isLoading = state is LoadingCenterReportScreenshotState;
+                    if (state is FailureReportScreenshotState) {
+                      final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+                      if (errorMessage.contains('401')) {
+                        widgetHelper.showDialog401(context);
+                        return;
+                      }
+                    } else if (state is SuccessLoadReportScreenshotState) {
+                      listTracks.clear();
+                      listTracks.addAll(state.response.data ?? []);
+                    }
+                  },
+                ),
+                BlocListener<TrackingBloc, TrackingState>(
+                  listener: (context, state) {
+                    if (state is! LoadingTrackingState) {
+                      // untuk menutup dialog loading tracking
+                      context.pop();
+                    }
+
+                    if (state is FailureTrackingState) {
+                      final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+                      if (errorMessage.contains('401')) {
+                        widgetHelper.showDialog401(context);
+                        return;
+                      }
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('oops'.tr()),
+                            content: Text(errorMessage.hideResponseCode()),
+                            actions: [
+                              TextButton(
+                                onPressed: () => context.pop(),
+                                child: Text('dismiss'.tr()),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else if (state is LoadingTrackingState) {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: LottieBuilder.asset(
+                              BaseAnimation.animationDeleteFile,
+                              repeat: true,
+                              width: 92,
+                              height: 92,
+                            ),
+                            content: Text(
+                              'deleting_track'.tr(),
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          );
+                        },
+                      );
+                    } else if (state is SuccessDeleteTrackUserTrackingState) {
+                      isRefreshPreviousPage = true;
+                      final trackId = state.trackId;
+                      listTracks.removeWhere((element) => element.id != null && element.id == trackId);
+                      widgetHelper.showSnackBar(
+                        context,
+                        'track_data_successfully_deleted'.tr(),
+                      );
+                      setState(() {});
+                    }
+                  },
+                ),
               ],
+              child: Stack(
+                children: [
+                  buildWidgetBody(),
+                  buildWidgetLoadingPreparingData(),
+                ],
+              ),
             ),
           ),
         ),
@@ -205,8 +282,7 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
             onTryAgain: doLoadData,
           );
         } else if (state is SuccessLoadReportScreenshotState) {
-          final listTracks = state.response.data ?? [];
-          return buildWidgetListData(listTracks);
+          return buildWidgetListData();
         }
         return Container();
       },
@@ -334,7 +410,7 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
     controllerFilterUser.text = name;
   }
 
-  Widget buildWidgetListData(List<ItemTrackUserResponse> listTracks) {
+  Widget buildWidgetListData() {
     if (listTracks.isEmpty) {
       return Padding(
         padding: EdgeInsets.all(helper.getDefaultPaddingLayout),
@@ -539,6 +615,7 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                           ),
                         ),
                         buildWidgetCountScreen(heightImage, listFiles),
+                        buildWidgetDeleteTask(heightImage, element.id),
                       ],
                     ),
                   ),
@@ -705,6 +782,54 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
               ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildWidgetDeleteTask(double heightImage, int? trackId) {
+    if (userRole != null && userRole == UserRole.employee) {
+      return Container();
+    }
+
+    return Align(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: EdgeInsets.only(top: heightImage),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Material(
+              borderRadius: BorderRadius.circular(999),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(999),
+                onTap: () {
+                  if (trackId == null) {
+                    widgetHelper.showSnackBar(
+                      context,
+                      'track_id_invalid'.tr(),
+                    );
+                    return;
+                  }
+
+                  trackingBloc.add(
+                    DeleteTrackUserTrackingEvent(
+                      trackId: trackId,
+                    ),
+                  );
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: FaIcon(
+                    FontAwesomeIcons.trashCan,
+                    color: Colors.red,
+                    size: 14,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
