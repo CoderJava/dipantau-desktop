@@ -25,6 +25,7 @@ import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repo
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_data/bulk_create_track_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_image/bulk_create_track_image.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/delete_track_user/delete_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_member/get_all_member.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_kv_setting/get_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
@@ -76,6 +77,7 @@ void init() {
     () => TrackingBloc(
       createTrack: sl(),
       helper: sl(),
+      deleteTrackUser: sl(),
     ),
   );
   sl.registerFactory(
@@ -150,6 +152,7 @@ void init() {
   sl.registerLazySingleton(() => GetKvSetting(repository: sl()));
   sl.registerLazySingleton(() => SetKvSetting(repository: sl()));
   sl.registerLazySingleton(() => SendAppVersion(repository: sl()));
+  sl.registerLazySingleton(() => DeleteTrackUser(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
