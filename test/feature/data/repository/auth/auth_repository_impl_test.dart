@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
+import 'package:dipantau_desktop_client/feature/data/model/forgot_password/forgot_password_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
@@ -56,6 +58,23 @@ void main() {
     );
   }
 
+  void testDisconnected2(Function endpointInvoke) {
+    test(
+      'pastikan mengembalikan objek ConnectionFailure ketika device tidak terhubung ke internet',
+      () async {
+        // arrange
+        setUpMockNetworkDisconnected();
+
+        // act
+        final result = await endpointInvoke.call();
+
+        // assert
+        verify(mockNetworkInfo.isConnected);
+        expect(result.failure, ConnectionFailure());
+      },
+    );
+  }
+
   void testServerFailureString(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ServerFailure ketika EmployeeRepository menerima respon kegagalan '
@@ -85,6 +104,35 @@ void main() {
     );
   }
 
+  void testServerFailureString2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika repository menerima respon kegagalan '
+      'dari endpoint dengan respon data html atau string',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(whenInvoke.call()).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: 'testDataError',
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await actInvoke.call();
+
+        // assert
+        verify(verifyInvoke.call());
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+  }
+
   void testParsingFailure(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
@@ -100,6 +148,25 @@ void main() {
         // assert
         verify(verifyInvoke.call());
         expect(result, Left(ParsingFailure(TypeError().toString())));
+      },
+    );
+  }
+
+  void testParsingFailure2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
+    test(
+      'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(whenInvoke.call()).thenThrow(TypeError());
+
+        // act
+        final result = await actInvoke.call();
+
+        // assert
+        verify(verifyInvoke.call());
+        expect(result.failure, ParsingFailure(TypeError().toString()));
       },
     );
   }
@@ -139,7 +206,8 @@ void main() {
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.login(any)).thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+        when(mockRemoteDataSource.login(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
 
         // act
         final result = await repository.login(tBody);
@@ -230,7 +298,8 @@ void main() {
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.signUp(any)).thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+        when(mockRemoteDataSource.signUp(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
 
         // act
         final result = await repository.signUp(tBody);
@@ -376,5 +445,97 @@ void main() {
     );
 
     testDisconnected(() => repository.refreshToken(tBody));
+  });
+
+  group('forgot password', () {
+    final tBody = ForgotPasswordBody.fromJson(
+      json.decode(
+        fixture('forgot_password_body.json'),
+      ),
+    );
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.forgotPassword(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.forgotPassword(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.forgotPassword(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.forgotPassword(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.forgotPassword(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.forgotPassword(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.forgotPassword(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.forgotPassword(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.forgotPassword(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.forgotPassword(any),
+      () => repository.forgotPassword(tBody),
+      () => mockRemoteDataSource.forgotPassword(tBody),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.forgotPassword(any),
+      () => repository.forgotPassword(tBody),
+      () => mockRemoteDataSource.forgotPassword(tBody),
+    );
+
+    testDisconnected2(() => repository.forgotPassword(tBody));
   });
 }

@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
+import 'package:dipantau_desktop_client/feature/data/model/forgot_password/forgot_password_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
@@ -12,4 +14,6 @@ abstract class AuthRepository {
   Future<Either<Failure, SignUpResponse>> signUp(SignUpBody body);
 
   Future<Either<Failure, LoginResponse>> refreshToken(RefreshTokenBody body);
+
+  Future<({Failure? failure, GeneralResponse? response})> forgotPassword(ForgotPasswordBody body);
 }
