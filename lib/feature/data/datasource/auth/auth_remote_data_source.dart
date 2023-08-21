@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
+import 'package:dipantau_desktop_client/feature/data/model/forgot_password/forgot_password_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
@@ -28,6 +30,11 @@ abstract class AuthRemoteDataSource {
   late String pathRefreshToken;
 
   Future<LoginResponse> refreshToken(RefreshTokenBody body);
+
+  /// Panggil endpoint [host]/auth/forgot-password
+  late String pathForgotPassword;
+
+  Future<GeneralResponse> forgotPassword(ForgotPasswordBody body);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -101,6 +108,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return LoginResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathRefreshToken));
+    }
+  }
+
+  @override
+  String pathForgotPassword = '';
+
+  @override
+  Future<GeneralResponse> forgotPassword(ForgotPasswordBody body) async {
+    pathForgotPassword = '$baseUrl/forgot-password';
+    final response = await dio.post(
+      pathForgotPassword,
+      data: body.toJson(),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return GeneralResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathForgotPassword));
     }
   }
 }
