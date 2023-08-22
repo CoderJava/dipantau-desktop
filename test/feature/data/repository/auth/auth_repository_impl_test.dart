@@ -10,6 +10,7 @@ import 'package:dipantau_desktop_client/feature/data/model/login/login_response.
 import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -537,5 +538,97 @@ void main() {
     );
 
     testDisconnected2(() => repository.forgotPassword(tBody));
+  });
+
+  group('verify forgot password', () {
+    final tBody = VerifyForgotPasswordBody.fromJson(
+      json.decode(
+        fixture('verify_forgot_password_body.json'),
+      ),
+    );
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
+          'respon sukses dari endpoint',
+          () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.verifyForgotPassword(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.verifyForgotPassword(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.verifyForgotPassword(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+          'respon timeout dari endpoint',
+          () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.verifyForgotPassword(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.verifyForgotPassword(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.verifyForgotPassword(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+          'dari endpoint',
+          () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.verifyForgotPassword(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.verifyForgotPassword(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.verifyForgotPassword(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+          () => mockRemoteDataSource.verifyForgotPassword(any),
+          () => repository.verifyForgotPassword(tBody),
+          () => mockRemoteDataSource.verifyForgotPassword(tBody),
+    );
+
+    testParsingFailure2(
+          () => mockRemoteDataSource.verifyForgotPassword(any),
+          () => repository.verifyForgotPassword(tBody),
+          () => mockRemoteDataSource.verifyForgotPassword(tBody),
+    );
+
+    testDisconnected2(() => repository.verifyForgotPassword(tBody));
   });
 }
