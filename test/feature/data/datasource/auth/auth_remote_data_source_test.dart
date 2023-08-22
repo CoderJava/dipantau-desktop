@@ -9,6 +9,7 @@ import 'package:dipantau_desktop_client/feature/data/model/general/general_respo
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh_token_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/reset_password/reset_password_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
@@ -431,6 +432,82 @@ void main() {
 
         // act
         final call = remoteDataSource.verifyForgotPassword(tBody);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
+
+  group('reset password', () {
+    const tPathBody = 'reset_password_body.json';
+    final tBody = ResetPasswordBody.fromJson(
+      json.decode(
+        fixture(tPathBody),
+      ),
+    );
+    const tPathResponse = 'general_response.json';
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.post(any, data: anyNamed('data'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint resetPassword benar-benar terpanggil dengan method POST',
+          () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.resetPassword(tBody);
+
+        // assert
+        verify(mockDio.post('$baseUrl/reset-password', data: anyNamed('data')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model GeneralResponse ketika menerima respon sukses '
+          'dari endpoint',
+          () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.resetPassword(tBody);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+          () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.post(any, data: anyNamed('data'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.resetPassword(tBody);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));
