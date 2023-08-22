@@ -26,6 +26,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_image/bulk_create_track_image.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/delete_track_user/delete_track_user.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/forgot_password/forgot_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_member/get_all_member.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_kv_setting/get_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
@@ -34,10 +35,12 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/set_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/verify_forgot_password/verify_forgot_password.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
@@ -153,6 +156,9 @@ void init() {
   sl.registerLazySingleton(() => SetKvSetting(repository: sl()));
   sl.registerLazySingleton(() => SendAppVersion(repository: sl()));
   sl.registerLazySingleton(() => DeleteTrackUser(repository: sl()));
+  sl.registerLazySingleton(() => ForgotPassword(repository: sl()));
+  sl.registerLazySingleton(() => VerifyForgotPassword(repository: sl()));
+  sl.registerLazySingleton(() => ResetPassword(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
