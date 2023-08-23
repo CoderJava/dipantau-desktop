@@ -49,6 +49,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bl
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screenshot/report_screenshot_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/reset_password/reset_password_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/setting_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sync_manual/sync_manual_bloc.dart';
@@ -144,6 +145,12 @@ void init() {
       helper: sl(),
       forgotPassword: sl(),
       verifyForgotPassword: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => ResetPasswordBloc(
+      helper: sl(),
+      resetPassword: sl(),
     ),
   );
 
