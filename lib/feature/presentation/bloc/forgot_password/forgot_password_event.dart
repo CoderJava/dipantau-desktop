@@ -12,3 +12,14 @@ class SubmitForgotPasswordEvent extends ForgotPasswordEvent {
     return 'SubmitForgotPasswordEvent{body: $body}';
   }
 }
+
+class SubmitVerifyForgotPasswordEvent extends ForgotPasswordEvent {
+  final VerifyForgotPasswordBody body;
+
+  SubmitVerifyForgotPasswordEvent({required this.body});
+
+  @override
+  String toString() {
+    return 'SubmitVerifyForgotPasswordEvent{body: $body}';
+  }
+}

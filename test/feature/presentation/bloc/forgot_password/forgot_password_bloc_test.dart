@@ -4,7 +4,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/feature/data/model/forgot_password/forgot_password_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/forgot_password/forgot_password.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/verify_forgot_password/verify_forgot_password.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/forgot_password/forgot_password_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -16,15 +18,18 @@ void main() {
   late ForgotPasswordBloc bloc;
   late MockHelper mockHelper;
   late MockForgotPassword mockForgotPassword;
+  late MockVerifyForgotPassword mockVerifyForgotPassword;
 
   const errorMessage = 'testErrorMessage';
 
   setUp(() {
     mockHelper = MockHelper();
     mockForgotPassword = MockForgotPassword();
+    mockVerifyForgotPassword = MockVerifyForgotPassword();
     bloc = ForgotPasswordBloc(
       helper: mockHelper,
       forgotPassword: mockForgotPassword,
+      verifyForgotPassword: mockVerifyForgotPassword,
     );
   });
 
@@ -130,6 +135,101 @@ void main() {
       ],
       verify: (_) {
         verify(mockForgotPassword(params));
+      },
+    );
+  });
+
+  group('submit verify forgot password', () {
+    final body = VerifyForgotPasswordBody.fromJson(
+      json.decode(
+        fixture('verify_forgot_password_body.json'),
+      ),
+    );
+    final params = ParamsVerifyForgotPassword(body: body);
+    final event = SubmitVerifyForgotPasswordEvent(body: body);
+
+    blocTest(
+      'pastikan emit [LoadingForgotPasswordState, SuccessVerifyForgotPasswordState] ketika terima event '
+      'SubmitVerifyForgotPasswordEvent dengan proses berhasil',
+      build: () {
+        final response = GeneralResponse.fromJson(
+          json.decode(
+            fixture('general_response.json'),
+          ),
+        );
+        final result = (failure: null, response: response);
+        when(mockVerifyForgotPassword(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ForgotPasswordBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingForgotPasswordState>(),
+        isA<SuccessVerifyForgotPasswordState>(),
+      ],
+      verify: (_) {
+        verify(mockVerifyForgotPassword(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingForgotPasswordState, FailureForgotPasswordState] ketika terima event '
+      'SubmitVerifyForgotPasswordEvent dengan proses gagal dari endpoint',
+      build: () {
+        final result = (failure: ServerFailure(errorMessage), response: null);
+        when(mockVerifyForgotPassword(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ForgotPasswordBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingForgotPasswordState>(),
+        isA<FailureForgotPasswordState>(),
+      ],
+      verify: (_) {
+        verify(mockVerifyForgotPassword(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingForgotPasswordState, FailureForgotPasswordState] ketika terima event '
+      'SubmitVerifyForgotPasswordEvent dengan kondisi internet tidak terhubung ketika hit endpoint',
+      build: () {
+        final result = (failure: ConnectionFailure(), response: null);
+        when(mockVerifyForgotPassword(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ForgotPasswordBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingForgotPasswordState>(),
+        isA<FailureForgotPasswordState>(),
+      ],
+      verify: (_) {
+        verify(mockVerifyForgotPassword(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingForgotPasswordState, FailureForgotPasswordState] ketika terima event '
+      'SubmitVerifyForgotPasswordEvent dengan proses gagal parsing respon JSON dari endpoint',
+      build: () {
+        final result = (failure: ParsingFailure(errorMessage), response: null);
+        when(mockVerifyForgotPassword(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ForgotPasswordBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingForgotPasswordState>(),
+        isA<FailureForgotPasswordState>(),
+      ],
+      verify: (_) {
+        verify(mockVerifyForgotPassword(params));
       },
     );
   });

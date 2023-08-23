@@ -143,6 +143,7 @@ void init() {
     () => ForgotPasswordBloc(
       helper: sl(),
       forgotPassword: sl(),
+      verifyForgotPassword: sl(),
     ),
   );
 

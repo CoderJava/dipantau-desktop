@@ -27,3 +27,16 @@ class SuccessForgotPasswordState extends ForgotPasswordState {
     return 'SuccessForgotPasswordState{email: $email}';
   }
 }
+
+class SuccessVerifyForgotPasswordState extends ForgotPasswordState {
+  final String code;
+
+  SuccessVerifyForgotPasswordState({
+    required this.code,
+  });
+
+  @override
+  String toString() {
+    return 'SuccessVerifyForgotPasswordState{code: $code}';
+  }
+}

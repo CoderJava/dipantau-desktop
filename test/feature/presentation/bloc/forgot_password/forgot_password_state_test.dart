@@ -31,4 +31,19 @@ void main() {
       },
     );
   });
+
+  group('SuccessVerifyForgotPasswordState', () {
+    final state = SuccessVerifyForgotPasswordState(code: 'testCode');
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          state.toString(),
+          'SuccessVerifyForgotPasswordState{code: ${state.code}}',
+        );
+      },
+    );
+  });
 }
