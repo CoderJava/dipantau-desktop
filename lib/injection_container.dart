@@ -43,6 +43,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/updat
 import 'package:dipantau_desktop_client/feature/domain/usecase/verify_forgot_password/verify_forgot_password.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/forgot_password/forgot_password_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
@@ -136,6 +137,12 @@ void init() {
       helper: sl(),
       bulkCreateTrackData: sl(),
       bulkCreateTrackImage: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => ForgotPasswordBloc(
+      helper: sl(),
+      forgotPassword: sl(),
     ),
   );
 
