@@ -3,6 +3,7 @@ import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/login/login_body.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/forgot_password/forgot_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
@@ -76,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 24),
                       buildWidgetTextFieldPassword(),
                       const SizedBox(height: 8),
-                      // buildWidgetResetPassword(),
+                      buildWidgetForgotPassword(),
                       const SizedBox(height: 24),
                       buildWidgetButtonSignIn(),
                       const SizedBox(height: 24),
@@ -111,22 +112,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // TODO: Buat fitur forgot password
-  Row buildWidgetResetPassword() {
+  Row buildWidgetForgotPassword() {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         InkWell(
           onTap: () {
-            /*final email = controllerEmail.text.trim();
+            final email = controllerEmail.text.trim();
             context.pushNamed(
-              ResetPasswordPage.routeName,
+              ForgotPasswordPage.routeName,
               queryParams: {
-                'email': email,
+                ForgotPasswordPage.parameterEmail: email,
               },
-            );*/
-            widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+            );
           },
           child: Text(
             'forgot_password'.tr(),
