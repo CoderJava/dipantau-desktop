@@ -33,11 +33,11 @@
   "user_not_found": "Sorry... We could not found your account",
   "wrong_password_login": "Incorrect email or password",
   "please_verify_your_email": "Please verify your email",
-  "subtitle_reset_password": "No worries, we'll send you reset instructions",
+  "subtitle_forgot_password": "No worries, we'll send you reset instructions",
   "reset_password": "Reset Password",
   "reset_password_failed": "Reset password failed",
   "reset_password_successfully": "Reset Password Successfully",
-  "subtitle_reset_password_successfully": "We sent a password reset link to",
+  "subtitle_reset_password_successfully": "Awesome. You've successfully reset your password.",
   "choose_project": "Choose project",
   "tasks": {
     "zero": "Task",
@@ -236,5 +236,15 @@
   "track_id_invalid": "Invalid track ID",
   "deleting_track": "Please wait a moment track data is\nbeing deleted",
   "dismiss": "Dismiss",
-  "track_data_successfully_deleted": "Track data successfully deleted"
+  "track_data_successfully_deleted": "Track data successfully deleted",
+  "continue": "Continue",
+  "verify": "Verify",
+  "verify_forgot_password": "Verify Forgot Password",
+  "subtitle_verify_forgot_password": "Enter the forgot password code we have sent to:",
+  "code": "Code",
+  "enter_a_code": "Enter a code",
+  "new_password": "New Password",
+  "subtitle_new_password": "Please create a new password that you don't use on any other site",
+  "change": "Change",
+  "create_new_password": "Create new password"
 }
