@@ -3,19 +3,16 @@ import 'package:dipantau_desktop_client/feature/presentation/page/login/login_pa
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_icon_circle.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ResetPasswordSuccessPage extends StatelessWidget {
   static const routePath = '/reset-password-success';
   static const routeName = 'reset-password-success';
 
-  final String email;
-
   ResetPasswordSuccessPage({
     Key? key,
-    required this.email,
   }) : super(key: key);
 
   final helper = sl<Helper>();
@@ -42,15 +39,9 @@ class ResetPasswordSuccessPage extends StatelessWidget {
               Text(
                 'subtitle_reset_password_successfully'.tr(),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey,
-                ),
+                      color: Colors.grey,
+                    ),
                 textAlign: TextAlign.center,
-              ),
-              Text(
-                email,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
               ),
               const SizedBox(height: 24),
               WidgetPrimaryButton(

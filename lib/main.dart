@@ -11,6 +11,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/app
 import 'package:dipantau_desktop_client/feature/presentation/page/add_member/add_edit_member_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/edit_profile/edit_profile_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/error/error_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/forgot_password/forgot_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
@@ -25,6 +26,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/setting_discor
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/verify_forgot_password/verify_forgot_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
@@ -166,18 +168,16 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       GoRoute(
-        path: ResetPasswordPage.routePath,
-        name: ResetPasswordPage.routeName,
-        builder: (context, state) => ResetPasswordPage(
+        path: ForgotPasswordPage.routePath,
+        name: ForgotPasswordPage.routeName,
+        builder: (context, state) => ForgotPasswordPage(
           email: state.queryParams['email'],
         ),
       ),
       GoRoute(
         path: ResetPasswordSuccessPage.routePath,
         name: ResetPasswordSuccessPage.routeName,
-        builder: (context, state) => ResetPasswordSuccessPage(
-          email: state.queryParams['email'] ?? '',
-        ),
+        builder: (context, state) => ResetPasswordSuccessPage(),
       ),
       GoRoute(
         path: SetupCredentialPage.routePath,
@@ -248,6 +248,28 @@ class _MyAppState extends State<MyApp> {
         path: EditProfilePage.routePath,
         name: EditProfilePage.routeName,
         builder: (context, state) => const EditProfilePage(),
+      ),
+      GoRoute(
+        path: VerifyForgotPasswordPage.routePath,
+        name: VerifyForgotPasswordPage.routeName,
+        builder: (context, state) {
+          final arguments = state.extra as Map<String, dynamic>?;
+          final email = arguments != null && arguments.containsKey(VerifyForgotPasswordPage.parameterEmail)
+              ? arguments[VerifyForgotPasswordPage.parameterEmail] as String
+              : '';
+          return VerifyForgotPasswordPage(email: email);
+        },
+      ),
+      GoRoute(
+        path: ResetPasswordPage.routePath,
+        name: ResetPasswordPage.routeName,
+        builder: (context, state) {
+          final arguments = state.extra as Map<String, dynamic>?;
+          final code = arguments != null && arguments.containsKey(ResetPasswordPage.parameterCode)
+              ? arguments[ResetPasswordPage.parameterCode] as String
+              : '';
+          return ResetPasswordPage(code: code);
+        },
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
