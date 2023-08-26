@@ -883,12 +883,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               borderRadius: BorderRadius.circular(999),
               onTap: () {
                 context.pushNamed<bool?>(ReportScreenshotPage.routeName).then((value) async {
-                  if (value != null && value) {
+                  // TODO: handle refresh data home setelah hapus track
+                  /*if (value != null && value) {
                     setState(() => isLoading = true);
                     isTimerStartTemp = isTimerStart;
                     stopTimerFromSystemTray();
                     doLoadDataTask(isAutoStart: isTimerStartTemp);
-                  }
+                  }*/
                 });
               },
               child: Padding(
