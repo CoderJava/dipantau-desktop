@@ -617,7 +617,7 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                           ),
                         ),
                         buildWidgetCountScreen(heightImage, listFiles),
-                        buildWidgetDeleteTask(heightImage, element.id),
+                        buildWidgetDeleteTask(heightImage, element),
                       ],
                     ),
                   ),
@@ -789,11 +789,14 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
     );
   }
 
-  Widget buildWidgetDeleteTask(double heightImage, int? trackId) {
-    if (userRole != null && userRole == UserRole.employee) {
+  Widget buildWidgetDeleteTask(double heightImage, ItemTrackUserResponse element) {
+    if (userRole == UserRole.employee) {
+      return Container();
+    } else if (userRole == UserRole.admin && userId != element.userId.toString()) {
       return Container();
     }
 
+    final trackId = element.id;
     return Align(
       alignment: Alignment.center,
       child: Padding(
