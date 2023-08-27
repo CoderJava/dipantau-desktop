@@ -716,9 +716,13 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
 
   Widget buildWidgetActivity(int activity, int durationInSeconds) {
     final duration = helper.convertSecondToHms(durationInSeconds);
+    final durationHour = duration.hour;
     final durationMinute = duration.minute;
     final durationSecond = duration.second;
     final listStrDuration = <String>[];
+    if (durationHour > 0) {
+      listStrDuration.add('alias_hour_n'.tr(args: [durationHour.toString()]));
+    }
     if (durationMinute > 0) {
       listStrDuration.add('alias_minute_n'.tr(args: [durationMinute.toString()]));
     }
