@@ -15,6 +15,7 @@ import 'package:dipantau_desktop_client/feature/domain/repository/track/track_re
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_data/bulk_create_track_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_image/bulk_create_track_image.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/create_manual_track/create_manual_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/delete_track_user/delete_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/forgot_password/forgot_password.dart';
@@ -72,5 +73,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<ForgotPassword>(),
   MockSpec<VerifyForgotPassword>(),
   MockSpec<ResetPassword>(),
+  MockSpec<CreateManualTrack>(),
 ])
 void main() {}
