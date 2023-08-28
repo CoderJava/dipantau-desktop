@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_cre
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/manual_create_track/manual_create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -493,6 +494,81 @@ void main() {
 
         // act
         final call = remoteDataSource.deleteTrackUser(trackId);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
+
+  group('createManualTrack', () {
+    final tBody = ManualCreateTrackBody.fromJson(
+      json.decode(
+        fixture('manual_create_track_body.json'),
+      ),
+    );
+    const tPathResponse = 'general_response.json';
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.post(any, data: anyNamed('data'), options: anyNamed('options'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint createManualTrack benar-benar terpanggil dengan method POST',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.createManualTrack(tBody);
+
+        // assert
+        verify(mockDio.post('$baseUrl/manual', data: anyNamed('data'), options: anyNamed('options')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model GeneralResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.createManualTrack(tBody);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.post(any, data: anyNamed('data'), options: anyNamed('options'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.createManualTrack(tBody);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));
