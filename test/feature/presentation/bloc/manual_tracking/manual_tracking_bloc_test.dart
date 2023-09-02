@@ -4,7 +4,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/manual_create_track/manual_create_track_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project_task/project_task_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_manual_track/create_manual_track.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_project_task_by_user_id/get_project_task_by_user_id.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/manual_tracking/manual_tracking_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -16,13 +18,16 @@ void main() {
   late ManualTrackingBloc bloc;
   late MockHelper mockHelper;
   late MockCreateManualTrack mockCreateManualTrack;
+  late MockGetProjectTaskByUserId mockGetProjectTaskByUserId;
 
   setUp(() {
     mockHelper = MockHelper();
     mockCreateManualTrack = MockCreateManualTrack();
+    mockGetProjectTaskByUserId = MockGetProjectTaskByUserId();
     bloc = ManualTrackingBloc(
       helper: mockHelper,
       createManualTrack: mockCreateManualTrack,
+      getProjectTaskByUserId: mockGetProjectTaskByUserId,
     );
   });
 
@@ -130,6 +135,100 @@ void main() {
       ],
       verify: (_) {
         verify(mockCreateManualTrack(params));
+      },
+    );
+  });
+
+  group('load data project task', () {
+    const userId = 'userId';
+    final params = ParamsGetProjectTaskByUserId(userId: userId);
+    final event = LoadDataProjectTaskManualTrackingEvent(userId: userId);
+
+    blocTest(
+      'pastikan emit [LoadingManualTrackingState, SuccessLoadDataProjectTaskManualTrackingState] ketika terima event '
+      'LoadDataProjectTaskManualTrackingEvent dengan proses berhasil',
+      build: () {
+        final response = ProjectTaskResponse.fromJson(
+          json.decode(
+            fixture('project_task_response.json'),
+          ),
+        );
+        final result = (failure: null, response: response);
+        when(mockGetProjectTaskByUserId(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ManualTrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingManualTrackingState>(),
+        isA<SuccessLoadDataProjectTaskManualTrackingState>(),
+      ],
+      verify: (_) async {
+        verify(mockGetProjectTaskByUserId(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingManualTrackingState, FailureCenterManualTrackingState] ketika terima event '
+      'LoadDataProjectTaskManualTrackingEvent dengan proses gagal dari endpoint',
+      build: () {
+        final failure = ServerFailure('errorMessage');
+        final result = (failure: failure, response: null);
+        when(mockGetProjectTaskByUserId(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ManualTrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingManualTrackingState>(),
+        isA<FailureCenterManualTrackingState>(),
+      ],
+      verify: (_) async {
+        verify(mockGetProjectTaskByUserId(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingManualTrackingState, FailureCenterManualTrackingState] ketika terima event '
+      'LoadDataProjectTaskManualTrackingEvent dengan kondisi internet tidak terhubung',
+      build: () {
+        final failure = ConnectionFailure();
+        final result = (failure: failure, response: null);
+        when(mockGetProjectTaskByUserId(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ManualTrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingManualTrackingState>(),
+        isA<FailureCenterManualTrackingState>(),
+      ],
+      verify: (_) async {
+        verify(mockGetProjectTaskByUserId(params));
+      },
+    );
+
+    blocTest(
+      'pastikan emit [LoadingManualTrackingState, FailureCenterManualTrackingState] ketika terima event '
+      'LoadDataProjectTaskManualTrackingEvent dengan proses gagal parsing respon JSON dari endpoint',
+      build: () {
+        final failure = ParsingFailure('errorMessage');
+        final result = (failure: failure, response: null);
+        when(mockGetProjectTaskByUserId(any)).thenAnswer((_) async => result);
+        return bloc;
+      },
+      act: (ManualTrackingBloc bloc) {
+        return bloc.add(event);
+      },
+      expect: () => [
+        isA<LoadingManualTrackingState>(),
+        isA<FailureCenterManualTrackingState>(),
+      ],
+      verify: (_) async {
+        verify(mockGetProjectTaskByUserId(params));
       },
     );
   });

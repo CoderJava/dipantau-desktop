@@ -16,4 +16,19 @@ void main() {
       },
     );
   });
+
+  group('FailureCenterManualTrackingState', () {
+    final state = FailureCenterManualTrackingState(errorMessage: 'errorMessage');
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          state.toString(),
+          'FailureCenterManualTrackingState{errorMessage: ${state.errorMessage}}',
+        );
+      },
+    );
+  });
 }

@@ -23,6 +23,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_member/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_kv_setting/get_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_project_task_by_user_id/get_project_task_by_user_id.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/get_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
@@ -74,5 +75,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<VerifyForgotPassword>(),
   MockSpec<ResetPassword>(),
   MockSpec<CreateManualTrack>(),
+  MockSpec<GetProjectTaskByUserId>(),
 ])
 void main() {}

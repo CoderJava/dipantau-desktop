@@ -17,4 +17,28 @@ class FailureManualTrackingState extends ManualTrackingState {
   }
 }
 
+class FailureCenterManualTrackingState extends ManualTrackingState {
+  final String errorMessage;
+
+  FailureCenterManualTrackingState({required this.errorMessage});
+
+  @override
+  String toString() {
+    return 'FailureCenterManualTrackingState{errorMessage: $errorMessage}';
+  }
+}
+
 class SuccessCreateManualTrackingState extends ManualTrackingState {}
+
+class SuccessLoadDataProjectTaskManualTrackingState extends ManualTrackingState {
+  final ProjectTaskResponse response;
+
+  SuccessLoadDataProjectTaskManualTrackingState({
+    required this.response,
+  });
+
+  @override
+  String toString() {
+    return 'SuccessLoadDataProjectTaskManualTrackingState{response: $response}';
+  }
+}

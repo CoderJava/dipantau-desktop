@@ -26,4 +26,19 @@ void main() {
       },
     );
   });
+
+  group('LoadDataProjectTaskManualTrackingEvent', () {
+    final event = LoadDataProjectTaskManualTrackingEvent(userId: 'userId');
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          event.toString(),
+          'LoadDataProjectTaskManualTrackingEvent{userId: ${event.userId}}',
+        );
+      },
+    );
+  });
 }

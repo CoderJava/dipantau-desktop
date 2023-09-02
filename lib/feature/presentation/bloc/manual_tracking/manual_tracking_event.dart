@@ -14,3 +14,16 @@ class CreateManualTrackingEvent extends ManualTrackingEvent {
     return 'CreateManualTrackingEvent{body: $body}';
   }
 }
+
+class LoadDataProjectTaskManualTrackingEvent extends ManualTrackingEvent {
+  final String userId;
+
+  LoadDataProjectTaskManualTrackingEvent({
+    required this.userId,
+  });
+
+  @override
+  String toString() {
+    return 'LoadDataProjectTaskManualTrackingEvent{userId: $userId}';
+  }
+}
