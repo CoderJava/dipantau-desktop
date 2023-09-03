@@ -135,6 +135,9 @@ dependencies:
   # A datetime picker package with option to use a single datetime picker or a datetime range picker.
   omni_datetime_picker: ^1.0.8
 
+  # A lightweight library for parsing, traversing, querying, transforming and building XML documents.
+  xml: ^6.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
