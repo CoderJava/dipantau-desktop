@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:xml/xml.dart';
 
 class WidgetHelper {
   void showSnackBar(BuildContext context, String message) {
@@ -168,9 +170,9 @@ class WidgetHelper {
                   ],
                 ),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ],
           ),
@@ -208,5 +210,26 @@ class WidgetHelper {
     await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
     return file;
+  }
+
+  Future<bool> isNewUpdateAvailable() async {
+    final response =
+        await Dio().get('https://raw.githubusercontent.com/CoderJava/dipantau-desktop/main/dist/appcast.xml');
+    final data = response.data;
+    final document = XmlDocument.parse(data);
+    final sparkleVersion = document.findAllElements('sparkle:version');
+    if (sparkleVersion.isNotEmpty) {
+      final element = sparkleVersion.first;
+      final versionText = element.innerText;
+      final newVersion = int.tryParse(versionText);
+      if (newVersion != null) {
+        final strBuildNumberLocal = packageInfo.buildNumber;
+        final buildNumberLocal = int.tryParse(strBuildNumberLocal);
+        if (buildNumberLocal != null) {
+          return newVersion > buildNumberLocal;
+        }
+      }
+    }
+    return false;
   }
 }
