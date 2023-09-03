@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:auto_updater/auto_updater.dart';
 import 'package:dipantau_desktop_client/core/network/network_info.dart';
 import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
@@ -76,6 +77,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final listTrackLocal = <Track>[];
   final listPathStartScreenshots = <String?>[];
   final networkInfo = sl<NetworkInfo>();
+  final valueNotifierShowBannerUpdate = ValueNotifier(false);
 
   var isWindowVisible = true;
   var userId = '';
@@ -130,6 +132,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       }
       setupCronTimer();
       doLoadDataTask();
+      final isNewUpdateAvailable = await widgetHelper.isNewUpdateAvailable();
+      valueNotifierShowBannerUpdate.value = isNewUpdateAvailable;
     });
     super.initState();
   }
@@ -506,7 +510,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
+          onPressed: () async {
             context.pushNamed(ManualTrackingPage.routeName).then((value) {
               // TODO: refresh data home jika add manual tracking-nya pada hari ini dan di project yang sama
             });
@@ -555,6 +559,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          buildWidgetBannerUpdate(),
           buildWidgetFieldProject(),
           const SizedBox(height: 24),
           buildWidgetTimer(),
@@ -1486,5 +1491,69 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         ),
       );
     }
+  }
+
+  Widget buildWidgetBannerUpdate() {
+    return ValueListenableBuilder(
+      valueListenable: valueNotifierShowBannerUpdate,
+      builder: (BuildContext context, bool isShow, _) {
+        if (!isShow) {
+          return Container();
+        }
+        return Column(
+          children: [
+            Material(
+              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  const feedURL = autoUpdaterUrl;
+                  autoUpdater.setFeedURL(feedURL);
+                  autoUpdater.checkForUpdates();
+                  valueNotifierShowBannerUpdate.value = false;
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'title_new_update_available'.tr(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Text(
+                                'description_new_update_available'.tr(),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          valueNotifierShowBannerUpdate.value = false;
+                        },
+                        icon: const Icon(Icons.clear),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        );
+      },
+    );
   }
 }
