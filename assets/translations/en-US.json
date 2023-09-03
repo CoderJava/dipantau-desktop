@@ -265,5 +265,7 @@
   "set_start_and_finish_time": "Set start and finish time",
   "duration": "Duration",
   "please_set_start_time": "Please set start time",
-  "please_set_finish_time": "Please set finish time"
+  "please_set_finish_time": "Please set finish time",
+  "title_new_update_available": "New update available",
+  "description_new_update_available": "Click here to download latest version"
 }
