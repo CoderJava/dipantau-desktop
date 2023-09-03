@@ -677,6 +677,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  omni_datetime_picker:
+    dependency: "direct main"
+    description:
+      name: omni_datetime_picker
+      sha256: "4f58fb64f1295cb4be1c7b2a78a4d23674c6afa834d366115b5f0ef557ac051d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
   package_config:
     dependency: transitive
     description:
