@@ -822,11 +822,36 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                     return;
                   }
 
-                  trackingBloc.add(
-                    DeleteTrackUserTrackingEvent(
-                      trackId: trackId,
-                    ),
-                  );
+                  showDialog<bool?>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('title_delete_track'.tr()),
+                        content: Text('content_delete_track'.tr()),
+                        actions: [
+                          TextButton(
+                            onPressed: () => context.pop(false),
+                            child: Text('cancel'.tr()),
+                          ),
+                          TextButton(
+                            onPressed: () => context.pop(true),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.red,
+                            ),
+                            child: Text('delete'.tr()),
+                          ),
+                        ],
+                      );
+                    },
+                  ).then((value) {
+                    if (value != null && value) {
+                      trackingBloc.add(
+                        DeleteTrackUserTrackingEvent(
+                          trackId: trackId,
+                        ),
+                      );
+                    }
+                  });
                 },
                 child: const Padding(
                   padding: EdgeInsets.all(8.0),
