@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_cre
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/manual_create_track/manual_create_track_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user_lite/track_user_lite_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
@@ -710,5 +711,97 @@ void main() {
     );
 
     testDisconnected2(() => repository.deleteTrackUser(trackId));
+  });
+
+  group('createManualTrack', () {
+    final tBody = ManualCreateTrackBody.fromJson(
+      json.decode(
+        fixture('manual_create_track_body.json'),
+      ),
+    );
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.createManualTrack(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.createManualTrack(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.createManualTrack(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.createManualTrack(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.createManualTrack(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.createManualTrack(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.createManualTrack(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.createManualTrack(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.createManualTrack(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.createManualTrack(any),
+      () => repository.createManualTrack(tBody),
+      () => mockRemoteDataSource.createManualTrack(tBody),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.createManualTrack(any),
+      () => repository.createManualTrack(tBody),
+      () => mockRemoteDataSource.createManualTrack(tBody),
+    );
+
+    testDisconnected2(() => repository.createManualTrack(tBody));
   });
 }

@@ -23,6 +23,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/user_profile/user_profile_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/edit_profile/edit_profile_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/manual_tracking/manual_tracking_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/report_screenshot/report_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
@@ -364,143 +365,153 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider<HomeBloc>(
-            create: (context) => homeBloc,
-          ),
-          BlocProvider<TrackingBloc>(
-            create: (context) => trackingBloc,
-          ),
-          BlocProvider<UserProfileBloc>(
-            create: (context) => userProfileBloc,
-          ),
-          BlocProvider<CronTrackingBloc>(
-            create: (context) => cronTrackingBloc,
-          ),
-        ],
-        child: MultiBlocListener(
-          listeners: [
-            BlocListener<HomeBloc, HomeState>(
-              listener: (context, state) async {
-                isLoading = state is LoadingHomeState;
-                if (state is FailureHomeState) {
-                  final errorMessage = state.errorMessage;
-                  if (errorMessage.contains('401')) {
-                    widgetHelper.showDialog401(context);
-                    return;
-                  }
-                } else if (state is SuccessLoadDataHomeState) {
-                  isTimerStartTemp = false;
-                  trackUserLite = state.trackUserLiteResponse;
-                  valueNotifierTotalTracked.value = trackUserLite?.trackedInSeconds ?? 0;
-
-                  if (listTrackLocal.isNotEmpty) {
-                    var totalTrackedFromLocal = 0;
-                    for (final element in listTrackLocal) {
-                      totalTrackedFromLocal += element.duration;
-                    }
-                    valueNotifierTotalTracked.value += totalTrackedFromLocal;
-                  }
-
-                  final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
-                  setTrayTitle(title: strTotalTrackingTime);
-
-                  listTrackTask.clear();
-                  final listTasks = trackUserLite?.listTasks ?? [];
-                  if (listTasks.isNotEmpty) {
-                    listTrackTask.addAll(
-                      listTasks.where((element) {
-                        return element.id != null && element.name != null;
-                      }).map((e) {
-                        return TrackTask(
-                          id: e.id!,
-                          name: e.name!,
-                          trackedInSeconds: 0,
-                        );
-                      }),
-                    );
-                  }
-
-                  final listTracks = trackUserLite?.listTracks ?? [];
-                  for (var index = 0; index < listTrackTask.length; index++) {
-                    final element = listTrackTask[index];
-                    final id = element.id;
-                    var totalTrackedInSeconds = 0;
-                    final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == id);
-                    for (final itemFilteredTrack in filteredTracks) {
-                      totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
-                    }
-                    final filteredTracksLocal = listTrackLocal.where((e) => e.taskId == id);
-                    for (final itemFilteredTrackLocal in filteredTracksLocal) {
-                      totalTrackedInSeconds += itemFilteredTrackLocal.duration;
-                    }
-                    listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
-                  }
-                  setTrayContextMenu();
-
-                  final isAutoStart = state.isAutoStart;
-                  if (isAutoStart) {
-                    autoStartFromSleep();
-                  }
-                }
-              },
+      body: Scaffold(
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<HomeBloc>(
+              create: (context) => homeBloc,
             ),
-            BlocListener<TrackingBloc, TrackingState>(
-              listener: (context, state) {
-                if (state is FailureTrackingState) {
-                  /* Nothing to do in here */
-                } else if (state is SuccessCreateTimeTrackingState) {
-                  final files = state.files;
-                  for (final path in files) {
-                    final file = File(path);
-                    if (file.existsSync()) {
-                      file.deleteSync();
+            BlocProvider<TrackingBloc>(
+              create: (context) => trackingBloc,
+            ),
+            BlocProvider<UserProfileBloc>(
+              create: (context) => userProfileBloc,
+            ),
+            BlocProvider<CronTrackingBloc>(
+              create: (context) => cronTrackingBloc,
+            ),
+          ],
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<HomeBloc, HomeState>(
+                listener: (context, state) async {
+                  isLoading = state is LoadingHomeState;
+                  if (state is FailureHomeState) {
+                    final errorMessage = state.errorMessage;
+                    if (errorMessage.contains('401')) {
+                      widgetHelper.showDialog401(context);
+                      return;
+                    }
+                  } else if (state is SuccessLoadDataHomeState) {
+                    isTimerStartTemp = false;
+                    trackUserLite = state.trackUserLiteResponse;
+                    valueNotifierTotalTracked.value = trackUserLite?.trackedInSeconds ?? 0;
+
+                    if (listTrackLocal.isNotEmpty) {
+                      var totalTrackedFromLocal = 0;
+                      for (final element in listTrackLocal) {
+                        totalTrackedFromLocal += element.duration;
+                      }
+                      valueNotifierTotalTracked.value += totalTrackedFromLocal;
+                    }
+
+                    final strTotalTrackingTime = helper.convertTrackingTimeToString(valueNotifierTotalTracked.value);
+                    setTrayTitle(title: strTotalTrackingTime);
+
+                    listTrackTask.clear();
+                    final listTasks = trackUserLite?.listTasks ?? [];
+                    if (listTasks.isNotEmpty) {
+                      listTrackTask.addAll(
+                        listTasks.where((element) {
+                          return element.id != null && element.name != null;
+                        }).map((e) {
+                          return TrackTask(
+                            id: e.id!,
+                            name: e.name!,
+                            trackedInSeconds: 0,
+                          );
+                        }),
+                      );
+                    }
+
+                    final listTracks = trackUserLite?.listTracks ?? [];
+                    for (var index = 0; index < listTrackTask.length; index++) {
+                      final element = listTrackTask[index];
+                      final id = element.id;
+                      var totalTrackedInSeconds = 0;
+                      final filteredTracks = listTracks.where((e) => e.taskId != null && e.taskId == id);
+                      for (final itemFilteredTrack in filteredTracks) {
+                        totalTrackedInSeconds += itemFilteredTrack.trackedInSeconds ?? 0;
+                      }
+                      final filteredTracksLocal = listTrackLocal.where((e) => e.taskId == id);
+                      for (final itemFilteredTrackLocal in filteredTracksLocal) {
+                        totalTrackedInSeconds += itemFilteredTrackLocal.duration;
+                      }
+                      listTrackTask[index].trackedInSeconds = totalTrackedInSeconds;
+                    }
+                    setTrayContextMenu();
+
+                    final isAutoStart = state.isAutoStart;
+                    if (isAutoStart) {
+                      autoStartFromSleep();
                     }
                   }
-                  final trackEntityId = state.trackEntityId;
-                  trackDao.deleteTrackById(trackEntityId);
-                }
-              },
-            ),
-            BlocListener<UserProfileBloc, UserProfileState>(
-              listener: (context, state) {
-                if (state is SuccessLoadDataUserProfileState) {
-                  final response = state.response;
-                  final name = response.name ?? '';
-                  final userRole = response.role;
-                  sharedPreferencesManager.putString(
-                    SharedPreferencesManager.keyFullName,
-                    name,
-                  );
-                  sharedPreferencesManager.putString(
-                    SharedPreferencesManager.keyUserRole,
-                    userRole?.name ?? '',
-                  );
-                }
-              },
-            ),
-            BlocListener<CronTrackingBloc, CronTrackingState>(
-              listener: (context, state) {
-                if (state is SuccessRunCronTrackingState) {
-                  final ids = state.ids;
-                  final files = state.files;
-                  trackDao.deleteMultipleTrackByIds(ids).then((value) {
-                    for (final itemFile in files) {
-                      final file = File(itemFile);
+                },
+              ),
+              BlocListener<TrackingBloc, TrackingState>(
+                listener: (context, state) {
+                  if (state is FailureTrackingState) {
+                    /* Nothing to do in here */
+                  } else if (state is SuccessCreateTimeTrackingState) {
+                    final files = state.files;
+                    for (final path in files) {
+                      final file = File(path);
                       if (file.existsSync()) {
                         file.deleteSync();
                       }
                     }
-                  });
-                }
-              },
+                    final trackEntityId = state.trackEntityId;
+                    trackDao.deleteTrackById(trackEntityId);
+                  }
+                },
+              ),
+              BlocListener<UserProfileBloc, UserProfileState>(
+                listener: (context, state) {
+                  if (state is SuccessLoadDataUserProfileState) {
+                    final response = state.response;
+                    final name = response.name ?? '';
+                    final userRole = response.role;
+                    sharedPreferencesManager.putString(
+                      SharedPreferencesManager.keyFullName,
+                      name,
+                    );
+                    sharedPreferencesManager.putString(
+                      SharedPreferencesManager.keyUserRole,
+                      userRole?.name ?? '',
+                    );
+                  }
+                },
+              ),
+              BlocListener<CronTrackingBloc, CronTrackingState>(
+                listener: (context, state) {
+                  if (state is SuccessRunCronTrackingState) {
+                    final ids = state.ids;
+                    final files = state.files;
+                    trackDao.deleteMultipleTrackByIds(ids).then((value) {
+                      for (final itemFile in files) {
+                        final file = File(itemFile);
+                        if (file.existsSync()) {
+                          file.deleteSync();
+                        }
+                      }
+                    });
+                  }
+                },
+              ),
+            ],
+            child: SizedBox(
+              width: double.infinity,
+              child: buildWidgetBody(),
             ),
-          ],
-          child: SizedBox(
-            width: double.infinity,
-            child: buildWidgetBody(),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.pushNamed(ManualTrackingPage.routeName).then((value) {
+              // TODO: refresh data home jika add manual tracking-nya pada hari ini dan di project yang sama
+            });
+          },
+          child: const FaIcon(FontAwesomeIcons.plus),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project_task/project_task_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -100,6 +101,77 @@ void main() {
 
         // act
         final call = remoteDataSource.getProject(tUserId);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
+
+  group('getProjectTaskByUserId', () {
+    const tUserId = 'testUserId';
+    const tPathResponse = 'project_task_response.json';
+    final tResponse = ProjectTaskResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint getProjectTaskByUserId benar-benar terpanggil dengan method GET',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.getProjectTaskByUserId(tUserId);
+
+        // assert
+        verify(mockDio.get('$baseUrl/user/$tUserId/detail', options: anyNamed('options')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model ProjectTaskResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.getProjectTaskByUserId(tUserId);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.getProjectTaskByUserId(tUserId);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));

@@ -24,6 +24,7 @@ import 'package:dipantau_desktop_client/feature/domain/repository/track/track_re
 import 'package:dipantau_desktop_client/feature/domain/repository/user/user_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_data/bulk_create_track_data.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/bulk_create_track_image/bulk_create_track_image.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/create_manual_track/create_manual_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/create_track.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/delete_track_user/delete_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/forgot_password/forgot_password.dart';
@@ -31,6 +32,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_member/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_kv_setting/get_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_project_task_by_user_id/get_project_task_by_user_id.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/get_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
@@ -46,6 +48,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/
 import 'package:dipantau_desktop_client/feature/presentation/bloc/forgot_password/forgot_password_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/home/home_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/login/login_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/manual_tracking/manual_tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/member/member_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screenshot/report_screenshot_bloc.dart';
@@ -153,6 +156,13 @@ void init() {
       resetPassword: sl(),
     ),
   );
+  sl.registerFactory(
+    () => ManualTrackingBloc(
+      helper: sl(),
+      createManualTrack: sl(),
+      getProjectTaskByUserId: sl(),
+    ),
+  );
 
   // use case
   sl.registerLazySingleton(() => GetProject(repository: sl()));
@@ -174,6 +184,8 @@ void init() {
   sl.registerLazySingleton(() => ForgotPassword(repository: sl()));
   sl.registerLazySingleton(() => VerifyForgotPassword(repository: sl()));
   sl.registerLazySingleton(() => ResetPassword(repository: sl()));
+  sl.registerLazySingleton(() => CreateManualTrack(repository: sl()));
+  sl.registerLazySingleton(() => GetProjectTaskByUserId(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(

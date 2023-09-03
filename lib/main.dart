@@ -14,6 +14,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/error/error_pa
 import 'package:dipantau_desktop_client/feature/presentation/page/forgot_password/forgot_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/login/login_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/manual_tracking/manual_tracking_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/register/register_page.dart';
@@ -269,6 +270,13 @@ class _MyAppState extends State<MyApp> {
               ? arguments[ResetPasswordPage.parameterCode] as String
               : '';
           return ResetPasswordPage(code: code);
+        },
+      ),
+      GoRoute(
+        path: ManualTrackingPage.routePath,
+        name: ManualTrackingPage.routeName,
+        builder: (context, state) {
+          return const ManualTrackingPage();
         },
       ),
     ],

@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/project_task/project_task_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/project/project_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -52,6 +53,23 @@ void main() {
     );
   }
 
+  void testDisconnected2(Function endpointInvoke) {
+    test(
+      'pastikan mengembalikan objek ConnectionFailure ketika device tidak terhubung ke internet',
+      () async {
+        // arrange
+        setUpMockNetworkDisconnected();
+
+        // act
+        final result = await endpointInvoke.call();
+
+        // assert
+        verify(mockNetworkInfo.isConnected);
+        expect(result.failure, ConnectionFailure());
+      },
+    );
+  }
+
   void testServerFailureString(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ServerFailure ketika EmployeeRepository menerima respon kegagalan '
@@ -81,6 +99,35 @@ void main() {
     );
   }
 
+  void testServerFailureString2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika repository menerima respon kegagalan '
+      'dari endpoint dengan respon data html atau string',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(whenInvoke.call()).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: 'testDataError',
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await actInvoke.call();
+
+        // assert
+        verify(verifyInvoke.call());
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+  }
+
   void testParsingFailure(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
     test(
       'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
@@ -96,6 +143,25 @@ void main() {
         // assert
         verify(verifyInvoke.call());
         expect(result, Left(ParsingFailure(TypeError().toString())));
+      },
+    );
+  }
+
+  void testParsingFailure2(Function whenInvoke, Function actInvoke, Function verifyInvoke) {
+    test(
+      'pastikan mengembalikan objek ParsingFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(whenInvoke.call()).thenThrow(TypeError());
+
+        // act
+        final result = await actInvoke.call();
+
+        // assert
+        verify(verifyInvoke.call());
+        expect(result.failure, ParsingFailure(TypeError().toString()));
       },
     );
   }
@@ -186,5 +252,93 @@ void main() {
     );
 
     testDisconnected(() => repository.getProject(tUserId));
+  });
+
+  group('getProjectTaskByUserId', () {
+    const userId = 'userId';
+    final tResponse = ProjectTaskResponse.fromJson(
+      json.decode(
+        fixture('project_task_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model ProjectTaskResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getProjectTaskByUserId(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.getProjectTaskByUserId(userId);
+
+        // assert
+        verify(mockRemoteDataSource.getProjectTaskByUserId(userId));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getProjectTaskByUserId(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.getProjectTaskByUserId(userId);
+
+        // assert
+        verify(mockRemoteDataSource.getProjectTaskByUserId(userId));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.getProjectTaskByUserId(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.getProjectTaskByUserId(userId);
+
+        // assert
+        verify(mockRemoteDataSource.getProjectTaskByUserId(userId));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.getProjectTaskByUserId(any),
+      () => repository.getProjectTaskByUserId(userId),
+      () => mockRemoteDataSource.getProjectTaskByUserId(userId),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.getProjectTaskByUserId(any),
+      () => repository.getProjectTaskByUserId(userId),
+      () => mockRemoteDataSource.getProjectTaskByUserId(userId),
+    );
+
+    testDisconnected2(() => repository.getProjectTaskByUserId(userId));
   });
 }
