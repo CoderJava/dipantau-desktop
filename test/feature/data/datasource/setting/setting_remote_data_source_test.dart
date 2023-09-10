@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/setting/setting_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/model/all_user_setting/all_user_setting_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/kv_setting/kv_setting_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/kv_setting/kv_setting_response.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -171,6 +172,76 @@ void main() {
 
         // act
         final call = remoteDataSource.setKvSetting(tBody);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
+
+  group('getAllUserSetting', () {
+    const tPathResponse = 'all_user_setting_response.json';
+    final tResponse = AllUserSettingResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint getAllUserSetting benar-benar terpanggil dengan method GET',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.getAllUserSetting();
+
+        // assert
+        verify(mockDio.get('$baseUrl/user', options: anyNamed('options')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model AllUserSettingResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.getAllUserSetting();
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.getAllUserSetting();
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));
