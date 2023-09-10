@@ -4,6 +4,8 @@ import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/model/all_user_setting/all_user_setting_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/kv_setting/kv_setting_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/kv_setting/kv_setting_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_setting/user_setting_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_setting/user_setting_response.dart';
 
 abstract class SettingRemoteDataSource {
   /// Panggil endpoint [host]/setting/key-value
@@ -20,12 +22,26 @@ abstract class SettingRemoteDataSource {
 
   Future<bool> setKvSetting(KvSettingBody body);
 
-  /// Panggil endpoint [host]/setting/user
+  /// Panggil endpoint [host]/setting/user/all
   ///
   /// Throws [DioException] untuk semua error kode
   late String pathGetAllUserSetting;
 
   Future<AllUserSettingResponse> getAllUserSetting();
+
+  /// Panggil endpoint [host]/setting/user
+  ///
+  /// Throws [DioException] untuk semua error kode
+  late String pathGetUserSetting;
+
+  Future<UserSettingResponse> getUserSetting();
+
+  /// Panggil endpoint [host]/setting/user
+  ///
+  /// Throws [DioException] untuk semua error kode
+  late String pathUpdateUserSetting;
+
+  Future<bool> updateUserSetting(UserSettingBody body);
 }
 
 class SettingRemoteDataSourceImpl implements SettingRemoteDataSource {
@@ -99,6 +115,49 @@ class SettingRemoteDataSourceImpl implements SettingRemoteDataSource {
       return AllUserSettingResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathGetAllUserSetting));
+    }
+  }
+
+  @override
+  String pathGetUserSetting = '';
+
+  @override
+  Future<UserSettingResponse> getUserSetting() async {
+    pathGetUserSetting = '$baseUrl/user';
+    final response = await dio.get(
+      pathGetUserSetting,
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return UserSettingResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathGetUserSetting));
+    }
+  }
+
+  @override
+  String pathUpdateUserSetting = '';
+
+  @override
+  Future<bool> updateUserSetting(UserSettingBody body) async {
+    pathUpdateUserSetting = '$baseUrl/user';
+    final response = await dio.post(
+      pathUpdateUserSetting,
+      data: body.toJson(),
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return true;
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathUpdateUserSetting));
     }
   }
 }
