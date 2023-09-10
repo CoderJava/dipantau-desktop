@@ -210,7 +210,7 @@ void main() {
         await remoteDataSource.getAllUserSetting();
 
         // assert
-        verify(mockDio.get('$baseUrl/user', options: anyNamed('options')));
+        verify(mockDio.get('$baseUrl/user/all', options: anyNamed('options')));
       },
     );
 

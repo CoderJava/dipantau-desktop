@@ -86,7 +86,7 @@ class SettingRemoteDataSourceImpl implements SettingRemoteDataSource {
 
   @override
   Future<AllUserSettingResponse> getAllUserSetting() async {
-    pathGetAllUserSetting = '$baseUrl/user';
+    pathGetAllUserSetting = '$baseUrl/user/all';
     final response = await dio.get(
       pathGetAllUserSetting,
       options: Options(
