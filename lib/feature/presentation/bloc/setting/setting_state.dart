@@ -42,3 +42,31 @@ class SuccessLoadKvSettingState extends SettingState {
 }
 
 class SuccessUpdateKvSettingState extends SettingState {}
+
+class SuccessLoadUserSettingState extends SettingState {
+  final UserSettingResponse response;
+
+  SuccessLoadUserSettingState({
+    required this.response,
+  });
+
+  @override
+  String toString() {
+    return 'SuccessLoadUserSettingState{response: $response}';
+  }
+}
+
+class SuccessLoadAllUserSettingState extends SettingState {
+  final AllUserSettingResponse response;
+
+  SuccessLoadAllUserSettingState({
+    required this.response,
+  });
+
+  @override
+  String toString() {
+    return 'SuccessLoadAllUserSettingState{response: $response}';
+  }
+}
+
+class SuccessUpdateUserSettingState extends SettingState {}

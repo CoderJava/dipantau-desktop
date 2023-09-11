@@ -14,3 +14,20 @@ class UpdateKvSettingEvent extends SettingEvent {
     return 'UpdateKvSettingEvent{body: $body}';
   }
 }
+
+class LoadUserSettingEvent extends SettingEvent {}
+
+class LoadAllUserSettingEvent extends SettingEvent {}
+
+class UpdateUserSettingEvent extends SettingEvent {
+  final UserSettingBody body;
+
+  UpdateUserSettingEvent({
+    required this.body,
+  });
+
+  @override
+  String toString() {
+    return 'UpdateUserSettingEvent{body: $body}';
+  }
+}
