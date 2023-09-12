@@ -261,6 +261,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingCenterSettingState>(),
         isA<SuccessLoadUserSettingState>(),
@@ -281,6 +282,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingCenterSettingState>(),
         isA<FailureSettingState>(),
@@ -301,6 +303,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingCenterSettingState>(),
         isA<FailureSettingState>(),
@@ -321,6 +324,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingCenterSettingState>(),
         isA<FailureSettingState>(),
@@ -446,6 +450,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingButtonSettingState>(),
         isA<SuccessUpdateUserSettingState>(),
@@ -466,6 +471,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingButtonSettingState>(),
         isA<FailureSnackBarSettingState>(),
@@ -486,6 +492,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingButtonSettingState>(),
         isA<FailureSnackBarSettingState>(),
@@ -506,6 +513,7 @@ void main() {
       act: (SettingBloc bloc) {
         return bloc.add(tEvent);
       },
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<LoadingButtonSettingState>(),
         isA<FailureSnackBarSettingState>(),

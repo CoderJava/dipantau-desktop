@@ -267,5 +267,9 @@
   "please_set_start_time": "Please set start time",
   "please_set_finish_time": "Please set finish time",
   "title_new_update_available": "New update available",
-  "description_new_update_available": "Click here to download latest version"
+  "description_new_update_available": "Click here to download latest version",
+  "screenshot_blur": "Screenshot Blur",
+  "description_screenshot_blur_user": "Set blurred screenshots. Only super admin can change this configuration.",
+  "refresh": "Refresh",
+  "invalid_id_or_user_id": "Invalid ID or user ID"
 }

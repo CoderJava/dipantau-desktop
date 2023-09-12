@@ -78,6 +78,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
 
   FutureOr<void> _onLoadUserSettingEvent(LoadUserSettingEvent event, Emitter<SettingState> emit) async {
     emit(LoadingCenterSettingState());
+    await Future.delayed(const Duration(milliseconds: 500));
     final (:response, :failure) = await getUserSetting(NoParams());
     if (response != null) {
       emit(SuccessLoadUserSettingState(response: response));
@@ -102,6 +103,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
 
   FutureOr<void> _onUpdateUserSettingEvent(UpdateUserSettingEvent event, Emitter<SettingState> emit) async {
     emit(LoadingButtonSettingState());
+    await Future.delayed(const Duration(milliseconds: 500));
     final (:response, :failure) = await updateUserSetting(
       ParamsUpdateUserSetting(
         body: event.body,
