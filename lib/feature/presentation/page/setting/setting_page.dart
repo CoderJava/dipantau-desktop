@@ -723,6 +723,8 @@ class _SettingPageState extends State<SettingPage> {
         buildWidgetTask(),
         const SizedBox(height: 16),
         buildWidgetDiscordChannelId(),
+        const SizedBox(height: 16),
+        buildWidgetMemberBlurScreenshot(),
       ],
     );
   }
@@ -1312,6 +1314,51 @@ class _SettingPageState extends State<SettingPage> {
           borderRadius: BorderRadius.circular(999),
           onTap: () {
             context.pushNamed(SettingDiscordPage.routeName);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Icon(
+              Icons.keyboard_arrow_right,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildWidgetMemberBlurScreenshot() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'screenshot_blur'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'subtitle_screenshot_blur'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () {
+            // TODO: arahkan ke halaman setting_member_blur_screenshot_page
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
