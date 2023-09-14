@@ -530,7 +530,10 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
               String? thumbnail;
               final listFiles = element.files ?? [];
               if (listFiles.isNotEmpty) {
-                thumbnail = listFiles.first.url;
+                thumbnail = listFiles.first.urlBlur ?? '';
+                if (thumbnail.isEmpty) {
+                  thumbnail = listFiles.first.url;
+                }
               }
               const heightImage = 92.0;
 
@@ -606,8 +609,12 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                               context.pushNamed(
                                 PhotoViewPage.routeName,
                                 extra: {
-                                  PhotoViewPage.parameterListPhotos:
-                                      listFiles.where((element) => element.url != null).map((e) => e.url!).toList(),
+                                  PhotoViewPage.parameterListPhotos: listFiles
+                                      .where((element) {
+                                        return element.url != null;
+                                      })
+                                      .map((e) => e)
+                                      .toList(),
                                 },
                               );
                             },
