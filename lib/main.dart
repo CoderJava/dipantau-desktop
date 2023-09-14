@@ -24,6 +24,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/reset_password
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting_discord/setting_discord_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting_member_blur_screenshot/setting_member_blur_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
@@ -277,6 +278,13 @@ class _MyAppState extends State<MyApp> {
         name: ManualTrackingPage.routeName,
         builder: (context, state) {
           return const ManualTrackingPage();
+        },
+      ),
+      GoRoute(
+        path: SettingMemberBlurScreenshotPage.routePath,
+        name: SettingMemberBlurScreenshotPage.routeName,
+        builder: (context, state) {
+          return const SettingMemberBlurScreenshotPage();
         },
       ),
     ],
