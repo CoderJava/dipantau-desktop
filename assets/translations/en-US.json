@@ -271,5 +271,15 @@
   "screenshot_blur": "Screenshot Blur",
   "description_screenshot_blur_user": "Set blurred screenshots. Only super admin can change this configuration.",
   "refresh": "Refresh",
-  "invalid_id_or_user_id": "Invalid ID or user ID"
+  "invalid_id_or_user_id": "Invalid ID or user ID",
+  "subtitle_screenshot_blur": "Control members blur screenshot for security and privacy.",
+  "enable_all": "Enable all",
+  "disable_all": "Disable all",
+  "member_n": {
+    "zero": "Member",
+    "one": "Member ({})",
+    "many": "Members ({})",
+    "other": "Members ({})"
+  },
+  "user_setting_updated_successfully": "User setting updated successfully"
 }
