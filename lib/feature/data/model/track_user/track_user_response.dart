@@ -106,11 +106,17 @@ class ItemFileTrackUserResponse extends Equatable {
   final String? url;
   @JsonKey(name: 'size')
   final int? sizeInByte;
+  @JsonKey(name: 'url_blur')
+  final String? urlBlur;
+  @JsonKey(name: 'size_blur')
+  final int? sizeBlurInByte;
 
   ItemFileTrackUserResponse({
     required this.id,
     required this.url,
     required this.sizeInByte,
+    required this.urlBlur,
+    required this.sizeBlurInByte,
   });
 
   factory ItemFileTrackUserResponse.fromJson(Map<String, dynamic> json) => _$ItemFileTrackUserResponseFromJson(json);
@@ -122,10 +128,13 @@ class ItemFileTrackUserResponse extends Equatable {
         id,
         url,
         sizeInByte,
+        urlBlur,
+        sizeBlurInByte,
       ];
 
   @override
   String toString() {
-    return 'ItemFileTrackUserResponse{id: $id, url: $url, sizeInByte: $sizeInByte}';
+    return 'ItemFileTrackUserResponse{id: $id, url: $url, sizeInByte: $sizeInByte, urlBlur: $urlBlur, '
+        'sizeBlurInByte: $sizeBlurInByte}';
   }
 }
