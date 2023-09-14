@@ -9,6 +9,7 @@ import 'package:dipantau_desktop_client/core/util/images.dart';
 import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/platform_channel_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_image_body.dart';
@@ -570,10 +571,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 if (state is LoadingHomeState || isLoading) {
                   return const WidgetCustomCircularProgressIndicator();
                 } else if (state is FailureHomeState) {
-                  final errorMessage = state.errorMessage;
+                  final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
                   return WidgetError(
                     title: 'oops'.tr(),
-                    message: errorMessage,
+                    message: errorMessage.hideResponseCode(),
                     onTryAgain: doLoadDataTask,
                   );
                 }

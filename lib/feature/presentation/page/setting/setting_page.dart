@@ -13,6 +13,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/settin
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting_discord/setting_discord_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting_member_blur_screenshot/setting_member_blur_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
@@ -1358,7 +1359,7 @@ class _SettingPageState extends State<SettingPage> {
         InkWell(
           borderRadius: BorderRadius.circular(999),
           onTap: () {
-            // TODO: arahkan ke halaman setting_member_blur_screenshot_page
+            context.pushNamed(SettingMemberBlurScreenshotPage.routeName);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(

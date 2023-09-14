@@ -275,10 +275,10 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
         if (state is LoadingCenterReportScreenshotState) {
           return const WidgetCustomCircularProgressIndicator();
         } else if (state is FailureReportScreenshotState) {
-          final errorMessage = state.errorMessage;
+          final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
           return WidgetError(
             title: 'oops'.tr(),
-            message: errorMessage,
+            message: errorMessage.hideResponseCode(),
             onTryAgain: doLoadData,
           );
         } else if (state is SuccessLoadReportScreenshotState) {
@@ -314,12 +314,12 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
         if (state is LoadingCenterMemberState) {
           return const WidgetCustomCircularProgressIndicator();
         } else if (state is FailureMemberState) {
-          final errorMessage = state.errorMessage;
+          final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
             child: WidgetError(
               title: 'oops'.tr(),
-              message: errorMessage,
+              message: errorMessage.hideResponseCode(),
               onTryAgain: prepareData,
             ),
           );
