@@ -138,6 +138,9 @@ class _SettingPageState extends State<SettingPage> {
                               destinations: navigationRailDestinations,
                               selectedIndex: selectedIndexNavigationRail,
                               onDestinationSelected: (newValue) {
+                                if (newValue == 0) {
+                                  doLoadUserSetting();
+                                }
                                 setState(() => selectedIndexNavigationRail = newValue);
                               },
                               extended: true,
