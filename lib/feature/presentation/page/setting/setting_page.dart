@@ -100,12 +100,14 @@ class _SettingPageState extends State<SettingPage> {
         listener: (context, state) {
           if (state is SuccessLoadUserSettingState) {
             userSetting = state.response;
+            setState(() {});
           } else if (state is SuccessUpdateUserSettingState) {
             final newUserSetting = UserSettingResponse(
               id: userSetting!.id!,
               isEnableBlurScreenshot: !(userSetting!.isEnableBlurScreenshot!),
               userId: userSetting!.userId,
               name: userSetting!.name,
+              isOverrideBlurScreenshot: userSetting?.isOverrideBlurScreenshot ?? false,
             );
             userSetting = newUserSetting;
           } else if (state is FailureSettingState) {
@@ -1461,6 +1463,11 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Widget buildWidgetUserSetting() {
+    final isOverrideBlurScreenshot = userSetting?.isOverrideBlurScreenshot ?? false;
+    var description = 'description_screenshot_blur_user'.tr();
+    if (isOverrideBlurScreenshot && (userRole == UserRole.admin || userRole == UserRole.employee)) {
+      description += ' ${'this_setting_is_override_by_super_admin'.tr()}';
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1473,7 +1480,7 @@ class _SettingPageState extends State<SettingPage> {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                'description_screenshot_blur_user'.tr(),
+                description,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
@@ -1482,54 +1489,62 @@ class _SettingPageState extends State<SettingPage> {
           ),
         ),
         const SizedBox(width: 16),
-        BlocBuilder<SettingBloc, SettingState>(
-          builder: (context, state) {
-            if (state is LoadingCenterSettingState || state is LoadingButtonSettingState) {
-              return const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: WidgetCustomCircularProgressIndicator(),
-              );
-            } else if ((state is FailureSettingState || state is FailureSnackBarSettingState) && userSetting == null) {
-              return TextButton(
-                onPressed: doLoadUserSetting,
-                child: Text('refresh'.tr()),
-              );
-            }
+        SizedBox(
+          width: 76,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: BlocBuilder<SettingBloc, SettingState>(
+              builder: (context, state) {
+                if (state is LoadingCenterSettingState || state is LoadingButtonSettingState) {
+                  return const SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: WidgetCustomCircularProgressIndicator(),
+                  );
+                } else if ((state is FailureSettingState || state is FailureSnackBarSettingState) &&
+                    userSetting == null) {
+                  return TextButton(
+                    onPressed: doLoadUserSetting,
+                    child: Text('refresh'.tr()),
+                  );
+                }
 
-            if (userSetting == null) {
-              return Container();
-            }
+                if (userSetting == null) {
+                  return Container();
+                }
 
-            return Switch.adaptive(
-              value: userSetting?.isEnableBlurScreenshot ?? false,
-              activeColor: Theme.of(context).colorScheme.primary,
-              onChanged: userRole == UserRole.superAdmin
-                  ? (value) {
-                      final id = userSetting?.id;
-                      final userId = userSetting?.userId;
-                      if (id == null || userId == null) {
-                        widgetHelper.showSnackBar(context, 'invalid_id_or_user_id'.tr());
-                        return;
-                      }
+                return Switch.adaptive(
+                  value: userSetting?.isEnableBlurScreenshot ?? false,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  onChanged: isOverrideBlurScreenshot && (userRole == UserRole.admin || userRole == UserRole.employee)
+                      ? null
+                      : (value) {
+                          final id = userSetting?.id;
+                          final userId = userSetting?.userId;
+                          if (id == null || userId == null) {
+                            widgetHelper.showSnackBar(context, 'invalid_id_or_user_id'.tr());
+                            return;
+                          }
 
-                      final body = UserSettingBody(
-                        data: [
-                          ItemUserSettingBody(
-                            id: userSetting!.id!,
-                            isEnableBlurScreenshot: value,
-                            userId: userSetting!.userId!,
-                          ),
-                        ],
-                      );
-                      settingBloc.add(
-                        UpdateUserSettingEvent(
-                          body: body,
-                        ),
-                      );
-                    }
-                  : null,
-            );
-          },
+                          final body = UserSettingBody(
+                            data: [
+                              ItemUserSettingBody(
+                                id: userSetting!.id!,
+                                isEnableBlurScreenshot: value,
+                                userId: userSetting!.userId!,
+                              ),
+                            ],
+                          );
+                          settingBloc.add(
+                            UpdateUserSettingEvent(
+                              body: body,
+                            ),
+                          );
+                        },
+                );
+              },
+            ),
+          ),
         ),
       ],
     );
