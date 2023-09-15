@@ -24,6 +24,7 @@ void main() {
           tModel.isEnableBlurScreenshot,
           tModel.userId,
           tModel.name,
+          tModel.isOverrideBlurScreenshot,
         ],
       );
     },
@@ -36,7 +37,7 @@ void main() {
       expect(
         tModel.toString(),
         'UserSettingResponse{id: ${tModel.id}, isEnableBlurScreenshot: ${tModel.isEnableBlurScreenshot}, '
-        'userId: ${tModel.userId}, name: ${tModel.name}}',
+        'userId: ${tModel.userId}, name: ${tModel.name}, isOverrideBlurScreenshot: ${tModel.isOverrideBlurScreenshot}}',
       );
     },
   );

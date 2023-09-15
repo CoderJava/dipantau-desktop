@@ -6,5 +6,6 @@
       "user_id": 1,
       "name": "name"
     }
-  ]
+  ],
+  "is_override_blur_screenshot": false
 }

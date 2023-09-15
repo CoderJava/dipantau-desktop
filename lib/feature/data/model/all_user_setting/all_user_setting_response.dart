@@ -8,8 +8,13 @@ part 'all_user_setting_response.g.dart';
 class AllUserSettingResponse extends Equatable {
   @JsonKey(name: 'data')
   final List<UserSettingResponse>? data;
+  @JsonKey(name: 'is_override_blur_screenshot')
+  final bool? isOverrideBlurScreenshot;
 
-  AllUserSettingResponse({required this.data});
+  AllUserSettingResponse({
+    required this.data,
+    required this.isOverrideBlurScreenshot,
+  });
 
   factory AllUserSettingResponse.fromJson(Map<String, dynamic> json) => _$AllUserSettingResponseFromJson(json);
 
@@ -18,12 +23,11 @@ class AllUserSettingResponse extends Equatable {
   @override
   List<Object?> get props => [
         data,
+        isOverrideBlurScreenshot,
       ];
 
   @override
   String toString() {
-    return 'AllUserSettingResponse{data: $data}';
+    return 'AllUserSettingResponse{data: $data, isOverrideBlurScreenshot: $isOverrideBlurScreenshot}';
   }
 }
-
-

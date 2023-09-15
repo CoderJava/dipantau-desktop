@@ -269,7 +269,8 @@
   "title_new_update_available": "New update available",
   "description_new_update_available": "Click here to download latest version",
   "screenshot_blur": "Screenshot Blur",
-  "description_screenshot_blur_user": "Set blurred screenshots. Only super admin can change this configuration.",
+  "description_screenshot_blur_user": "Set your screenshot to blurred.",
+  "this_setting_is_override_by_super_admin": "This setting is overrided by super admin.",
   "refresh": "Refresh",
   "invalid_id_or_user_id": "Invalid ID or user ID",
   "subtitle_screenshot_blur": "Control members blur screenshot for security and privacy.",
@@ -281,5 +282,7 @@
     "many": "Members ({})",
     "other": "Members ({})"
   },
-  "user_setting_updated_successfully": "User setting updated successfully"
+  "user_setting_updated_successfully": "User setting updated successfully",
+  "override": "Override",
+  "description_override_member_blur_screenshot": "It will override the individual setting and member cannot change this configuration."
 }

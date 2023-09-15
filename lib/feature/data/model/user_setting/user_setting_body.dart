@@ -7,9 +7,12 @@ part 'user_setting_body.g.dart';
 class UserSettingBody extends Equatable {
   @JsonKey(name: 'data')
   final List<ItemUserSettingBody> data;
+  @JsonKey(name: 'is_override_blur_screenshot')
+  final bool? isOverrideBlurScreenshot;
 
   UserSettingBody({
     required this.data,
+    required this.isOverrideBlurScreenshot,
   });
 
   factory UserSettingBody.fromJson(Map<String, dynamic> json) => _$UserSettingBodyFromJson(json);
@@ -19,11 +22,12 @@ class UserSettingBody extends Equatable {
   @override
   List<Object?> get props => [
         data,
+        isOverrideBlurScreenshot,
       ];
 
   @override
   String toString() {
-    return 'UserSettingBody{data: $data}';
+    return 'UserSettingBody{data: $data, isOverrideBlurScreenshot: $isOverrideBlurScreenshot}';
   }
 }
 

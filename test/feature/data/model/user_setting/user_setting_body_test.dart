@@ -21,6 +21,7 @@ void main() {
         tModel.props,
         [
           tModel.data,
+          tModel.isOverrideBlurScreenshot,
         ],
       );
     },
@@ -32,7 +33,7 @@ void main() {
       // assert
       expect(
         tModel.toString(),
-        'UserSettingBody{data: ${tModel.data}}',
+        'UserSettingBody{data: ${tModel.data}, isOverrideBlurScreenshot: ${tModel.isOverrideBlurScreenshot}}',
       );
     },
   );
