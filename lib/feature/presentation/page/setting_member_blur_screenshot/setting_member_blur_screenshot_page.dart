@@ -29,6 +29,7 @@ class _SettingMemberBlurScreenshotPageState extends State<SettingMemberBlurScree
   final listData = <_ItemSettingMember>[];
 
   var isLoadingButton = false;
+  var isOverride = false;
 
   @override
   void setState(VoidCallback fn) {
@@ -70,6 +71,7 @@ class _SettingMemberBlurScreenshotPageState extends State<SettingMemberBlurScree
               }
               widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
             } else if (state is SuccessLoadAllUserSettingState) {
+              isOverride = state.response.isOverrideBlurScreenshot ?? false;
               listData.clear();
               for (final element in state.response.data ?? <UserSettingResponse>[]) {
                 final id = element.id ?? -1;
@@ -121,48 +123,26 @@ class _SettingMemberBlurScreenshotPageState extends State<SettingMemberBlurScree
 
                   return Column(
                     children: [
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            'member_n'.plural(listData.length),
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey,
-                                ),
-                          ),
-                          Expanded(
-                            child: Container(),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              for (final itemData in listData) {
-                                itemData.isEnableBlurScreenshot = false;
-                              }
-                              setState(() {});
-                            },
-                            child: Text('disable_all'.tr()),
-                          ),
-                          Container(
-                            width: 1,
-                            height: 24,
-                            color: Colors.grey,
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              for (final itemData in listData) {
-                                itemData.isEnableBlurScreenshot = true;
-                              }
-                              setState(() {});
-                            },
-                            child: Text('enable_all'.tr()),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Expanded(
-                        child: buildWidgetListData(),
-                      ),
+                      SizedBox(height: helper.getDefaultPaddingLayoutTop),
+                      buildWidgetOverrideSetting(),
+                      isOverride
+                          ? Expanded(
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 16),
+                                  const Divider(),
+                                  const SizedBox(height: 8),
+                                  buildWidgetActionAll(),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: buildWidgetListData(),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Expanded(
+                              child: Container(),
+                            ),
                       Padding(
                         padding: EdgeInsets.only(
                           top: 16,
@@ -190,18 +170,67 @@ class _SettingMemberBlurScreenshotPageState extends State<SettingMemberBlurScree
     );
   }
 
-  void submit() {
-    final body = UserSettingBody(
-      data: listData
-          .map(
-            (e) => ItemUserSettingBody(
-              id: e.id,
-              isEnableBlurScreenshot: e.isEnableBlurScreenshot,
-              userId: e.userId,
-            ),
-          )
-          .toList(),
+  Widget buildWidgetActionAll() {
+    return Row(
+      children: [
+        Text(
+          'member_n'.plural(listData.length),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey,
+              ),
+        ),
+        Expanded(
+          child: Container(),
+        ),
+        TextButton(
+          onPressed: () {
+            for (final itemData in listData) {
+              itemData.isEnableBlurScreenshot = false;
+            }
+            setState(() {});
+          },
+          child: Text('disable_all'.tr()),
+        ),
+        Container(
+          width: 1,
+          height: 24,
+          color: Colors.grey,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+        ),
+        TextButton(
+          onPressed: () {
+            for (final itemData in listData) {
+              itemData.isEnableBlurScreenshot = true;
+            }
+            setState(() {});
+          },
+          child: Text('enable_all'.tr()),
+        ),
+      ],
     );
+  }
+
+  void submit() {
+    UserSettingBody body;
+    if (isOverride) {
+      body = UserSettingBody(
+        data: listData
+            .map(
+              (e) => ItemUserSettingBody(
+                id: e.id,
+                isEnableBlurScreenshot: e.isEnableBlurScreenshot,
+                userId: e.userId,
+              ),
+            )
+            .toList(),
+        isOverrideBlurScreenshot: isOverride,
+      );
+    } else {
+      body = UserSettingBody(
+        data: [],
+        isOverrideBlurScreenshot: false,
+      );
+    }
     settingBloc.add(
       UpdateUserSettingEvent(
         body: body,
@@ -235,6 +264,39 @@ class _SettingMemberBlurScreenshotPageState extends State<SettingMemberBlurScree
       },
       separatorBuilder: (context, index) => const Divider(),
       itemCount: listData.length,
+    );
+  }
+
+  Widget buildWidgetOverrideSetting() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'override'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'description_override_member_blur_screenshot'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        Switch.adaptive(
+          value: isOverride,
+          activeColor: Theme.of(context).colorScheme.primary,
+          onChanged: (value) {
+            setState(() => isOverride = value);
+          },
+        ),
+      ],
     );
   }
 }

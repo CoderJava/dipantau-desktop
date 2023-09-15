@@ -1534,6 +1534,7 @@ class _SettingPageState extends State<SettingPage> {
                                 userId: userSetting!.userId!,
                               ),
                             ],
+                            isOverrideBlurScreenshot: null,
                           );
                           settingBloc.add(
                             UpdateUserSettingEvent(
