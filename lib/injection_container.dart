@@ -29,12 +29,14 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/create_track/crea
 import 'package:dipantau_desktop_client/feature/domain/usecase/delete_track_user/delete_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/forgot_password/forgot_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_member/get_all_member.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_all_user_setting/get_all_user_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_kv_setting/get_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_profile/get_profile.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project/get_project.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_project_task_by_user_id/get_project_task_by_user_id.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/get_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_setting/get_user_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
@@ -42,6 +44,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/
 import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/set_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/update_user_setting/update_user_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/verify_forgot_password/verify_forgot_password.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
@@ -121,6 +124,9 @@ void init() {
       helper: sl(),
       getKvSetting: sl(),
       setKvSetting: sl(),
+      getUserSetting: sl(),
+      getAllUserSetting: sl(),
+      updateUserSetting: sl(),
     ),
   );
   sl.registerFactory(
@@ -186,6 +192,9 @@ void init() {
   sl.registerLazySingleton(() => ResetPassword(repository: sl()));
   sl.registerLazySingleton(() => CreateManualTrack(repository: sl()));
   sl.registerLazySingleton(() => GetProjectTaskByUserId(repository: sl()));
+  sl.registerLazySingleton(() => GetAllUserSetting(repository: sl()));
+  sl.registerLazySingleton(() => GetUserSetting(repository: sl()));
+  sl.registerLazySingleton(() => UpdateUserSetting(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(

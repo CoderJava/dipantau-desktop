@@ -1,4 +1,5 @@
 import 'package:dipantau_desktop_client/core/util/helper.dart';
+import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/feature/data/model/project/project_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/project/project_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
@@ -63,12 +64,12 @@ class _WidgetChooseProjectState extends State<WidgetChooseProject> {
                 if (state is LoadingProjectState) {
                   return const WidgetCustomCircularProgressIndicator();
                 } else if (state is FailureProjectState) {
-                  final errorMessage = state.errorMessage;
+                  final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
                     child: WidgetError(
                       title: 'info'.tr(),
-                      message: errorMessage,
+                      message: errorMessage.hideResponseCode(),
                     ),
                   );
                 } else if (state is SuccessLoadDataProjectState) {

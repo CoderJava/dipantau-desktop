@@ -94,10 +94,10 @@ class _SettingDiscordPageState extends State<SettingDiscordPage> {
                 },
                 builder: (context, state) {
                   if (state is FailureSettingState) {
-                    final errorMessage = state.errorMessage;
+                    final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
                     return WidgetError(
                       title: 'oops'.tr(),
-                      message: errorMessage,
+                      message: errorMessage.hideResponseCode(),
                       onTryAgain: doLoadData,
                     );
                   } else if (state is LoadingCenterSettingState) {

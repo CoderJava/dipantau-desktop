@@ -117,12 +117,12 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
           if (state is LoadingManualTrackingState) {
             return const WidgetCustomCircularProgressIndicator();
           } else if (state is FailureCenterManualTrackingState) {
-            final errorMessage = state.errorMessage;
+            final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
               child: WidgetError(
                 title: 'oops'.tr(),
-                message: errorMessage,
+                message: errorMessage.hideResponseCode(),
                 onTryAgain: doLoadData,
               ),
             );

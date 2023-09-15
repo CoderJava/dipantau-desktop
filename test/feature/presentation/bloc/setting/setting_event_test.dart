@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dipantau_desktop_client/feature/data/model/kv_setting/kv_setting_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_setting/user_setting_body.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/setting_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,6 +24,27 @@ void main() {
         expect(
           tEvent.toString(),
           'UpdateKvSettingEvent{body: ${tEvent.body}}',
+        );
+      },
+    );
+  });
+
+  group('UpdateUserSettingEvent', () {
+    final tEvent = UpdateUserSettingEvent(
+      body: UserSettingBody.fromJson(
+        json.decode(
+          fixture('user_setting_body.json'),
+        ),
+      ),
+    );
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          tEvent.toString(),
+          'UpdateUserSettingEvent{body: ${tEvent.body}}',
         );
       },
     );

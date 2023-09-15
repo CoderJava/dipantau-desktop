@@ -6,6 +6,7 @@ import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/core/util/enum/appearance_mode.dart';
 import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/add_member/add_edit_member_page.dart';
@@ -24,6 +25,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/reset_password
 import 'package:dipantau_desktop_client/feature/presentation/page/reset_password_success/reset_password_success_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting/setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting_discord/setting_discord_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting_member_blur_screenshot/setting_member_blur_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
@@ -214,7 +216,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context, state) {
           final arguments = state.extra as Map<String, dynamic>?;
           final listPhotos = arguments != null && arguments.containsKey(PhotoViewPage.parameterListPhotos)
-              ? arguments[PhotoViewPage.parameterListPhotos] as List<String>?
+              ? arguments[PhotoViewPage.parameterListPhotos] as List<ItemFileTrackUserResponse>?
               : null;
           return PhotoViewPage(listPhotos: listPhotos);
         },
@@ -277,6 +279,13 @@ class _MyAppState extends State<MyApp> {
         name: ManualTrackingPage.routeName,
         builder: (context, state) {
           return const ManualTrackingPage();
+        },
+      ),
+      GoRoute(
+        path: SettingMemberBlurScreenshotPage.routePath,
+        name: SettingMemberBlurScreenshotPage.routeName,
+        builder: (context, state) {
+          return const SettingMemberBlurScreenshotPage();
         },
       ),
     ],

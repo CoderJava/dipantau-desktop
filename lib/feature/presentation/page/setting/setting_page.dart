@@ -4,13 +4,19 @@ import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
+import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_setting/user_setting_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_setting/user_setting_response.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/setting_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/home/home_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/member_setting/member_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setting_discord/setting_discord_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/setting_member_blur_screenshot/setting_member_blur_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_theme_container.dart';
 import 'package:dipantau_desktop_client/injection_container.dart';
@@ -34,6 +40,7 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+  final settingBloc = sl<SettingBloc>();
   final helper = sl<Helper>();
   final navigationRailDestinations = <NavigationRailDestination>[];
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
@@ -59,6 +66,7 @@ class _SettingPageState extends State<SettingPage> {
   var isEnableReminderTrackFri = true;
   var isEnableReminderTrackSat = false;
   var isEnableReminderTrackSun = false;
+  UserSettingResponse? userSetting;
 
   @override
   void setState(VoidCallback fn) {
@@ -76,6 +84,7 @@ class _SettingPageState extends State<SettingPage> {
     final strUserRole = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserRole) ?? '';
     userRole = strUserRole.fromStringUserRole;
     prepareData();
+    doLoadUserSetting();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setupNavigationRailDestinations();
       setState(() {});
@@ -85,59 +94,94 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationRailDestinations.isEmpty
-          ? Container()
-          : Row(
-              children: [
-                Column(
+    return BlocProvider<SettingBloc>(
+      create: (context) => settingBloc,
+      child: BlocListener<SettingBloc, SettingState>(
+        listener: (context, state) {
+          if (state is SuccessLoadUserSettingState) {
+            userSetting = state.response;
+          } else if (state is SuccessUpdateUserSettingState) {
+            final newUserSetting = UserSettingResponse(
+              id: userSetting!.id!,
+              isEnableBlurScreenshot: !(userSetting!.isEnableBlurScreenshot!),
+              userId: userSetting!.userId,
+              name: userSetting!.name,
+            );
+            userSetting = newUserSetting;
+          } else if (state is FailureSettingState) {
+            final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+            if (errorMessage.contains('401')) {
+              widgetHelper.showDialog401(context);
+              return;
+            }
+            widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
+          } else if (state is FailureSnackBarSettingState) {
+            final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+            if (errorMessage.contains('401')) {
+              widgetHelper.showDialog401(context);
+              return;
+            }
+            widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
+          }
+        },
+        child: Scaffold(
+          body: navigationRailDestinations.isEmpty
+              ? Container()
+              : Row(
                   children: [
-                    Expanded(
-                      child: SizedBox(
-                        width: 172,
-                        child: NavigationRail(
-                          destinations: navigationRailDestinations,
-                          selectedIndex: selectedIndexNavigationRail,
-                          onDestinationSelected: (newValue) {
-                            setState(() => selectedIndexNavigationRail = newValue);
-                          },
-                          extended: true,
+                    Column(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            width: 172,
+                            child: NavigationRail(
+                              destinations: navigationRailDestinations,
+                              selectedIndex: selectedIndexNavigationRail,
+                              onDestinationSelected: (newValue) {
+                                if (newValue == 0) {
+                                  doLoadUserSetting();
+                                }
+                                setState(() => selectedIndexNavigationRail = newValue);
+                              },
+                              extended: true,
+                            ),
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: TextButton(
+                            onPressed: () => context.pop(),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.arrow_back_ios_new,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'back_to_main_menu'.tr(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextButton(
-                        onPressed: () => context.pop(),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.arrow_back_ios_new,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'back_to_main_menu'.tr(),
-                            ),
-                          ],
-                        ),
+                    const VerticalDivider(
+                      thickness: 1,
+                      width: 1,
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: buildWidgetBody(),
                       ),
                     ),
                   ],
                 ),
-                const VerticalDivider(
-                  thickness: 1,
-                  width: 1,
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: buildWidgetBody(),
-                  ),
-                ),
-              ],
-            ),
+        ),
+      ),
     );
   }
 
@@ -192,6 +236,8 @@ class _SettingPageState extends State<SettingPage> {
         buildWidgetSetHostName(),
         const SizedBox(height: 16),
         buildWidgetAlwaysOnTop(),
+        const SizedBox(height: 16),
+        buildWidgetUserSetting(),
         const SizedBox(height: 16),
         buildWidgetChooseAppearance(),
         const SizedBox(height: 16),
@@ -681,6 +727,8 @@ class _SettingPageState extends State<SettingPage> {
         buildWidgetTask(),
         const SizedBox(height: 16),
         buildWidgetDiscordChannelId(),
+        const SizedBox(height: 16),
+        buildWidgetMemberBlurScreenshot(),
       ],
     );
   }
@@ -1289,6 +1337,51 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  Widget buildWidgetMemberBlurScreenshot() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'screenshot_blur'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'subtitle_screenshot_blur'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () {
+            context.pushNamed(SettingMemberBlurScreenshotPage.routeName);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Icon(
+              Icons.keyboard_arrow_right,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   void updateReminderTrack() async {
     final isEnableReminderNotTrack = valueNotifierIsEnableReminderTrack.value;
     await sharedPreferencesManager.putBool(SharedPreferencesManager.keyIsEnableReminderTrack, isEnableReminderNotTrack);
@@ -1365,5 +1458,84 @@ class _SettingPageState extends State<SettingPage> {
       );
     }
     countTimeReminderTrackInSeconds = 0;
+  }
+
+  Widget buildWidgetUserSetting() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'screenshot_blur'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                'description_screenshot_blur_user'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        BlocBuilder<SettingBloc, SettingState>(
+          builder: (context, state) {
+            if (state is LoadingCenterSettingState || state is LoadingButtonSettingState) {
+              return const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: WidgetCustomCircularProgressIndicator(),
+              );
+            } else if ((state is FailureSettingState || state is FailureSnackBarSettingState) && userSetting == null) {
+              return TextButton(
+                onPressed: doLoadUserSetting,
+                child: Text('refresh'.tr()),
+              );
+            }
+
+            if (userSetting == null) {
+              return Container();
+            }
+
+            return Switch.adaptive(
+              value: userSetting?.isEnableBlurScreenshot ?? false,
+              activeColor: Theme.of(context).colorScheme.primary,
+              onChanged: userRole == UserRole.superAdmin
+                  ? (value) {
+                      final id = userSetting?.id;
+                      final userId = userSetting?.userId;
+                      if (id == null || userId == null) {
+                        widgetHelper.showSnackBar(context, 'invalid_id_or_user_id'.tr());
+                        return;
+                      }
+
+                      final body = UserSettingBody(
+                        data: [
+                          ItemUserSettingBody(
+                            id: userSetting!.id!,
+                            isEnableBlurScreenshot: value,
+                            userId: userSetting!.userId!,
+                          ),
+                        ],
+                      );
+                      settingBloc.add(
+                        UpdateUserSettingEvent(
+                          body: body,
+                        ),
+                      );
+                    }
+                  : null,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  void doLoadUserSetting() {
+    settingBloc.add(LoadUserSettingEvent());
   }
 }

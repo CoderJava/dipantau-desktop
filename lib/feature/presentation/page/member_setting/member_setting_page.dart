@@ -159,10 +159,10 @@ class _MemberSettingPageState extends State<MemberSettingPage> {
           child: BlocBuilder<MemberBloc, MemberState>(
             builder: (context, state) {
               if (state is FailureMemberState) {
-                final errorMessage = state.errorMessage;
+                final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
                 return WidgetError(
                   title: 'oops'.tr(),
-                  message: errorMessage,
+                  message: errorMessage.hideResponseCode(),
                   onTryAgain: doLoadData,
                 );
               } else if (state is LoadingCenterMemberState) {

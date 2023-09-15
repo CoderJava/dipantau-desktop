@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dipantau_desktop_client/core/util/images.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
@@ -10,8 +11,9 @@ class PhotoViewPage extends StatefulWidget {
   static const routePath = '/photo-view';
   static const routeName = 'photo-view';
   static const parameterListPhotos = 'list_photos';
+  static const parameterListPhotosBlur = 'list_photos_blur';
 
-  final List<String>? listPhotos;
+  final List<ItemFileTrackUserResponse>? listPhotos;
 
   PhotoViewPage({
     Key? key,
@@ -24,7 +26,7 @@ class PhotoViewPage extends StatefulWidget {
 
 class _PhotoViewPageState extends State<PhotoViewPage> {
   final pageController = PageController();
-  final listPhotos = <String>[];
+  final listPhotos = <ItemFileTrackUserResponse>[];
 
   var indexSelectedPhoto = 0;
 
@@ -48,7 +50,10 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
                 pageController: pageController,
                 scrollPhysics: const BouncingScrollPhysics(),
                 builder: (BuildContext context, int index) {
-                  final photo = listPhotos[index];
+                  var photo = listPhotos[index].urlBlur ?? '';
+                  if (photo.isEmpty) {
+                    photo = listPhotos[index].url ?? '';
+                  }
                   return photo.startsWith('http')
                       ? PhotoViewGalleryPageOptions(
                           imageProvider: NetworkImage(photo),
@@ -126,37 +131,24 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
-          children: listPhotos.map((photo) {
-            final index = listPhotos.indexOf(photo);
-            final isSelected = photo == listPhotos[indexSelectedPhoto];
+          children: listPhotos.map((element) {
+            final index = listPhotos.indexOf(element);
+            final elementId = element.id;
+            final selectedId = listPhotos[indexSelectedPhoto].id;
+            var isSelected = false;
+            if (elementId != null || selectedId != null) {
+              isSelected = elementId == selectedId;
+            }
+            var photo = element.urlBlur ?? '';
+            if (photo.isEmpty) {
+              photo = element.url ?? '';
+            }
 
             final widgetImage = SizedBox(
               width: defaultSize,
               height: defaultSize,
               child: photo.startsWith('http')
-                  ? /*CachedNetworkImage(
-                      imageUrl: photo,
-                      fit: BoxFit.cover,
-                      width: defaultSize,
-                      height: defaultSize,
-                      errorWidget: (context, error, stacktrace) {
-                        return Image.asset(
-                          BaseImage.imagePlaceholder,
-                          fit: BoxFit.cover,
-                          width: defaultSize,
-                          height: defaultSize,
-                        );
-                      },
-                      progressIndicatorBuilder: (context, url, downloadProgress) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1,
-                            value: downloadProgress.progress,
-                          ),
-                        );
-                      },
-                    )*/
-                  Image.network(
+                  ? Image.network(
                       photo,
                       fit: BoxFit.cover,
                       width: defaultSize,

@@ -132,12 +132,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 if (state is LoadingCenterUserProfileState) {
                   return const WidgetCustomCircularProgressIndicator();
                 } else if (state is FailureUserProfileState) {
-                  final errorMessage = state.errorMessage;
+                  final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: helper.getDefaultPaddingLayout),
                     child: WidgetError(
                       title: 'oops'.tr(),
-                      message: errorMessage,
+                      message: errorMessage.hideResponseCode(),
                       onTryAgain: doLoadData,
                     ),
                   );

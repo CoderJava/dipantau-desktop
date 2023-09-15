@@ -16,7 +16,9 @@
         {
           "id": 1,
           "url": "testUrl",
-          "size": 1
+          "size": 1,
+          "url_blur": "testUrlBlur",
+          "size_blur": 1
         }
       ]
     }
