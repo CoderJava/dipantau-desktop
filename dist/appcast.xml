@@ -5,32 +5,26 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.3.0</title>
+            <title>Version 1.4.0</title>
             <description><![CDATA[
                 <h3>Fitur</h3>
                 <ul>
-                    <li>Buat fitur hapus data track dan task khusus untuk role admin dan super admin.</li>
-                    <li>Buat fitur forgot password.</li>
-                    <li>Auto start timer ketika wake up lock screen. Hanya berjalan jika pada saat sleep kondisi timer-nya sedang berjalan.</li>
-                    <li>Tambahkan tombol start/stop timer di system tray.</li>
-                    <li>Kirimkan versi app yang digunakan ke API.</li>
-                    <li>Ubah metode JWT agar menggunakan private dan public key.</li>
-                </ul>
-                <h3>Perbaikan</h3>
-                <ul>
-                    <li>Tambahkan validasi agar tidak duplikat datanya ketika buat data track.</li>
+                    <li>Tampilkan dialog konfirmasi ketika delete track di halaman report screenshot.</li>
+                    <li>Buat fitur blur screenshot beserta dengan pengaturannya.</li>
+                    <li>Buat fitur add manual time track.</li>
+                    <li>Buat penanda ketika ada app versi terbaru.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>8</sparkle:version>
-            <sparkle:shortVersionString>1.3.0</sparkle:shortVersionString>
+            <sparkle:version>9</sparkle:version>
+            <sparkle:shortVersionString>1.4.0</sparkle:shortVersionString>
             <enclosure
-                length="21664023"
+                length="21929618"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.3.0/dipantau_desktop_client-1.3.0+8-macos.zip"
-                sparkle:edSignature="e37ebLmKtpRSQK1rUg6Y+aHGq0jvR4qIjAUHAtaQtY0qK+/ZeAY9MPMeTXpr8/pPhZwH2+ro2iy63hbjUx96Bw=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.4.0/dipantau_desktop_client-1.4.0+9-macos.zip"
+                sparkle:edSignature="GQ538z2yYeVgOkmMSF3/IQNR92V+Js5vG8k18n6cucadvNFexg4DEiY1YJeYqxZS2Z2S0b/ulRnBBvgTpCLkCQ=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 27 Aug 2023 10:00:00 +0700</pubDate>
+            <pubDate>Mon, 16 Sep 2023 06:00:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
