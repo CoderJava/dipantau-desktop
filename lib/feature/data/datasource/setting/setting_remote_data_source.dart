@@ -145,9 +145,17 @@ class SettingRemoteDataSourceImpl implements SettingRemoteDataSource {
   @override
   Future<bool> updateUserSetting(UserSettingBody body) async {
     pathUpdateUserSetting = '$baseUrl/user';
+    Map<String, dynamic>? data;
+    if (body.isOverrideBlurScreenshot == null) {
+      data = {
+        'data': body.data,
+      };
+    } else {
+      data = body.toJson();
+    }
     final response = await dio.post(
       pathUpdateUserSetting,
-      data: body.toJson(),
+      data: data,
       options: Options(
         headers: {
           baseUrlConfig.requiredToken: true,

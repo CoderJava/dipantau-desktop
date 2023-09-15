@@ -322,10 +322,14 @@ void main() {
   });
 
   group('updateUserSetting', () {
-    final body = UserSettingBody.fromJson(
+    final bodyOverride = UserSettingBody.fromJson(
       json.decode(
         fixture('user_setting_body.json'),
       ),
+    );
+    final bodyOverrideNull = UserSettingBody(
+      data: [],
+      isOverrideBlurScreenshot: null,
     );
     const tPathResponse = 'general_response.json';
     const tResponse = true;
@@ -350,7 +354,8 @@ void main() {
         setUpMockDioSuccess();
 
         // act
-        await remoteDataSource.updateUserSetting(body);
+        await remoteDataSource.updateUserSetting(bodyOverride);
+        await remoteDataSource.updateUserSetting(bodyOverrideNull);
 
         // assert
         verify(mockDio.post('$baseUrl/user', data: anyNamed('data'), options: anyNamed('options')));
@@ -365,7 +370,7 @@ void main() {
         setUpMockDioSuccess();
 
         // act
-        final result = await remoteDataSource.updateUserSetting(body);
+        final result = await remoteDataSource.updateUserSetting(bodyOverride);
 
         // assert
         expect(result, tResponse);
@@ -384,7 +389,7 @@ void main() {
         when(mockDio.post(any, data: anyNamed('data'), options: anyNamed('options'))).thenAnswer((_) async => response);
 
         // act
-        final call = remoteDataSource.updateUserSetting(body);
+        final call = remoteDataSource.updateUserSetting(bodyOverride);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));
