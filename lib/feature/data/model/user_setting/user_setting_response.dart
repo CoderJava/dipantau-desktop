@@ -13,12 +13,15 @@ class UserSettingResponse extends Equatable {
   final int? userId;
   @JsonKey(name: 'name')
   final String? name;
+  @JsonKey(name: 'is_override_blur_screenshot')
+  final bool? isOverrideBlurScreenshot;
 
   UserSettingResponse({
     required this.id,
     required this.isEnableBlurScreenshot,
     required this.userId,
     required this.name,
+    required this.isOverrideBlurScreenshot,
   });
 
   factory UserSettingResponse.fromJson(Map<String, dynamic> json) => _$UserSettingResponseFromJson(json);
@@ -31,10 +34,12 @@ class UserSettingResponse extends Equatable {
         isEnableBlurScreenshot,
         userId,
         name,
+        isOverrideBlurScreenshot,
       ];
 
   @override
   String toString() {
-    return 'UserSettingResponse{id: $id, isEnableBlurScreenshot: $isEnableBlurScreenshot, userId: $userId, name: $name}';
+    return 'UserSettingResponse{id: $id, isEnableBlurScreenshot: $isEnableBlurScreenshot, userId: $userId, name: $name, '
+        'isOverrideBlurScreenshot: $isOverrideBlurScreenshot}';
   }
 }
