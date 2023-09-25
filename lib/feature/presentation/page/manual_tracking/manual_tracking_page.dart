@@ -13,7 +13,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 class ManualTrackingPage extends StatefulWidget {
   static const routePath = '/manual-tracking';
@@ -33,7 +32,9 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
   final sharedPreferencesManager = sl<SharedPreferencesManager>();
   final projectItems = <_ItemData>[];
   final taskItems = <_ItemData>[];
+  final controllerStartDate = TextEditingController();
   final controllerStartTime = TextEditingController();
+  final controllerFinishDate = TextEditingController();
   final controllerFinishTime = TextEditingController();
   final controllerDuration = TextEditingController();
   final valueNotifierEnableButtonSave = ValueNotifier(false);
@@ -42,7 +43,8 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
   var userId = '';
   ProjectTaskResponse? projectTask;
   _ItemData? selectedProject, selectedTask;
-  DateTime? startDateTime, finishDateTime;
+  DateTime? startDate, finishDate;
+  TimeOfDay? startTime, finishTime;
   int? durationInSeconds;
 
   @override
@@ -208,69 +210,199 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
             },
           ),
           const SizedBox(height: 24),
-          buildWidgetField(
-            controllerStartTime,
-            label: 'start_time'.tr(),
-            hint: 'set_start_time'.tr(),
-            validator: (value) {
-              return value == null ? 'please_set_start_time'.tr() : null;
-            },
-            onTap: () async {
-              final now = DateTime.now();
-              final firstDate = now.subtract(const Duration(days: 30));
-              final selectedStartDateTime = await showOmniDateTimePicker(
-                context: context,
-                initialDate: startDateTime ?? now,
-                firstDate: firstDate,
-                lastDate: now,
-                is24HourMode: true,
-                separator: const Divider(),
-              );
-              if (selectedStartDateTime != null) {
-                startDateTime = selectedStartDateTime;
-                if (finishDateTime != null && startDateTime!.isAfter(finishDateTime!)) {
-                  finishDateTime = null;
-                  controllerFinishTime.text = '';
-                }
-                controllerStartTime.text = helper.setDateFormat('EEE dd MMM yyyy HH:mm').format(startDateTime!);
-                calculateDuration();
-                doCheckEnableButtonSubmit();
-                setState(() {});
-              }
-            },
+          Row(
+            children: [
+              Expanded(
+                child: buildWidgetField(
+                  controllerStartDate,
+                  label: 'start_date'.tr(),
+                  hint: 'set_start_date'.tr(),
+                  validator: (value) {
+                    return value == null ? 'please_set_start_date'.tr() : null;
+                  },
+                  onTap: () async {
+                    final now = DateTime.now();
+                    final firstDate = now.subtract(const Duration(days: 30));
+                    final selectedStartDate = await showDatePicker(
+                      context: context,
+                      initialDate: startDate ?? now,
+                      firstDate: firstDate,
+                      lastDate: now,
+                    );
+                    if (selectedStartDate != null) {
+                      startDate = selectedStartDate;
+                      checkIfStartAfterFinishDateTime();
+                      controllerStartDate.text = helper.setDateFormat('EEEE dd MMM yyyy').format(startDate!);
+                      calculateDuration();
+                      doCheckEnableButtonSubmit();
+                      setState(() {});
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: buildWidgetField(
+                  controllerStartTime,
+                  label: 'start_time'.tr(),
+                  hint: 'set_start_time'.tr(),
+                  validator: (value) {
+                    return value == null ? 'please_set_start_time'.tr() : null;
+                  },
+                  onTap: () async {
+                    TimeOfDay initialTime = TimeOfDay.now();
+                    if (startTime != null) {
+                      initialTime = TimeOfDay(
+                        hour: startTime!.hour,
+                        minute: startTime!.minute,
+                      );
+                    }
+                    final selectedStartTime = await showTimePicker(
+                      context: context,
+                      initialTime: initialTime,
+                      initialEntryMode: TimePickerEntryMode.input,
+                    );
+                    if (selectedStartTime != null) {
+                      startTime = TimeOfDay(
+                        hour: selectedStartTime.hour,
+                        minute: selectedStartTime.minute,
+                      );
+                      final startDateTime = DateTime(
+                        startDate!.year,
+                        startDate!.month,
+                        startDate!.day,
+                        startTime!.hour,
+                        startTime!.minute,
+                        0,
+                      );
+                      checkIfStartAfterFinishDateTime();
+                      controllerStartTime.text = helper.setDateFormat('HH:mm').format(startDateTime);
+                      calculateDuration();
+                      doCheckEnableButtonSubmit();
+                      setState(() {});
+                    }
+                  },
+                  isEnabled: startDate != null,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
-          buildWidgetField(
-            controllerFinishTime,
-            label: 'finish_time'.tr(),
-            hint: 'set_finish_time'.tr(),
-            validator: (value) {
-              return value == null ? 'please_set_finish_time'.tr() : null;
-            },
-            onTap: () async {
-              final now = DateTime.now();
-              final firstDate = now.subtract(const Duration(days: 30));
-              final selectedFinishTime = await showOmniDateTimePicker(
-                context: context,
-                initialDate: finishDateTime ?? now,
-                firstDate: firstDate,
-                lastDate: now,
-                is24HourMode: true,
-                separator: const Divider(),
-              );
-              if (selectedFinishTime != null) {
-                finishDateTime = selectedFinishTime;
-                if (startDateTime != null && finishDateTime!.isBefore(startDateTime!)) {
-                  startDateTime = null;
-                  controllerStartTime.text = '';
-                }
-                controllerFinishTime.text = helper.setDateFormat('EEE dd MMM yyyy HH:mm').format(finishDateTime!);
-                calculateDuration();
-                doCheckEnableButtonSubmit();
-                setState(() {});
-              }
-            },
-            isEnabled: startDateTime != null,
+          Row(
+            children: [
+              Expanded(
+                child: buildWidgetField(
+                  controllerFinishDate,
+                  label: 'finish_date'.tr(),
+                  hint: 'set_finish_date'.tr(),
+                  validator: (value) {
+                    return value == null ? 'please_set_finish_date'.tr() : null;
+                  },
+                  onTap: () async {
+                    final firstDate = DateTime(
+                      startDate!.year,
+                      startDate!.month,
+                      startDate!.day,
+                      startTime!.hour,
+                      startTime!.minute,
+                      0,
+                    );
+                    firstDate.add(const Duration(minutes: 1));
+                    final selectedFinishDate = await showDatePicker(
+                      context: context,
+                      initialDate: finishDate ?? firstDate,
+                      firstDate: firstDate,
+                      lastDate: firstDate.add(const Duration(days: 1)),
+                    );
+                    if (selectedFinishDate != null) {
+                      finishDate = selectedFinishDate;
+                      controllerFinishDate.text = helper.setDateFormat('EEEE dd MMM yyyy').format(finishDate!);
+                      final isFinishBeforeStart = isFinishBeforeStartDateTime();
+                      if (isFinishBeforeStart) {
+                        finishTime = null;
+                        controllerFinishTime.text = '';
+                        if (mounted) {
+                          showDialogValidationTime();
+                        }
+                        return;
+                      }
+
+                      calculateDuration();
+                      doCheckEnableButtonSubmit();
+                      setState(() {});
+                    }
+                  },
+                  isEnabled: startDate != null && startTime != null,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: buildWidgetField(
+                  controllerFinishTime,
+                  label: 'finish_time'.tr(),
+                  hint: 'set_finish_time'.tr(),
+                  validator: (value) {
+                    return value == null ? 'please_set_finish_time'.tr() : null;
+                  },
+                  onTap: () async {
+                    DateTime startDateTime = DateTime(
+                      startDate!.year,
+                      startDate!.month,
+                      startDate!.day,
+                      startTime!.hour,
+                      startTime!.minute,
+                      0,
+                    );
+                    startDateTime = startDateTime.add(const Duration(minutes: 1));
+
+                    TimeOfDay initialTime = TimeOfDay(
+                      hour: startDateTime.hour,
+                      minute: startDateTime.minute,
+                    );
+                    if (finishTime != null) {
+                      initialTime = TimeOfDay(
+                        hour: finishTime!.hour,
+                        minute: finishTime!.minute,
+                      );
+                    }
+                    final selectedFinishTime = await showTimePicker(
+                      context: context,
+                      initialTime: initialTime,
+                      initialEntryMode: TimePickerEntryMode.input,
+                    );
+                    if (selectedFinishTime != null) {
+                      finishTime = TimeOfDay(
+                        hour: selectedFinishTime.hour,
+                        minute: selectedFinishTime.minute,
+                      );
+                      final finishDateTime = DateTime(
+                        finishDate!.year,
+                        finishDate!.month,
+                        finishDate!.day,
+                        finishTime!.hour,
+                        finishTime!.minute,
+                        0,
+                      );
+                      controllerFinishTime.text = helper.setDateFormat('HH:mm').format(finishDateTime);
+                      final isFinishBeforeStart = isFinishBeforeStartDateTime();
+                      if (isFinishBeforeStart) {
+                        finishTime = null;
+                        controllerFinishTime.text = '';
+                        if (mounted) {
+                          showDialogValidationTime();
+                        }
+                        return;
+                      }
+
+                      calculateDuration();
+                      doCheckEnableButtonSubmit();
+                      setState(() {});
+                    }
+                  },
+                  isEnabled: startDate != null && startTime != null && finishDate != null,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           buildWidgetField(
@@ -284,6 +416,78 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
         ],
       ),
     );
+  }
+
+  void showDialogValidationTime() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('warning'.tr()),
+          content: Text(
+            'finish_date_time_must_be_after_of_start_date_time'.tr(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => context.pop(),
+              child: Text('ok'.tr()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  bool isFinishBeforeStartDateTime() {
+    if (startDate != null && startTime != null && finishDate != null && finishTime != null) {
+      final startDateTime = DateTime(
+        startDate!.year,
+        startDate!.month,
+        startDate!.day,
+        startTime!.hour,
+        startTime!.minute,
+        0,
+      );
+      final finishDateTime = DateTime(
+        finishDate!.year,
+        finishDate!.month,
+        finishDate!.day,
+        finishTime!.hour,
+        finishTime!.minute,
+        0,
+      );
+      if (finishDateTime.isBefore(startDateTime) || finishDateTime.isAtSameMomentAs(startDateTime)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void checkIfStartAfterFinishDateTime() {
+    if (finishDate != null && finishTime != null && startDate != null && startTime != null) {
+      final startDateTime = DateTime(
+        startDate!.year,
+        startDate!.month,
+        startDate!.day,
+        startTime!.hour,
+        startTime!.minute,
+        0,
+      );
+      final finishDateTime = DateTime(
+        finishDate!.year,
+        finishDate!.month,
+        finishDate!.day,
+        finishTime!.hour,
+        finishTime!.minute,
+        0,
+      );
+      if (startDateTime.isAfter(finishDateTime)) {
+        finishDate = null;
+        finishTime = null;
+        controllerFinishDate.text = '';
+        controllerFinishTime.text = '';
+      }
+    }
   }
 
   Widget buildWidgetButtonSave() {
@@ -311,7 +515,7 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
   }
 
   void doSave() {
-    final timezoneOffsetInSeconds = startDateTime!.timeZoneOffset.inSeconds;
+    final timezoneOffsetInSeconds = startDate!.timeZoneOffset.inSeconds;
     final timezoneOffset = helper.convertSecondToHms(timezoneOffsetInSeconds);
     var strTimezoneOffset = timezoneOffsetInSeconds >= 0 ? '+' : '-';
     strTimezoneOffset += timezoneOffset.hour < 10 ? '0${timezoneOffset.hour}' : timezoneOffset.hour.toString();
@@ -320,10 +524,26 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
 
     const datePattern = 'yyyy-MM-dd';
     const timePattern = 'HH:mm:ss';
-    final strStartDate = helper.setDateFormat(datePattern).format(startDateTime!);
-    final strStartTime = helper.setDateFormat(timePattern).format(startDateTime!);
-    final strFinishDate = helper.setDateFormat(datePattern).format(finishDateTime!);
-    final strFinishTime = helper.setDateFormat(timePattern).format(finishDateTime!);
+    final startDateTime = DateTime(
+      startDate!.year,
+      startDate!.month,
+      startDate!.day,
+      startTime!.hour,
+      startTime!.minute,
+      0,
+    );
+    final finishDateTime = DateTime(
+      finishDate!.year,
+      finishDate!.month,
+      finishDate!.day,
+      finishTime!.hour,
+      finishTime!.minute,
+      0,
+    );
+    final strStartDate = helper.setDateFormat(datePattern).format(startDateTime);
+    final strStartTime = helper.setDateFormat(timePattern).format(startDateTime);
+    final strFinishDate = helper.setDateFormat(datePattern).format(finishDateTime);
+    final strFinishTime = helper.setDateFormat(timePattern).format(finishDateTime);
     final formattedStartDateTime = '${strStartDate}T$strStartTime$strTimezoneOffset';
     final formattedFinishDateTime = '${strFinishDate}T$strFinishTime$strTimezoneOffset';
     final body = ManualCreateTrackBody(
@@ -340,8 +560,24 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
   }
 
   void calculateDuration() {
-    if (startDateTime != null && finishDateTime != null) {
-      durationInSeconds = startDateTime!.difference(finishDateTime!).inSeconds.abs();
+    if (startDate != null && startTime != null && finishDate != null && finishTime != null) {
+      final startDateTime = DateTime(
+        startDate!.year,
+        startDate!.month,
+        startDate!.day,
+        startTime!.hour,
+        startTime!.minute,
+        0,
+      );
+      final finishDateTime = DateTime(
+        finishDate!.year,
+        finishDate!.month,
+        finishDate!.day,
+        finishTime!.hour,
+        finishTime!.minute,
+        0,
+      );
+      durationInSeconds = startDateTime.difference(finishDateTime).inSeconds.abs();
       final mapDuration = helper.convertSecondToHms(durationInSeconds!);
       final hour = mapDuration.hour;
       final minute = mapDuration.minute;
@@ -431,8 +667,8 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
     var isEnableTemp = false;
     if (selectedProject != null &&
         selectedTask != null &&
-        startDateTime != null &&
-        finishDateTime != null &&
+        startDate != null &&
+        finishDate != null &&
         durationInSeconds != null &&
         durationInSeconds! > 0) {
       isEnableTemp = true;
