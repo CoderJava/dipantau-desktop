@@ -132,9 +132,6 @@ dependencies:
   # This plugin allow Flutter desktop apps to Auto launch on startup / login.
   launch_at_startup: ^0.2.2
 
-  # A datetime picker package with option to use a single datetime picker or a datetime range picker.
-  omni_datetime_picker: ^1.0.8
-
   # A lightweight library for parsing, traversing, querying, transforming and building XML documents.
   xml: ^6.3.0
 
