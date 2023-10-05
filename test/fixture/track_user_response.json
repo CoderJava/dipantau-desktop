@@ -20,7 +20,8 @@
           "url_blur": "testUrlBlur",
           "size_blur": 1
         }
-      ]
+      ],
+      "note": "testNote"
     }
   ]
 }
