@@ -423,6 +423,8 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
             onChanged: (_) {
               doCheckEnableButtonSubmit();
             },
+            minLines: 1,
+            maxLines: 3,
           ),
           const SizedBox(height: 24),
           buildWidgetButtonSave(),
@@ -629,6 +631,8 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
     bool readOnly = true,
     int? maxLength,
     ValueChanged<String>? onChanged,
+    int? minLines,
+    int? maxLines,
   }) {
     return TextFormField(
       controller: controller,
@@ -643,6 +647,8 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
       enabled: isEnabled,
       maxLength: maxLength,
       onChanged: onChanged,
+      minLines: minLines,
+      maxLines: maxLines,
     );
   }
 
