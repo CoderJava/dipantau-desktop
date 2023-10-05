@@ -37,6 +37,7 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
   final controllerFinishDate = TextEditingController();
   final controllerFinishTime = TextEditingController();
   final controllerDuration = TextEditingController();
+  final controllerNote = TextEditingController();
   final valueNotifierEnableButtonSave = ValueNotifier(false);
 
   var isLoading = false;
@@ -412,6 +413,18 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
             isEnabled: false,
           ),
           const SizedBox(height: 24),
+          buildWidgetField(
+            controllerNote,
+            label: 'reason'.tr(),
+            hint: 'why_are_you_adding_manual_track'.tr(),
+            isEnabled: true,
+            readOnly: false,
+            maxLength: 100,
+            onChanged: (_) {
+              doCheckEnableButtonSubmit();
+            },
+          ),
+          const SizedBox(height: 24),
           buildWidgetButtonSave(),
         ],
       ),
@@ -551,6 +564,7 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
       startDate: formattedStartDateTime,
       finishDate: formattedFinishDateTime,
       duration: durationInSeconds!,
+      note: controllerNote.text.trim(),
     );
     manualTrackingBloc.add(
       CreateManualTrackingEvent(
@@ -612,6 +626,9 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
     Function()? onTap,
     bool isEnabled = true,
     FormFieldValidator<String>? validator,
+    bool readOnly = true,
+    int? maxLength,
+    ValueChanged<String>? onChanged,
   }) {
     return TextFormField(
       controller: controller,
@@ -619,11 +636,13 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
         labelText: label,
         hintText: hint,
       ),
-      readOnly: true,
+      readOnly: readOnly,
       mouseCursor: MaterialStateMouseCursor.clickable,
       onTap: onTap,
       validator: validator,
       enabled: isEnabled,
+      maxLength: maxLength,
+      onChanged: onChanged,
     );
   }
 
@@ -655,9 +674,9 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
       validator: validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       padding: EdgeInsets.zero,
+      hint: Text(hintText),
       decoration: widgetHelper.setDefaultTextFieldDecoration(
         labelText: labelText,
-        hintText: hintText,
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );
@@ -665,12 +684,14 @@ class _ManualTrackingPageState extends State<ManualTrackingPage> {
 
   void doCheckEnableButtonSubmit() {
     var isEnableTemp = false;
+    final reason = controllerNote.text.trim();
     if (selectedProject != null &&
         selectedTask != null &&
         startDate != null &&
         finishDate != null &&
         durationInSeconds != null &&
-        durationInSeconds! > 0) {
+        durationInSeconds! > 0 &&
+        reason.isNotEmpty) {
       isEnableTemp = true;
     }
     if (isEnableTemp != valueNotifierEnableButtonSave.value) {
