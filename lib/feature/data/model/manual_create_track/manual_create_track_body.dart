@@ -13,12 +13,15 @@ class ManualCreateTrackBody extends Equatable {
   final String finishDate;
   @JsonKey(name: 'duration')
   final int duration;
+  @JsonKey(name: 'note')
+  final String? note;
 
   ManualCreateTrackBody({
     required this.taskId,
     required this.startDate,
     required this.finishDate,
     required this.duration,
+    required this.note,
   });
 
   factory ManualCreateTrackBody.fromJson(Map<String, dynamic> json) => _$ManualCreateTrackBodyFromJson(json);
@@ -31,10 +34,12 @@ class ManualCreateTrackBody extends Equatable {
         startDate,
         finishDate,
         duration,
+        note,
       ];
 
   @override
   String toString() {
-    return 'ManualCreateTrackBody{taskId: $taskId, startDate: $startDate, finishDate: $finishDate, duration: $duration}';
+    return 'ManualCreateTrackBody{taskId: $taskId, startDate: $startDate, finishDate: $finishDate, duration: $duration, '
+        'note: $note}';
   }
 }

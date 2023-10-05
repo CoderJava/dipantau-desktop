@@ -808,69 +808,95 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
     }
 
     final trackId = element.id;
+    final note = element.note ?? '';
     return Align(
       alignment: Alignment.center,
       child: Padding(
         padding: EdgeInsets.only(top: heightImage),
         child: Row(
           mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Material(
-              borderRadius: BorderRadius.circular(999),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(999),
-                onTap: () {
-                  if (trackId == null) {
-                    widgetHelper.showSnackBar(
-                      context,
-                      'track_id_invalid'.tr(),
-                    );
-                    return;
-                  }
-
-                  showDialog<bool?>(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text('title_delete_track'.tr()),
-                        content: Text('content_delete_track'.tr()),
-                        actions: [
-                          TextButton(
-                            onPressed: () => context.pop(false),
-                            child: Text('cancel'.tr()),
-                          ),
-                          TextButton(
-                            onPressed: () => context.pop(true),
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.red,
-                            ),
-                            child: Text('delete'.tr()),
-                          ),
-                        ],
-                      );
-                    },
-                  ).then((value) {
-                    if (value != null && value) {
-                      trackingBloc.add(
-                        DeleteTrackUserTrackingEvent(
-                          trackId: trackId,
-                        ),
-                      );
-                    }
-                  });
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: FaIcon(
-                    FontAwesomeIcons.trashCan,
-                    color: Colors.red,
-                    size: 14,
+            note.isEmpty
+                ? Container()
+                : Tooltip(
+                    message: note,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FaIcon(
+                        FontAwesomeIcons.penToSquare,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 14,
+                      ),
+                    ),
                   ),
-                ),
+            buildWidgetIconDelete(
+              const FaIcon(
+                FontAwesomeIcons.trashCan,
+                color: Colors.red,
+                size: 14,
               ),
+              onTap: () {
+                if (trackId == null) {
+                  widgetHelper.showSnackBar(
+                    context,
+                    'track_id_invalid'.tr(),
+                  );
+                  return;
+                }
+
+                showDialog<bool?>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('title_delete_track'.tr()),
+                      content: Text('content_delete_track'.tr()),
+                      actions: [
+                        TextButton(
+                          onPressed: () => context.pop(false),
+                          child: Text('cancel'.tr()),
+                        ),
+                        TextButton(
+                          onPressed: () => context.pop(true),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          child: Text('delete'.tr()),
+                        ),
+                      ],
+                    );
+                  },
+                ).then((value) {
+                  if (value != null && value) {
+                    trackingBloc.add(
+                      DeleteTrackUserTrackingEvent(
+                        trackId: trackId,
+                      ),
+                    );
+                  }
+                });
+              },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildWidgetIconDelete(
+    Widget icon, {
+    Function()? onTap,
+    ValueChanged<bool>? onHover,
+  }) {
+    return Material(
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        onHover: onHover,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: icon,
         ),
       ),
     );

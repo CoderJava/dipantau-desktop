@@ -24,6 +24,7 @@ void main() {
           tModel.startDate,
           tModel.finishDate,
           tModel.duration,
+          tModel.note,
         ],
       );
     },
@@ -36,7 +37,7 @@ void main() {
       expect(
         tModel.toString(),
         'ManualCreateTrackBody{taskId: ${tModel.taskId}, startDate: ${tModel.startDate}, '
-        'finishDate: ${tModel.finishDate}, duration: ${tModel.duration}}',
+        'finishDate: ${tModel.finishDate}, duration: ${tModel.duration}, note: ${tModel.note}}',
       );
     },
   );

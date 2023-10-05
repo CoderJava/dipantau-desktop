@@ -291,5 +291,7 @@
   "set_finish_date": "Set finish date",
   "please_set_start_date": "Please set start date",
   "please_set_finish_date": "Please set finish date",
-  "finish_date_time_must_be_after_of_start_date_time": "The finish date time must be after the start date time"
+  "finish_date_time_must_be_after_of_start_date_time": "The finish date time must be after the start date time",
+  "reason": "Reason",
+  "why_are_you_adding_manual_track": "e.g. Forgot to start timer"
 }

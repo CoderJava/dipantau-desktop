@@ -53,6 +53,8 @@ class ItemTrackUserResponse extends Equatable {
   final String? user;
   @JsonKey(name: 'files')
   final List<ItemFileTrackUserResponse>? files;
+  @JsonKey(name: 'note')
+  final String? note;
 
   ItemTrackUserResponse({
     required this.id,
@@ -67,6 +69,7 @@ class ItemTrackUserResponse extends Equatable {
     required this.userId,
     required this.user,
     required this.files,
+    required this.note,
   });
 
   factory ItemTrackUserResponse.fromJson(Map<String, dynamic> json) => _$ItemTrackUserResponseFromJson(json);
@@ -87,6 +90,7 @@ class ItemTrackUserResponse extends Equatable {
         userId,
         user,
         files,
+        note,
       ];
 
   @override
@@ -94,7 +98,7 @@ class ItemTrackUserResponse extends Equatable {
     return 'ItemTrackUserResponse{id: $id, taskId: $taskId, taskName: $taskName, projectId: $projectId, '
         'projectName: $projectName, startDate: $startDate, finishDate: $finishDate, '
         'activityInPercent: $activityInPercent, durationInSeconds: $durationInSeconds, userId: $userId, user: $user, '
-        'files: $files}';
+        'files: $files, note: $note}';
   }
 }
 
