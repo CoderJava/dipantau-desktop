@@ -66,11 +66,28 @@ class _LoginPageState extends State<LoginPage> {
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'subtitle_login'.tr(),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${'dont_have_an_account'.tr()} ',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey,
+                                ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              // TODO: arahkan ke halaman create_account_page.dart
+                              widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+                            },
+                            child: Text(
+                              'create_account'.tr(),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
                             ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 24),
                       buildWidgetTextFieldEmail(),
@@ -86,14 +103,14 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'hostname_isnt_right'.tr(),
+                            '${'hostname_isnt_right'.tr()} ',
                           ),
                           InkWell(
                             onTap: () {
                               context.push(SetupCredentialPage.routePath);
                             },
                             child: Text(
-                              ' ${'try_changing_it'.tr()}',
+                              'try_changing_it'.tr(),
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Theme.of(context).colorScheme.primary,
                                   ),
