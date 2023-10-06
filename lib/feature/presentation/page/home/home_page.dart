@@ -45,6 +45,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 var countTimeReminderTrackInSeconds = 0;
+var isGlobalTimerStart = false;
 
 class HomePage extends StatefulWidget {
   static const routePath = '/home';
@@ -83,7 +84,6 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   var isWindowVisible = true;
   var userId = '';
   var email = '';
-  var isTimerStart = false;
   var isTimerStartTemp = false;
   TrackUserLiteResponse? trackUserLite;
   ItemProjectResponse? selectedProject;
@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       now.day,
     );
     timerDate = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!isTimerStart) {
+      if (!isGlobalTimerStart) {
         // reminder track
         var isShowReminderTrack = false;
         final now = DateTime.now();
@@ -533,7 +533,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         final firstTask = filteredTask.first;
         startTime = DateTime.now();
         selectedTask = firstTask;
-        isTimerStart = true;
+        isGlobalTimerStart = true;
         setTrayContextMenu();
         valueNotifierTaskTracked.value = firstTask.trackedInSeconds;
         resetCountTimer();
@@ -666,7 +666,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                       }
                       startTime = DateTime.now();
                       selectedTask = itemTask;
-                      isTimerStart = true;
+                      isGlobalTimerStart = true;
                       setTrayContextMenu();
                       valueNotifierTaskTracked.value = itemTask.trackedInSeconds;
                       resetCountTimer();
@@ -733,7 +733,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void stopTimerFromButton(TrackTask itemTask) {
-    isTimerStart = false;
+    isGlobalTimerStart = false;
     setTrayContextMenu();
     itemTask.trackedInSeconds = valueNotifierTaskTracked.value;
     stopTimer();
@@ -747,7 +747,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: isTimerStart || isTimerStartTemp
+        onTap: isGlobalTimerStart || isTimerStartTemp
             ? null
             : () async {
                 final selectedProjectTemp = await showModalBottomSheet(
@@ -806,7 +806,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 height: 8,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isTimerStart || isTimerStartTemp ? Colors.green : Colors.grey,
+                  color: isGlobalTimerStart || isTimerStartTemp ? Colors.green : Colors.grey,
                 ),
               ),
               const SizedBox(width: 4),
@@ -822,7 +822,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 ),
               ),
               const SizedBox(width: 16),
-              isTimerStart || isTimerStartTemp
+              isGlobalTimerStart || isTimerStartTemp
                   ? Container()
                   : const Icon(
                       Icons.keyboard_arrow_down,
@@ -995,7 +995,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   void setTrayContextMenu() {
     final items = <MenuItem>[];
     if (listTrackTask.isNotEmpty) {
-      if (!isTimerStart) {
+      if (!isGlobalTimerStart) {
         items.add(
           MenuItem(
             key: keyTrayStartWorking,
@@ -1096,7 +1096,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       final task = listTrackTask.first;
       startTime = DateTime.now();
       selectedTask = task;
-      isTimerStart = true;
+      isGlobalTimerStart = true;
       setTrayContextMenu();
       valueNotifierTaskTracked.value = task.trackedInSeconds;
       resetCountTimer();
@@ -1107,7 +1107,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       final task = filteredTask.first;
       startTime = DateTime.now();
       selectedTask = task;
-      isTimerStart = true;
+      isGlobalTimerStart = true;
       setTrayContextMenu();
       valueNotifierTaskTracked.value = task.trackedInSeconds;
       resetCountTimer();
@@ -1117,7 +1117,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   }
 
   void stopTimerFromSystemTray() {
-    isTimerStart = false;
+    isGlobalTimerStart = false;
     setTrayContextMenu();
     selectedTask?.trackedInSeconds = valueNotifierTaskTracked.value;
     stopTimer();
@@ -1158,8 +1158,8 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
             isHaveActivity = true;
           } else if (strEvent == 'screen_is_locked') {
             // auto stop timer dan ambil screenshot-nya
-            if (isTimerStart) {
-              isTimerStart = false;
+            if (isGlobalTimerStart) {
+              isGlobalTimerStart = false;
               setTrayContextMenu();
               stopTimer();
               finishTime = DateTime.now();
@@ -1271,7 +1271,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         // stop timer-nya jika permission screen recording-nya tidak diallow-kan atau
         // gagal ambil screenshot-nya di end time
         stopTimer();
-        isTimerStart = false;
+        isGlobalTimerStart = false;
         setTrayContextMenu();
         selectedTask = null;
         setState(() {});
@@ -1294,7 +1294,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       // stop timer-nya jika isForceStop bernilai true
       listPathScreenshots.clear();
       stopTimer();
-      isTimerStart = false;
+      isGlobalTimerStart = false;
       setTrayContextMenu();
       selectedTask = null;
       setState(() {});
