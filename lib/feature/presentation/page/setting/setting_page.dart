@@ -1032,6 +1032,7 @@ class _SettingPageState extends State<SettingPage> {
     if (isLogout != null && mounted) {
       await helper.setLogout();
       if (mounted) {
+        trayManager.setTitle('--:--:--');
         context.goNamed(SplashPage.routeName);
       }
     }
