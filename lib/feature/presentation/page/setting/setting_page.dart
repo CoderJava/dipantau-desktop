@@ -27,6 +27,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 class SettingPage extends StatefulWidget {
@@ -1002,6 +1003,25 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<void> doLogout() async {
+    if (isGlobalTimerStart) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('warning'.tr()),
+            content: Text('please_stop_the_timer_if_you_want_to_logout'.tr()),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(),
+                child: Text('dismiss'.tr()),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     final isLogout = await showDialog(
       context: context,
       builder: (context) {
