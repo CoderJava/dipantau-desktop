@@ -293,5 +293,6 @@
   "please_set_finish_date": "Please set finish date",
   "finish_date_time_must_be_after_of_start_date_time": "The finish date time must be after the start date time",
   "reason": "Reason",
-  "why_are_you_adding_manual_track": "e.g. Forgot to start timer"
+  "why_are_you_adding_manual_track": "e.g. Forgot to start timer",
+  "please_stop_the_timer_if_you_want_to_logout": "Please stop the timer if you want to logout."
 }
