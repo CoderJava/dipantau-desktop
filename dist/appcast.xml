@@ -5,26 +5,29 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.4.0</title>
+            <title>Version 1.5.0</title>
             <description><![CDATA[
                 <h3>Fitur</h3>
                 <ul>
-                    <li>Tampilkan dialog konfirmasi ketika delete track di halaman report screenshot.</li>
-                    <li>Buat fitur blur screenshot beserta dengan pengaturannya.</li>
-                    <li>Buat fitur add manual time track.</li>
-                    <li>Buat penanda ketika ada app versi terbaru.</li>
+                    <li>Update form add manual track agar lebih gampang dipakai.</li>
+                    <li>Update form add manual track agar wajib mengisi catatan.</li>
+                </ul>
+                <h3>Perbaikan</h3>
+                <ul>
+                    <li>Perbaiki reset timer di system tray setelah user logout.</li>
+                    <li>Perbaiki agar user tidak bisa logout jika timer-nya dalam keadaan hidup.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>9</sparkle:version>
-            <sparkle:shortVersionString>1.4.0</sparkle:shortVersionString>
+            <sparkle:version>10</sparkle:version>
+            <sparkle:shortVersionString>1.5.0</sparkle:shortVersionString>
             <enclosure
-                length="21929618"
+                length="22099465"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.4.0/dipantau_desktop_client-1.4.0+9-macos.zip"
-                sparkle:edSignature="GQ538z2yYeVgOkmMSF3/IQNR92V+Js5vG8k18n6cucadvNFexg4DEiY1YJeYqxZS2Z2S0b/ulRnBBvgTpCLkCQ=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.5.0/dipantau_desktop_client-1.5.0+10-macos.zip"
+                sparkle:edSignature="SD3FiLTU33boY9igH0D95rHcdjIOaLT7SLgZUf4qJcHeVK8fuqAJgKw2TB2SDtxAFKzLTPE5uFWmHKVVEW47BA=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 16 Sep 2023 06:00:00 +0700</pubDate>
+            <pubDate>Mon, 07 Oct 2023 09:00:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
