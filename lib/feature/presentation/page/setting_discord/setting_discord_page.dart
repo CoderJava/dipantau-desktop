@@ -178,6 +178,7 @@ class _SettingDiscordPageState extends State<SettingDiscordPage> {
         UpdateKvSettingEvent(
           body: KvSettingBody(
             discordChannelId: discordChannelId,
+            signUpMethod: null,
           ),
         ),
       );

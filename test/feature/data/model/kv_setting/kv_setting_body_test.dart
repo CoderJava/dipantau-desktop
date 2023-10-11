@@ -21,6 +21,7 @@ void main() {
         tModel.props,
         [
           tModel.discordChannelId,
+          tModel.signUpMethod,
         ],
       );
     },
@@ -32,7 +33,7 @@ void main() {
       // assert
       expect(
         tModel.toString(),
-        'KvSettingBody{discordChannelId: ${tModel.discordChannelId}}',
+        'KvSettingBody{discordChannelId: ${tModel.discordChannelId}, signUpMethod: ${tModel.signUpMethod}}',
       );
     },
   );
