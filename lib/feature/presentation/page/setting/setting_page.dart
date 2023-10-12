@@ -16,6 +16,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/setting_discor
 import 'package:dipantau_desktop_client/feature/presentation/page/setting_member_blur_screenshot/setting_member_blur_screenshot_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/user_registration_setting/user_registration_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_theme_container.dart';
@@ -732,6 +733,8 @@ class _SettingPageState extends State<SettingPage> {
         buildWidgetDiscordChannelId(),
         const SizedBox(height: 16),
         buildWidgetMemberBlurScreenshot(),
+        const SizedBox(height: 16),
+        buildWidgetUserRegistration(),
       ],
     );
   }
@@ -775,54 +778,17 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Widget buildWidgetSetHostName() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'hostname'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                hostname,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        InkWell(
-          borderRadius: BorderRadius.circular(999),
-          onTap: () {
-            context.pushNamed(
-              SetupCredentialPage.routeName,
-              extra: {
-                SetupCredentialPage.parameterIsShowWarning: true,
-              },
-            );
+    return buildWidgetItemSettingArrow(
+      'hostname'.tr(),
+      hostname,
+      onTap: () {
+        context.pushNamed(
+          SetupCredentialPage.routeName,
+          extra: {
+            SetupCredentialPage.parameterIsShowWarning: true,
           },
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: const Icon(
-              Icons.keyboard_arrow_right,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -1179,143 +1145,58 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Widget buildWidgetMember() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'members'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                'add_edit_or_remove_member'.tr(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        InkWell(
-          borderRadius: BorderRadius.circular(999),
-          onTap: () {
-            context.pushNamed(MemberSettingPage.routeName);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: const Icon(
-              Icons.keyboard_arrow_right,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      ],
+    return buildWidgetItemSettingArrow(
+      'members'.tr(),
+      'add_edit_or_remove_member'.tr(),
+      onTap: () {
+        context.pushNamed(MemberSettingPage.routeName);
+      },
     );
   }
 
   Widget buildWidgetProject() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'projects'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                'add_edit_or_remove_project'.tr(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        InkWell(
-          borderRadius: BorderRadius.circular(999),
-          onTap: () {
-            // TODO: Arahkan ke halaman project_setting_page.dart
-            widgetHelper.showSnackBar(context, 'coming_soon'.tr());
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: const Icon(
-              Icons.keyboard_arrow_right,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      ],
+    return buildWidgetItemSettingArrow(
+      'projects'.tr(),
+      'add_edit_or_remove_project'.tr(),
+      onTap: () {
+        // TODO: Arahkan ke halaman project_setting_page.dart
+        widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+      },
     );
   }
 
   Widget buildWidgetTask() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'tasks_2'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                'add_edit_or_remove_task'.tr(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        InkWell(
-          borderRadius: BorderRadius.circular(999),
-          onTap: () {
-            // TODO: Arahkan ke halaman task_setting_page.dart
-            widgetHelper.showSnackBar(context, 'coming_soon'.tr());
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: const Icon(
-              Icons.keyboard_arrow_right,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      ],
+    return buildWidgetItemSettingArrow(
+      'tasks_2'.tr(),
+      'add_edit_or_remove_task'.tr(),
+      onTap: () {
+        // TODO: Arahkan ke halaman task_setting_page.dart
+        widgetHelper.showSnackBar(context, 'coming_soon'.tr());
+      },
     );
   }
 
   Widget buildWidgetDiscordChannelId() {
+    return buildWidgetItemSettingArrow(
+      'discord_channel_id'.tr(),
+      'subtitle_discord_channel_id'.tr(),
+      onTap: () {
+        context.pushNamed(SettingDiscordPage.routeName);
+      },
+    );
+  }
+
+  Widget buildWidgetMemberBlurScreenshot() {
+    return buildWidgetItemSettingArrow(
+      'screenshot_blur'.tr(),
+      'subtitle_screenshot_blur'.tr(),
+      onTap: () {
+        context.pushNamed(SettingMemberBlurScreenshotPage.routeName);
+      },
+    );
+  }
+
+  Widget buildWidgetItemSettingArrow(String title, String subtitle, {Function()? onTap}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1324,11 +1205,11 @@ class _SettingPageState extends State<SettingPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'discord_channel_id'.tr(),
+                title,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                'subtitle_discord_channel_id'.tr(),
+                subtitle,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey,
                     ),
@@ -1339,9 +1220,7 @@ class _SettingPageState extends State<SettingPage> {
         const SizedBox(width: 16),
         InkWell(
           borderRadius: BorderRadius.circular(999),
-          onTap: () {
-            context.pushNamed(SettingDiscordPage.routeName);
-          },
+          onTap: onTap,
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -1360,48 +1239,13 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Widget buildWidgetMemberBlurScreenshot() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'screenshot_blur'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                'subtitle_screenshot_blur'.tr(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        InkWell(
-          borderRadius: BorderRadius.circular(999),
-          onTap: () {
-            context.pushNamed(SettingMemberBlurScreenshotPage.routeName);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: const Icon(
-              Icons.keyboard_arrow_right,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      ],
+  Widget buildWidgetUserRegistration() {
+    return buildWidgetItemSettingArrow(
+      'user_registration'.tr(),
+      'subtitle_user_registration'.tr(),
+      onTap: () {
+        context.pushNamed(UserRegistrationSettingPage.routeName);
+      },
     );
   }
 

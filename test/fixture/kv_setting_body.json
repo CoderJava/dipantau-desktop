@@ -1,3 +1,4 @@
 {
-  "discord_channel_id": "testDiscordChannelId"
+  "discord_channel_id": "testDiscordChannelId",
+  "sign_up_method": "testSignUpMethod"
 }

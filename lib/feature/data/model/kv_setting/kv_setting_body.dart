@@ -7,8 +7,13 @@ part 'kv_setting_body.g.dart';
 class KvSettingBody extends Equatable {
   @JsonKey(name: 'discord_channel_id')
   final String? discordChannelId;
+  @JsonKey(name: 'sign_up_method')
+  final String? signUpMethod;
 
-  KvSettingBody({required this.discordChannelId});
+  KvSettingBody({
+    required this.discordChannelId,
+    required this.signUpMethod,
+  });
 
   factory KvSettingBody.fromJson(Map<String, dynamic> json) => _$KvSettingBodyFromJson(json);
 
@@ -16,11 +21,12 @@ class KvSettingBody extends Equatable {
 
   @override
   List<Object?> get props => [
-    discordChannelId,
-  ];
+        discordChannelId,
+        signUpMethod,
+      ];
 
   @override
   String toString() {
-    return 'KvSettingBody{discordChannelId: $discordChannelId}';
+    return 'KvSettingBody{discordChannelId: $discordChannelId, signUpMethod: $signUpMethod}';
   }
 }
