@@ -71,6 +71,9 @@ class _UserRegistrationSettingPageState extends State<UserRegistrationSettingPag
               final strSignUpMethod = state.response?.signUpMethod ?? '';
               signUpMethod = SignUpMethodExtension.parseString(strSignUpMethod);
               signUpMethod ??= SignUpMethod.auto;
+            } else if (state is FailureSnackBarSettingState) {
+              final errorMessage = state.errorMessage.convertErrorMessageToHumanMessage();
+              widgetHelper.showSnackBar(context, errorMessage.hideResponseCode());
             } else if (state is SuccessUpdateKvSettingState) {
               widgetHelper.showSnackBar(
                 context,
