@@ -294,5 +294,14 @@
   "finish_date_time_must_be_after_of_start_date_time": "The finish date time must be after the start date time",
   "reason": "Reason",
   "why_are_you_adding_manual_track": "e.g. Forgot to start timer",
-  "please_stop_the_timer_if_you_want_to_logout": "Please stop the timer if you want to logout."
+  "please_stop_the_timer_if_you_want_to_logout": "Please stop the timer if you want to logout.",
+  "user_registration": "User Registration",
+  "subtitle_user_registration": "Configuring approval workflow for user registration.",
+  "user_registration_workflow_successfully_updated": "User registration workflow successfully updated",
+  "user_registration_workflow": "User Registration Workflow",
+  "auto_approval": "Auto Approval",
+  "description_auto_approval": "New user registration are automatically approved after submitting the registration form.",
+  "manual_approval": "Manual Approval",
+  "description_manual_approval": "New user registration are held in a moderation queue and require an super admin to approve them.",
+  "please_choose_user_registration_workflow": "Please choose user registration workflow"
 }
