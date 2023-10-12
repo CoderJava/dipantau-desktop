@@ -29,6 +29,7 @@ import 'package:dipantau_desktop_client/feature/presentation/page/setting_member
 import 'package:dipantau_desktop_client/feature/presentation/page/setup_credential/setup_credential_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/splash/splash_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/sync/sync_page.dart';
+import 'package:dipantau_desktop_client/feature/presentation/page/user_registration_setting/user_registration_setting_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/verify_forgot_password/verify_forgot_password_page.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custom_circular_progress_indicator.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
@@ -286,6 +287,13 @@ class _MyAppState extends State<MyApp> {
         name: SettingMemberBlurScreenshotPage.routeName,
         builder: (context, state) {
           return const SettingMemberBlurScreenshotPage();
+        },
+      ),
+      GoRoute(
+        path: UserRegistrationSettingPage.routePath,
+        name: UserRegistrationSettingPage.routeName,
+        builder: (context, state) {
+          return const UserRegistrationSettingPage();
         },
       ),
     ],
