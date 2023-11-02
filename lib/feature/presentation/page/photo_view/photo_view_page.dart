@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
+import 'package:dipantau_desktop_client/core/util/enum/user_role.dart';
 import 'package:dipantau_desktop_client/core/util/images.dart';
+import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +14,6 @@ class PhotoViewPage extends StatefulWidget {
   static const routePath = '/photo-view';
   static const routeName = 'photo-view';
   static const parameterListPhotos = 'list_photos';
-  static const parameterListPhotosBlur = 'list_photos_blur';
 
   final List<ItemFileTrackUserResponse>? listPhotos;
 
@@ -29,12 +31,19 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
   final listPhotos = <ItemFileTrackUserResponse>[];
 
   var indexSelectedPhoto = 0;
+  UserRole? userRole;
+  var isBlurSettingEnabled = false;
+  var isBlurPreviewEnabled = false;
 
   @override
   void initState() {
+    final strUserRole = sharedPreferencesManager.getString(SharedPreferencesManager.keyUserRole) ?? '';
+    userRole = strUserRole.fromStringUserRole;
     if (widget.listPhotos != null) {
       listPhotos.addAll(widget.listPhotos ?? []);
     }
+    isBlurSettingEnabled = listPhotos.where((element) => (element.urlBlur ?? '').isNotEmpty).isNotEmpty;
+    isBlurPreviewEnabled = isBlurSettingEnabled;
     super.initState();
   }
 
@@ -50,8 +59,10 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
                 pageController: pageController,
                 scrollPhysics: const BouncingScrollPhysics(),
                 builder: (BuildContext context, int index) {
-                  var photo = listPhotos[index].urlBlur ?? '';
-                  if (photo.isEmpty) {
+                  var photo = '';
+                  if (isBlurPreviewEnabled) {
+                    photo = listPhotos[index].urlBlur ?? '';
+                  } else {
                     photo = listPhotos[index].url ?? '';
                   }
                   return photo.startsWith('http')
@@ -86,35 +97,72 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
                   setState(() => indexSelectedPhoto = index);
                 },
               ),
-              Align(
-                alignment: Alignment.topLeft,
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(.5),
-                  ),
-                  margin: const EdgeInsets.only(
-                    left: 8,
-                    top: 8,
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.clear,
-                      color: Colors.white,
-                    ),
-                    padding: const EdgeInsets.all(8),
-                  ),
-                ),
-              ),
+              buildWidgetIconClose(),
+              buildWidgetIconPreviewSetting(),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: buildWidgetSliderPreviewPhoto(),
               ),
             ],
           );
+  }
+
+  Widget buildWidgetIconPreviewSetting() {
+    if (!isBlurSettingEnabled || (userRole != UserRole.superAdmin)) {
+      return Container();
+    }
+
+    return Align(
+      alignment: Alignment.topRight,
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black.withOpacity(.5),
+        ),
+        margin: const EdgeInsets.only(
+          right: 8,
+          top: 8,
+        ),
+        child: IconButton(
+          onPressed: () {
+            setState(() {
+              isBlurPreviewEnabled = !isBlurPreviewEnabled;
+            });
+          },
+          icon: Icon(
+            isBlurPreviewEnabled ? Icons.visibility_off : Icons.visibility,
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.all(8),
+        ),
+      ),
+    );
+  }
+
+  Widget buildWidgetIconClose() {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black.withOpacity(.5),
+        ),
+        margin: const EdgeInsets.only(
+          left: 8,
+          top: 8,
+        ),
+        child: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.clear,
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.all(8),
+        ),
+      ),
+    );
   }
 
   Widget buildWidgetSliderPreviewPhoto() {
@@ -139,9 +187,11 @@ class _PhotoViewPageState extends State<PhotoViewPage> {
             if (elementId != null || selectedId != null) {
               isSelected = elementId == selectedId;
             }
-            var photo = element.urlBlur ?? '';
-            if (photo.isEmpty) {
-              photo = element.url ?? '';
+            var photo = '';
+            if (isBlurPreviewEnabled) {
+              photo = listPhotos[index].urlBlur ?? '';
+            } else {
+              photo = listPhotos[index].url ?? '';
             }
 
             final widgetImage = SizedBox(
