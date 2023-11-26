@@ -5,29 +5,28 @@
         <language>en</language>
         <title>Dipantau</title>
         <item>
-            <title>Version 1.5.0</title>
+            <title>Version 1.6.0</title>
             <description><![CDATA[
                 <h3>Fitur</h3>
                 <ul>
-                    <li>Update form add manual track agar lebih gampang dipakai.</li>
-                    <li>Update form add manual track agar wajib mengisi catatan.</li>
+                    <li>Khusus super admin, buatkan fitur untuk melihat original dari screenshot yang diblur.</li>
+                    <li>Buat fitur download screenshot.</li>
                 </ul>
                 <h3>Perbaikan</h3>
                 <ul>
-                    <li>Perbaiki reset timer di system tray setelah user logout.</li>
-                    <li>Perbaiki agar user tidak bisa logout jika timer-nya dalam keadaan hidup.</li>
+                    <li>Perbaiki nilai task yang tidak tersimpan ke database lokal.</li>
                 </ul>
             ]]>
             </description>
-            <sparkle:version>10</sparkle:version>
-            <sparkle:shortVersionString>1.5.0</sparkle:shortVersionString>
+            <sparkle:version>11</sparkle:version>
+            <sparkle:shortVersionString>1.6.0</sparkle:shortVersionString>
             <enclosure
-                length="22099465"
+                length="22197865"
                 type="application/octet-stream"
-                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.5.0/dipantau_desktop_client-1.5.0+10-macos.zip"
-                sparkle:edSignature="SD3FiLTU33boY9igH0D95rHcdjIOaLT7SLgZUf4qJcHeVK8fuqAJgKw2TB2SDtxAFKzLTPE5uFWmHKVVEW47BA=="
+                url="https://github.com/CoderJava/dipantau-desktop/releases/download/v1.6.0/dipantau_desktop_client-1.6.0+11-macos.zip"
+                sparkle:edSignature="03QBZgalOHWyrqMcRHNXZVfmU0VKioqp5wNdGi4xgC7dPMIjJGKxKairsbxKd8Z1WkGL/W5BVbKEE27DH8sBAw=="
                 sparkle:os="macos" />
-            <pubDate>Mon, 07 Oct 2023 09:00:00 +0700</pubDate>
+            <pubDate>Sun, 26 Nov 2023 22:00:00 +0700</pubDate>
         </item>
     </channel>
 </rss>
