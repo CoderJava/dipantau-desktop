@@ -232,4 +232,46 @@ class WidgetHelper {
     }
     return false;
   }
+
+  Future<bool?> showDialogConfirmation(
+    BuildContext context,
+    String title,
+    String content,
+    List<Widget> actions,
+  ) {
+    return showDialog<bool?>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: actions,
+        );
+      },
+    );
+  }
+
+  Future<void> showDialogMessage(
+    BuildContext context,
+    String? title,
+    String message,
+  ) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title ?? 'info'.tr()),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.pop();
+              },
+              child: Text('dismiss'.tr()),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
