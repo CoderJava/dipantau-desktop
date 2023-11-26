@@ -1206,18 +1206,19 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     });
   }
 
-  void doTakeScreenshot(DateTime? startTime, DateTime? finishTime, {bool isForceStop = false}) async {
+  Future<void> doTakeScreenshot(DateTime? startTime, DateTime? finishTime, {bool isForceStop = false}) async {
+    final selectedTaskTemp = selectedTask;
     var percentActivity = 0.0;
     if (counterActivity > 0 && countTimerInSeconds > 0) {
       percentActivity = (counterActivity / countTimerInSeconds) * 100;
     }
     counterActivity = 0;
 
-    if (selectedProject == null || selectedTask == null) {
+    if (selectedProject == null || selectedTaskTemp == null) {
       return;
     }
 
-    final taskId = selectedTask?.id;
+    final taskId = selectedTaskTemp.id;
 
     if (startTime == null || finishTime == null) {
       return;
@@ -1281,8 +1282,12 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
       if (listPathStartScreenshots.isNotEmpty) {
         // hapus file list path start screenshot karena tidak pakai file tersebut
         // jika file screenshot-nya dapat pas di end time
-        final filtered =
-            listPathStartScreenshots.where((element) => element != null && element.isNotEmpty).map((e) => e!).toList();
+        final filtered = listPathStartScreenshots
+            .where((element) {
+              return element != null && element.isNotEmpty;
+            })
+            .map((e) => e!)
+            .toList();
         for (final element in filtered) {
           final file = File(element);
           if (file.existsSync()) {
@@ -1346,14 +1351,14 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
     final trackEntity = Track(
       userId: userId,
-      taskId: taskId!,
+      taskId: taskId,
       startDate: formattedStartDateTime,
       finishDate: formattedFinishDateTime,
       activity: activity,
       files: files,
       duration: durationInSeconds,
       projectName: selectedProject?.name ?? '',
-      taskName: selectedTask?.name ?? '',
+      taskName: selectedTaskTemp.name,
     );
     final trackEntityId = await trackDao.insertTrack(trackEntity);
 
