@@ -303,5 +303,12 @@
   "description_auto_approval": "New user registration are automatically approved after submitting the registration form.",
   "manual_approval": "Manual Approval",
   "description_manual_approval": "New user registration are held in a moderation queue and require an super admin to approve them.",
-  "please_choose_user_registration_workflow": "Please choose user registration workflow"
+  "please_choose_user_registration_workflow": "Please choose user registration workflow",
+  "url_screenshot_invalid": "URL screenshot invalid",
+  "screenshot_name_invalid": "Screenshot name invalid",
+  "download_directory_invalid": "Download directory invalid",
+  "something_went_wrong_with_message": "Something went wrong with message {}",
+  "screenshot_downloaded_successfully": "Screenshot downloaded successfully",
+  "file_screenshot_doesnt_exists": "File screenshot doesn't exists",
+  "path_file_screenshot_invalid": "Path file screenshot invalid"
 }
