@@ -219,7 +219,14 @@ class _MyAppState extends State<MyApp> {
           final listPhotos = arguments != null && arguments.containsKey(PhotoViewPage.parameterListPhotos)
               ? arguments[PhotoViewPage.parameterListPhotos] as List<ItemFileTrackUserResponse>?
               : null;
-          return PhotoViewPage(listPhotos: listPhotos);
+          final isShowIconDownload =
+              arguments != null && arguments.containsKey(PhotoViewPage.parameterIsShowIconDownload)
+                  ? arguments[PhotoViewPage.parameterIsShowIconDownload] as bool?
+                  : null;
+          return PhotoViewPage(
+            listPhotos: listPhotos,
+            isShowIconDownload: isShowIconDownload,
+          );
         },
       ),
       GoRoute(

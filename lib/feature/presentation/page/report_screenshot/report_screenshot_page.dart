@@ -615,6 +615,8 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                                       })
                                       .map((e) => e)
                                       .toList(),
+                                  PhotoViewPage.parameterIsShowIconDownload:
+                                      userId == element.userId?.toString() || userRole == UserRole.superAdmin,
                                 },
                               );
                             },
@@ -845,27 +847,23 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
                   return;
                 }
 
-                showDialog<bool?>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('title_delete_track'.tr()),
-                      content: Text('content_delete_track'.tr()),
-                      actions: [
-                        TextButton(
-                          onPressed: () => context.pop(false),
-                          child: Text('cancel'.tr()),
-                        ),
-                        TextButton(
-                          onPressed: () => context.pop(true),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.red,
-                          ),
-                          child: Text('delete'.tr()),
-                        ),
-                      ],
-                    );
-                  },
+                widgetHelper.showDialogConfirmation(
+                  context,
+                  'title_delete_track'.tr(),
+                  'content_delete_track'.tr(),
+                  [
+                    TextButton(
+                      onPressed: () => context.pop(false),
+                      child: Text('cancel'.tr()),
+                    ),
+                    TextButton(
+                      onPressed: () => context.pop(true),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                      ),
+                      child: Text('delete'.tr()),
+                    ),
+                  ],
                 ).then((value) {
                   if (value != null && value) {
                     trackingBloc.add(

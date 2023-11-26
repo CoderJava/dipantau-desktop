@@ -7,6 +7,7 @@ import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dar
 import 'package:dipantau_desktop_client/core/util/string_extension.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/model/create_track/bulk_create_track_data_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/track_user/track_user_response.dart';
 import 'package:dipantau_desktop_client/feature/database/entity/track/track.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sync_manual/sync_manual_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/page/photo_view/photo_view_page.dart';
@@ -333,7 +334,16 @@ class _SyncPageState extends State<SyncPage> {
                         context.pushNamed(
                           PhotoViewPage.routeName,
                           extra: {
-                            PhotoViewPage.parameterListPhotos: listScreenshots.map((e) => e.path).toList(),
+                            PhotoViewPage.parameterListPhotos: listScreenshots.map((e) {
+                              return ItemFileTrackUserResponse(
+                                id: null,
+                                url: e.path,
+                                sizeInByte: 0,
+                                urlBlur: null,
+                                sizeBlurInByte: 0,
+                              );
+                            }).toList(),
+                            PhotoViewPage.parameterIsShowIconDownload: true,
                           },
                         );
                       },
