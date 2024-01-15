@@ -12,6 +12,7 @@ import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh
 import 'package:dipantau_desktop_client/feature/data/model/reset_password/reset_password_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up_by_user/sign_up_by_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -392,7 +393,7 @@ void main() {
 
     test(
       'pastikan endpoint verifyForgotPassword benar-benar terpanggil dengan method POST',
-          () async {
+      () async {
         // arrange
         setUpMockDioSuccess();
 
@@ -406,8 +407,8 @@ void main() {
 
     test(
       'pastikan mengembalikan objek class model GeneralResponse ketika menerima respon sukses '
-          'dari endpoint',
-          () async {
+      'dari endpoint',
+      () async {
         // arrange
         setUpMockDioSuccess();
 
@@ -421,7 +422,7 @@ void main() {
 
     test(
       'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
-          () async {
+      () async {
         // arrange
         final response = Response(
           requestOptions: tRequestOptions,
@@ -468,7 +469,7 @@ void main() {
 
     test(
       'pastikan endpoint resetPassword benar-benar terpanggil dengan method POST',
-          () async {
+      () async {
         // arrange
         setUpMockDioSuccess();
 
@@ -482,8 +483,8 @@ void main() {
 
     test(
       'pastikan mengembalikan objek class model GeneralResponse ketika menerima respon sukses '
-          'dari endpoint',
-          () async {
+      'dari endpoint',
+      () async {
         // arrange
         setUpMockDioSuccess();
 
@@ -497,7 +498,7 @@ void main() {
 
     test(
       'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
-          () async {
+      () async {
         // arrange
         final response = Response(
           requestOptions: tRequestOptions,
@@ -508,6 +509,82 @@ void main() {
 
         // act
         final call = remoteDataSource.resetPassword(tBody);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
+
+  group('sign up by user', () {
+    const tPathBody = 'sign_up_by_user_body.json';
+    final tBody = SignUpByUserBody.fromJson(
+      json.decode(
+        fixture(tPathBody),
+      ),
+    );
+    const tPathResponse = 'general_response.json';
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture(tPathResponse),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(tPathResponse));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.post(any, data: anyNamed('data'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint signUpByUser benar-benar terpanggil dengan method POST',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.signUpByUser(tBody);
+
+        // assert
+        verify(mockDio.post('$baseUrl/user/signup', data: anyNamed('data')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek class model GeneralResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.signUpByUser(tBody);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.post(any, data: anyNamed('data'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.signUpByUser(tBody);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));
