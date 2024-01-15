@@ -11,6 +11,7 @@ import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh
 import 'package:dipantau_desktop_client/feature/data/model/reset_password/reset_password_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up_by_user/sign_up_by_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -723,5 +724,97 @@ void main() {
     );
 
     testDisconnected2(() => repository.resetPassword(tBody));
+  });
+
+  group('sign up by user', () {
+    final tBody = SignUpByUserBody.fromJson(
+      json.decode(
+        fixture('sign_up_by_user_body.json'),
+      ),
+    );
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.signUpByUser(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.signUpByUser(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.signUpByUser(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.signUpByUser(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.signUpByUser(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.signUpByUser(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.signUpByUser(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.signUpByUser(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.signUpByUser(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.signUpByUser(any),
+      () => repository.signUpByUser(tBody),
+      () => mockRemoteDataSource.signUpByUser(tBody),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.signUpByUser(any),
+      () => repository.signUpByUser(tBody),
+      () => mockRemoteDataSource.signUpByUser(tBody),
+    );
+
+    testDisconnected2(() => repository.signUpByUser(tBody));
   });
 }

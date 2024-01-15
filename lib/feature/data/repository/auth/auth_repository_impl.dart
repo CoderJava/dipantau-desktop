@@ -11,6 +11,7 @@ import 'package:dipantau_desktop_client/feature/data/model/refresh_token/refresh
 import 'package:dipantau_desktop_client/feature/data/model/reset_password/reset_password_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/sign_up_by_user/sign_up_by_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
 
@@ -203,4 +204,35 @@ class AuthRepositoryImpl implements AuthRepository {
     }
     return (failure: failure, response: response);
   }
+
+  @override
+  Future<({Failure? failure, GeneralResponse? response})> signUpByUser(SignUpByUserBody body) async {
+    Failure? failure;
+    GeneralResponse? response;
+    final isConnected = await networkInfo.isConnected;
+    if (isConnected) {
+      try {
+        response = await remoteDataSource.signUpByUser(body);
+      } on DioException catch (error) {
+        final message = error.message ?? error.toString();
+        if (error.response == null) {
+          failure = ServerFailure(message);
+        } else {
+          final errorMessage = getErrorMessageFromEndpoint(
+            error.response?.data,
+            message,
+            error.response?.statusCode,
+          );
+          failure = ServerFailure(errorMessage);
+        }
+      } on TypeError catch (error) {
+        final errorMessage = error.toString();
+        failure = ParsingFailure(errorMessage);
+      }
+    } else {
+      failure = ConnectionFailure();
+    }
+    return (failure: failure, response: response);
+  }
+
 }
