@@ -15,7 +15,7 @@ void main() {
 
   test(
     'pastikan output dari fungsi toString',
-    () async {
+        () async {
       // assert
       expect(
         tModel.toString(),
@@ -26,7 +26,7 @@ void main() {
 
   test(
     'pastikan output dari fungsi props',
-    () async {
+        () async {
       // assert
       expect(
         tModel.props,
@@ -40,7 +40,7 @@ void main() {
 
   test(
     'pastikan output dari fungsi fromJson',
-    () async {
+        () async {
       // arrange
       final jsonData = json.decode(fixture(pathJson));
 
@@ -54,7 +54,7 @@ void main() {
 
   test(
     'pastikan output dari fungsi toJson',
-    () async {
+        () async {
       // arrange
       final model = VerifyEmailResponse.fromJson(
         json.decode(
