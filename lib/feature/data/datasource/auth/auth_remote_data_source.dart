@@ -10,6 +10,8 @@ import 'package:dipantau_desktop_client/feature/data/model/reset_password/reset_
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up_by_user/sign_up_by_user_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/verify_email/verify_email_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/verify_email/verify_email_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
 
 abstract class AuthRemoteDataSource {
@@ -53,6 +55,11 @@ abstract class AuthRemoteDataSource {
   late String pathSignUpByUser;
 
   Future<GeneralResponse> signUpByUser(SignUpByUserBody body);
+
+  /// Panggil endpoint [host]/auth/user/verify-email-code
+  late String pathVerifyEmail;
+
+  Future<VerifyEmailResponse> verifyEmail(VerifyEmailBody body);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -194,6 +201,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return GeneralResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathSignUpByUser));
+    }
+  }
+
+  @override
+  String pathVerifyEmail = '';
+
+  @override
+  Future<VerifyEmailResponse> verifyEmail(VerifyEmailBody body) async {
+    pathVerifyEmail = '$baseUrl/user/verify-email-code';
+    final response = await dio.post(
+      pathVerifyEmail,
+      data: body.toJson(),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return VerifyEmailResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathVerifyEmail));
     }
   }
 }
