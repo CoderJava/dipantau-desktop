@@ -9,6 +9,8 @@ import 'package:dipantau_desktop_client/feature/data/model/reset_password/reset_
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up/sign_up_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/sign_up_by_user/sign_up_by_user_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/verify_email/verify_email_body.dart';
+import 'package:dipantau_desktop_client/feature/data/model/verify_email/verify_email_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/verify_forgot_password/verify_forgot_password_body.dart';
 
 abstract class AuthRepository {
@@ -25,4 +27,6 @@ abstract class AuthRepository {
   Future<({Failure? failure, GeneralResponse? response})> resetPassword(ResetPasswordBody body);
 
   Future<({Failure? failure, GeneralResponse? response})> signUpByUser(SignUpByUserBody body);
+
+  Future<({Failure? failure, VerifyEmailResponse? response})> verifyEmail(VerifyEmailBody body);
 }
