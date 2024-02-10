@@ -43,32 +43,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-// TODO: buat fitur khusus untuk super admin. Super admin memiliki fitur berikut:
-/**
- * 1. CRUD user
- *    - add [done]
- *    - edit [done]
- *    - delete
- * 2. CRUD projek
- * 3. CRUD task
- * 4. CRUD track manual
- * 5. Report screenshot all member (done)
- * 6. Atur discord channel ID (done)
- */
-
-// TODO: buat fitur khusus untuk admin. Admin memiliki fitur berikut:
-/**
- * 1. Read projek
- * 2. add/edit/view task all member
- * 3. CRUD track manual
- * 4. Report screenshot all member (done)
- */
-
-// TODO: buat fitur khusus untuk employee. Employee memiliki fitur berikut:
-/// 1. Read assigned project
-/// 2. add/edit/view personal
-/// 3. CRUD personal
-/// 4. Report screenshot personal (done)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
