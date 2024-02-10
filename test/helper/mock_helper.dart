@@ -28,14 +28,18 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_project_task_
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/get_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_setting/get_user_setting.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_sign_up_waiting/get_user_sign_up_waiting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/set_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up_by_user/sign_up_by_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user_setting/update_user_setting.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/user_sign_up_approval/user_sign_up_approval.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/verify_email/verify_email.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/verify_forgot_password/verify_forgot_password.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -82,5 +86,9 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<GetAllUserSetting>(),
   MockSpec<GetUserSetting>(),
   MockSpec<UpdateUserSetting>(),
+  MockSpec<SignUpByUser>(),
+  MockSpec<VerifyEmail>(),
+  MockSpec<GetUserSignUpWaiting>(),
+  MockSpec<UserSignUpApproval>(),
 ])
 void main() {}
