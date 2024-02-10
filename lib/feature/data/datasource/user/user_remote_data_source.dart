@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/config/base_url_config.dart';
 import 'package:dipantau_desktop_client/config/flavor_config.dart';
+import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/update_user/update_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_sign_up_approval/user_sign_up_approval_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_sign_up_waiting/user_sign_up_waiting_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
 
@@ -38,6 +40,11 @@ abstract class UserRemoteDataSource {
   late String pathGetUserSignUpWaiting;
 
   Future<UserSignUpWaitingResponse> getUserSignUpWaiting();
+
+  /// Panggil endpoint [host]/signup/approval
+  late String pathUserSignUpApproval;
+
+  Future<GeneralResponse> userSignUpApproval(UserSignUpApprovalBody body);
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -154,6 +161,28 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       return UserSignUpWaitingResponse.fromJson(response.data);
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathGetUserSignUpWaiting));
+    }
+  }
+
+  @override
+  String pathUserSignUpApproval = '';
+
+  @override
+  Future<GeneralResponse> userSignUpApproval(UserSignUpApprovalBody body) async {
+    pathUserSignUpApproval = '$baseUrl/signup/approval';
+    final response = await dio.post(
+      pathUserSignUpApproval,
+      data: body.toJson(),
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return GeneralResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathUserSignUpApproval));
     }
   }
 }
