@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:dipantau_desktop_client/feature/data/model/verify_email/verify_email_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/verify_email/verify_email_body.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../fixture/fixture_reader.dart';
 
 void main() {
-  const pathJson = 'verify_email_response.json';
-  final tModel = VerifyEmailResponse.fromJson(
+  const pathJson = 'verify_email_body.json';
+  final tModel = VerifyEmailBody.fromJson(
     json.decode(
       fixture(pathJson),
     ),
@@ -19,7 +19,7 @@ void main() {
       // assert
       expect(
         tModel.toString(),
-        'VerifyEmailResponse{message: ${tModel.message}, isAutoApproval: ${tModel.isAutoApproval}}',
+        'VerifyEmailBody{code: ${tModel.code}}',
       );
     },
   );
@@ -31,8 +31,7 @@ void main() {
       expect(
         tModel.props,
         [
-          tModel.message,
-          tModel.isAutoApproval,
+          tModel.code,
         ],
       );
     },
@@ -45,7 +44,7 @@ void main() {
       final jsonData = json.decode(fixture(pathJson));
 
       // act
-      final actualModel = VerifyEmailResponse.fromJson(jsonData);
+      final actualModel = VerifyEmailBody.fromJson(jsonData);
 
       // assert
       expect(actualModel, tModel);
@@ -56,7 +55,7 @@ void main() {
     'pastikan output dari fungsi toJson',
     () async {
       // arrange
-      final model = VerifyEmailResponse.fromJson(
+      final model = VerifyEmailBody.fromJson(
         json.decode(
           fixture(pathJson),
         ),
