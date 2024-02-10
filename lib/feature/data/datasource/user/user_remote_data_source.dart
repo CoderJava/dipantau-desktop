@@ -4,6 +4,7 @@ import 'package:dipantau_desktop_client/config/flavor_config.dart';
 import 'package:dipantau_desktop_client/feature/data/model/update_user/update_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_sign_up_waiting/user_sign_up_waiting_response.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
 
 abstract class UserRemoteDataSource {
@@ -32,6 +33,11 @@ abstract class UserRemoteDataSource {
   late String pathSendAppVersion;
 
   Future<bool> sendAppVersion(UserVersionBody body);
+
+  /// Panggil endpoint [host]/signup/waiting
+  late String pathGetUserSignUpWaiting;
+
+  Future<UserSignUpWaitingResponse> getUserSignUpWaiting();
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -127,6 +133,27 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       return true;
     } else {
       throw DioException(requestOptions: RequestOptions(path: pathSendAppVersion));
+    }
+  }
+
+  @override
+  String pathGetUserSignUpWaiting = '';
+
+  @override
+  Future<UserSignUpWaitingResponse> getUserSignUpWaiting() async {
+    pathGetUserSignUpWaiting = '$baseUrl/signup/waiting';
+    final response = await dio.get(
+      pathGetUserSignUpWaiting,
+      options: Options(
+        headers: {
+          baseUrlConfig.requiredToken: true,
+        },
+      ),
+    );
+    if (response.statusCode.toString().startsWith('2')) {
+      return UserSignUpWaitingResponse.fromJson(response.data);
+    } else {
+      throw DioException(requestOptions: RequestOptions(path: pathGetUserSignUpWaiting));
     }
   }
 }
