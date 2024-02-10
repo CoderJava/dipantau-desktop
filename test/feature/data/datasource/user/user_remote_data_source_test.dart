@@ -467,4 +467,79 @@ void main() {
       },
     );
   });
+
+  group('userSignUpApproval', () {
+    const pathResponseJson = 'general_response.json';
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture(pathResponseJson),
+      ),
+    );
+    final tBody = UserSignUpApprovalBody.fromJson(
+      json.decode(
+        fixture('user_sign_up_approval_body.json'),
+      ),
+    );
+
+    void setUpMockDioSuccess() {
+      final responsePayload = json.decode(fixture(pathResponseJson));
+      final response = Response(
+        requestOptions: tRequestOptions,
+        data: responsePayload,
+        statusCode: 200,
+        headers: Headers.fromMap({
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        }),
+      );
+      when(mockDio.post(any, data: anyNamed('data'), options: anyNamed('options'))).thenAnswer((_) async => response);
+    }
+
+    test(
+      'pastikan endpoint userSignUpApproval benar-benar terpanggil dengan method POST',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        await remoteDataSource.userSignUpApproval(tBody);
+
+        // assert
+        verify(mockDio.post('$baseUrl/signup/approval', data: anyNamed('data'), options: anyNamed('options')));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan GeneralResponse ketika menerima respon sukses '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockDioSuccess();
+
+        // act
+        final result = await remoteDataSource.userSignUpApproval(tBody);
+
+        // assert
+        expect(result, tResponse);
+      },
+    );
+
+    test(
+      'pastikan akan menerima exception DioException ketika menerima respon kegagalan dari endpoint',
+      () async {
+        // arrange
+        final response = Response(
+          requestOptions: tRequestOptions,
+          data: 'Bad Request',
+          statusCode: 400,
+        );
+        when(mockDio.post(any, data: anyNamed('data'), options: anyNamed('options'))).thenAnswer((_) async => response);
+
+        // act
+        final call = remoteDataSource.userSignUpApproval(tBody);
+
+        // assert
+        expect(() => call, throwsA(const TypeMatcher<DioException>()));
+      },
+    );
+  });
 }
