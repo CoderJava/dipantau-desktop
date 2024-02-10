@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
+import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/update_user/update_user_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/list_user_profile_response.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_profile/user_profile_response.dart';
+import 'package:dipantau_desktop_client/feature/data/model/user_sign_up_approval/user_sign_up_approval_body.dart';
 import 'package:dipantau_desktop_client/feature/data/model/user_sign_up_waiting/user_sign_up_waiting_response.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/user_version/user_version_body.dart';
@@ -605,5 +607,97 @@ void main() {
     );
 
     testDisconnected2(() => repository.getUserSignUpWaiting());
+  });
+
+  group('userSignUpApproval', () {
+    final tBody = UserSignUpApprovalBody.fromJson(
+      json.decode(
+        fixture('user_sign_up_approval_body.json'),
+      ),
+    );
+    final tResponse = GeneralResponse.fromJson(
+      json.decode(
+        fixture('general_response.json'),
+      ),
+    );
+
+    test(
+      'pastikan mengembalikan GeneralResponse ketika RemoteDataSource berhasil menerima '
+      'respon sukses dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.userSignUpApproval(any)).thenAnswer((_) async => tResponse);
+
+        // act
+        final result = await repository.userSignUpApproval(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.userSignUpApproval(tBody));
+        expect(result.response, tResponse);
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource berhasil menerima '
+      'respon timeout dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.userSignUpApproval(any))
+            .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
+
+        // act
+        final result = await repository.userSignUpApproval(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.userSignUpApproval(tBody));
+        expect(result.failure, ServerFailure('testError'));
+      },
+    );
+
+    test(
+      'pastikan mengembalikan objek ServerFailure ketika RemoteDataSource menerima respon kegagalan '
+      'dari endpoint',
+      () async {
+        // arrange
+        setUpMockNetworkConnected();
+        when(mockRemoteDataSource.userSignUpApproval(any)).thenThrow(
+          DioException(
+            requestOptions: tRequestOptions,
+            message: 'testError',
+            response: Response(
+              requestOptions: tRequestOptions,
+              data: {
+                'title': 'testTitleError',
+                'message': 'testMessageError',
+              },
+              statusCode: 400,
+            ),
+          ),
+        );
+
+        // act
+        final result = await repository.userSignUpApproval(tBody);
+
+        // assert
+        verify(mockRemoteDataSource.userSignUpApproval(tBody));
+        expect(result.failure, ServerFailure('400 testMessageError'));
+      },
+    );
+
+    testServerFailureString2(
+      () => mockRemoteDataSource.userSignUpApproval(any),
+      () => repository.userSignUpApproval(tBody),
+      () => mockRemoteDataSource.userSignUpApproval(tBody),
+    );
+
+    testParsingFailure2(
+      () => mockRemoteDataSource.userSignUpApproval(any),
+      () => repository.userSignUpApproval(tBody),
+      () => mockRemoteDataSource.userSignUpApproval(tBody),
+    );
+
+    testDisconnected2(() => repository.userSignUpApproval(tBody));
   });
 }
