@@ -310,5 +310,8 @@
   "something_went_wrong_with_message": "Something went wrong with message {}",
   "screenshot_downloaded_successfully": "Screenshot downloaded successfully",
   "file_screenshot_doesnt_exists": "File screenshot doesn't exists",
-  "path_file_screenshot_invalid": "Path file screenshot invalid"
+  "path_file_screenshot_invalid": "Path file screenshot invalid",
+  "workflow_user_registration": "Workflow user registration",
+  "workflow_user_registration_successfully_updated": "Workflow user registration successfully updated",
+  "select": "Select"
 }
