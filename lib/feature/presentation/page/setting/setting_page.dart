@@ -733,9 +733,8 @@ class _SettingPageState extends State<SettingPage> {
         buildWidgetDiscordChannelId(),
         const SizedBox(height: 16),
         buildWidgetMemberBlurScreenshot(),
-        // TODO: untuk sementara tutup dulu fitur ini karena belum selesai endpoint-nya
-        /*const SizedBox(height: 16),
-        buildWidgetUserRegistration(),*/
+        const SizedBox(height: 16),
+        buildWidgetUserRegistration(),
       ],
     );
   }
