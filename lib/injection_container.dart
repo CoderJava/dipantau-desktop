@@ -37,14 +37,18 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_project_task_
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/get_track_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_setting/get_user_setting.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_sign_up_waiting/get_user_sign_up_waiting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/set_kv_setting/set_kv_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up/sign_up.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/sign_up_by_user/sign_up_by_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user/update_user.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/update_user_setting/update_user_setting.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/user_sign_up_approval/user_sign_up_approval.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/verify_email/verify_email.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/verify_forgot_password/verify_forgot_password.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/appearance/appearance_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/cron_tracking/cron_tracking_bloc.dart';
@@ -61,6 +65,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_u
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sync_manual/sync_manual_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/user_profile/user_profile_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/user_registration_setting/user_registration_setting_bloc.dart';
 import 'package:floor/floor.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -169,6 +174,13 @@ void init() {
       getProjectTaskByUserId: sl(),
     ),
   );
+  sl.registerFactory(
+    () => UserRegistrationSettingBloc(
+      helper: sl(),
+      getKvSetting: sl(),
+      getUserSignUpWaiting: sl(),
+    ),
+  );
 
   // use case
   sl.registerLazySingleton(() => GetProject(repository: sl()));
@@ -195,6 +207,10 @@ void init() {
   sl.registerLazySingleton(() => GetAllUserSetting(repository: sl()));
   sl.registerLazySingleton(() => GetUserSetting(repository: sl()));
   sl.registerLazySingleton(() => UpdateUserSetting(repository: sl()));
+  sl.registerLazySingleton(() => SignUpByUser(repository: sl()));
+  sl.registerLazySingleton(() => VerifyEmail(repository: sl()));
+  sl.registerLazySingleton(() => GetUserSignUpWaiting(repository: sl()));
+  sl.registerLazySingleton(() => UserSignUpApproval(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
