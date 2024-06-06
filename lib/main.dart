@@ -142,14 +142,14 @@ class _MyAppState extends State<MyApp> {
         path: RegisterSuccessPage.routePath,
         name: RegisterSuccessPage.routeName,
         builder: (context, state) => RegisterSuccessPage(
-          email: state.queryParams['email'] as String,
+          email: state.uri.queryParameters['email'] as String,
         ),
       ),
       GoRoute(
         path: ForgotPasswordPage.routePath,
         name: ForgotPasswordPage.routeName,
         builder: (context, state) => ForgotPasswordPage(
-          email: state.queryParams['email'],
+          email: state.uri.queryParameters['email'],
         ),
       ),
       GoRoute(
@@ -385,8 +385,14 @@ class _MyAppState extends State<MyApp> {
             isDarkMode = state.isDarkMode;
           }
 
-          return WillPopScope(
-            onWillPop: () async => false,
+          return PopScope(
+            canPop: false,
+            onPopInvoked: (didPop) {
+              if (didPop) {
+                return;
+              }
+              return;
+            },
             child: MaterialApp.router(
               title: 'Dipantau',
               themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,

@@ -27,7 +27,7 @@ class ReportScreenshotPage extends StatefulWidget {
   static const routePath = '/report-screenshot';
   static const routeName = 'report-screenshot';
 
-  const ReportScreenshotPage({Key? key}) : super(key: key);
+  const ReportScreenshotPage({super.key});
 
   @override
   State<ReportScreenshotPage> createState() => _ReportScreenshotPageState();
@@ -91,10 +91,13 @@ class _ReportScreenshotPageState extends State<ReportScreenshotPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
         context.pop(isRefreshPreviousPage);
-        return false;
       },
       child: GestureDetector(
         onTap: () => widgetHelper.unfocus(context),

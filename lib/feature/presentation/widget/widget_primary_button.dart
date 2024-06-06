@@ -8,12 +8,12 @@ class WidgetPrimaryButton extends StatelessWidget {
   final ButtonStyle? buttonStyle;
 
   const WidgetPrimaryButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.child,
     this.isLoading,
     this.buttonStyle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

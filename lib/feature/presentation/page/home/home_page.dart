@@ -51,7 +51,7 @@ class HomePage extends StatefulWidget {
   static const routePath = '/home';
   static const routeName = 'home';
 
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -129,7 +129,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         final appDatabase = await sl.getAsync<AppDatabase>();
         trackDao = appDatabase.trackDao;
       } catch (error) {
-        widgetHelper.showSnackBar(context, 'error: $error');
+        if (mounted) {
+          widgetHelper.showSnackBar(context, 'error: $error');
+        }
       }
       setupCronTimer();
       doLoadDataTask();
@@ -644,7 +646,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                   onTap: () async {
                     final isPermissionScreenRecordingGranted =
                         await platformChannelHelper.checkPermissionScreenRecording();
-                    if (mounted && isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) {
+                    if (context.mounted && isPermissionScreenRecordingGranted != null && !isPermissionScreenRecordingGranted) {
                       widgetHelper.showDialogPermissionScreenRecording(context);
                       return;
                     }
@@ -652,7 +654,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                     if (isPermissionScreenRecordingGranted!) {
                       final isPermissionAccessibilityGranted =
                           await platformChannelHelper.checkPermissionAccessibility();
-                      if (mounted && isPermissionAccessibilityGranted != null && !isPermissionAccessibilityGranted) {
+                      if (context.mounted && isPermissionAccessibilityGranted != null && !isPermissionAccessibilityGranted) {
                         widgetHelper.showDialogPermissionAccessibility(context);
                         return;
                       }

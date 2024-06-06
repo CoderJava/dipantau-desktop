@@ -15,7 +15,7 @@ jobs:
       - name: Install & set Flutter version
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.10.4'
+          flutter-version: '3.19.6'
           channel: 'stable'
       - name: Get package
         run: flutter pub get

@@ -3,7 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  auto_updater
+  auto_updater_windows
   connectivity_plus
   screen_retriever
   tray_manager

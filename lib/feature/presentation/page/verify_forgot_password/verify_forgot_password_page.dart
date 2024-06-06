@@ -20,9 +20,9 @@ class VerifyForgotPasswordPage extends StatefulWidget {
   final String email;
 
   const VerifyForgotPasswordPage({
-    Key? key,
+    super.key,
     required this.email,
-  }) : super(key: key);
+  });
 
   @override
   State<VerifyForgotPasswordPage> createState() => _VerifyForgotPasswordPageState();

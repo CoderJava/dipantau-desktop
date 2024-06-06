@@ -4,9 +4,9 @@ class WidgetCustomCircularProgressIndicator extends StatelessWidget {
   final Color? color;
 
   const WidgetCustomCircularProgressIndicator({
-    Key? key,
+    super.key,
     this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
