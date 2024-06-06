@@ -22,9 +22,9 @@ class ResetPasswordPage extends StatefulWidget {
   final String code;
 
   const ResetPasswordPage({
-    Key? key,
+    super.key,
     required this.code,
-  }) : super(key: key);
+  });
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();

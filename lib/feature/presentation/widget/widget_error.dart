@@ -9,11 +9,11 @@ class WidgetError extends StatelessWidget {
   final Function()? onTryAgain;
 
   const WidgetError({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
     this.onTryAgain,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

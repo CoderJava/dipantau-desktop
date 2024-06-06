@@ -22,7 +22,7 @@ class EditProfilePage extends StatefulWidget {
   static const routePath = '/edit-profile';
   static const routeName = 'edit-profile';
 
-  const EditProfilePage({Key? key}) : super(key: key);
+  const EditProfilePage({super.key});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();

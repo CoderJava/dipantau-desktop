@@ -17,7 +17,7 @@ class UserRegistrationSettingPage extends StatefulWidget {
   static const routePath = '/user-registration-setting';
   static const routeName = 'user-registration-setting';
 
-  const UserRegistrationSettingPage({Key? key}) : super(key: key);
+  const UserRegistrationSettingPage({super.key});
 
   @override
   State<UserRegistrationSettingPage> createState() => _UserRegistrationSettingPageState();

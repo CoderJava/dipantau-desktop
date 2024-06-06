@@ -2,7 +2,7 @@ import 'package:dipantau_desktop_client/feature/presentation/widget/widget_custo
 import 'package:flutter/material.dart';
 
 class WidgetLoadingCenterFullScreen extends StatelessWidget {
-  const WidgetLoadingCenterFullScreen({Key? key}) : super(key: key);
+  const WidgetLoadingCenterFullScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

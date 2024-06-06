@@ -26,7 +26,7 @@ class SyncPage extends StatefulWidget {
   static const routePath = '/sync';
   static const routeName = 'sync';
 
-  const SyncPage({Key? key}) : super(key: key);
+  const SyncPage({super.key});
 
   @override
   State<SyncPage> createState() => _SyncPageState();

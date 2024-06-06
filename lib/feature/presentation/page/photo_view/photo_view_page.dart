@@ -24,10 +24,10 @@ class PhotoViewPage extends StatefulWidget {
   final bool? isShowIconDownload;
 
   PhotoViewPage({
-    Key? key,
+    super.key,
     required this.listPhotos,
     required this.isShowIconDownload,
-  }) : super(key: key);
+  });
 
   @override
   State<PhotoViewPage> createState() => _PhotoViewPageState();

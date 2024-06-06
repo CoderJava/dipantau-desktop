@@ -17,7 +17,7 @@ class RegisterPage extends StatefulWidget {
   static const routePath = '/register';
   static const routeName = 'register';
 
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -51,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
             } else if (state is SuccessSubmitSignUpState) {
               context.goNamed(
                 RegisterSuccessPage.routeName,
-                queryParams: {
+                queryParameters: {
                   'email': state.response.email ?? '-',
                 },
               );

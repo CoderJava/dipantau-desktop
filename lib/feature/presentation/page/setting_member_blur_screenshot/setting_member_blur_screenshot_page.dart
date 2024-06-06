@@ -16,7 +16,7 @@ class SettingMemberBlurScreenshotPage extends StatefulWidget {
   static const routePath = '/member-blur-screenshot';
   static const routeName = 'member-blur-screenshot';
 
-  const SettingMemberBlurScreenshotPage({Key? key}) : super(key: key);
+  const SettingMemberBlurScreenshotPage({super.key});
 
   @override
   State<SettingMemberBlurScreenshotPage> createState() => _SettingMemberBlurScreenshotPageState();

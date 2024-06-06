@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
   static const routePath = '/login';
   static const routeName = 'login';
 
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -122,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
             final email = controllerEmail.text.trim();
             context.pushNamed(
               ForgotPasswordPage.routeName,
-              queryParams: {
+              queryParameters: {
                 ForgotPasswordPage.parameterEmail: email,
               },
             );

@@ -8,12 +8,12 @@ class WidgetThemeContainer extends StatefulWidget {
   final Color? borderColor;
 
   const WidgetThemeContainer({
-    Key? key,
+    super.key,
     required this.mode,
     required this.width,
     required this.height,
     this.borderColor,
-  }) : super(key: key);
+  });
 
   @override
   State<WidgetThemeContainer> createState() => _WidgetThemeContainerState();

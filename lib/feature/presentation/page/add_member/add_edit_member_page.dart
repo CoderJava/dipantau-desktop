@@ -24,9 +24,9 @@ class AddEditMemberPage extends StatefulWidget {
   final UserProfileResponse? defaultValue;
 
   const AddEditMemberPage({
-    Key? key,
+    super.key,
     this.defaultValue,
-  }) : super(key: key);
+  });
 
   @override
   State<AddEditMemberPage> createState() => _AddEditMemberPageState();

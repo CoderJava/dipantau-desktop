@@ -18,10 +18,10 @@ class SetupCredentialPage extends StatefulWidget {
   final bool isShowWarning;
 
   const SetupCredentialPage({
-    Key? key,
+    super.key,
     this.isFromSplashScreen = false,
     this.isShowWarning = false,
-  }) : super(key: key);
+  });
 
   @override
   State<SetupCredentialPage> createState() => _SetupCredentialPageState();

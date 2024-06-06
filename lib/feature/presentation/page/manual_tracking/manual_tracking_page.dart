@@ -18,7 +18,7 @@ class ManualTrackingPage extends StatefulWidget {
   static const routePath = '/manual-tracking';
   static const routeName = 'manual-tracking';
 
-  const ManualTrackingPage({Key? key}) : super(key: key);
+  const ManualTrackingPage({super.key});
 
   @override
   State<ManualTrackingPage> createState() => _ManualTrackingPageState();
