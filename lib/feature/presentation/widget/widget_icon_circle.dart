@@ -9,8 +9,8 @@ class WidgetIconCircle extends StatelessWidget {
     required this.iconData,
     this.size = 32.0,
     this.padding = 16.0,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

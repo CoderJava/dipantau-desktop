@@ -14,9 +14,9 @@ class RegisterSuccessPage extends StatelessWidget {
   final String email;
 
   RegisterSuccessPage({
-    Key? key,
+    super.key,
     required this.email,
-  }) : super(key: key);
+  });
 
   final helper = sl<Helper>();
 

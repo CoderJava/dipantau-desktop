@@ -14,8 +14,8 @@ class WidgetChooseProject extends StatefulWidget {
 
   const WidgetChooseProject({
     required this.defaultSelectedProjectId,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WidgetChooseProject> createState() => _WidgetChooseProjectState();

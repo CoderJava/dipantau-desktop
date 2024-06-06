@@ -16,7 +16,7 @@ class SettingDiscordPage extends StatefulWidget {
   static const routePath = '/setting-discord';
   static const routeName = 'setting-discord';
 
-  const SettingDiscordPage({Key? key}) : super(key: key);
+  const SettingDiscordPage({super.key});
 
   @override
   State<SettingDiscordPage> createState() => _SettingDiscordPageState();

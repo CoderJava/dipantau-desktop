@@ -19,8 +19,8 @@ void main() {
     'menggunakan mobile data',
     () async {
       // arrange
-      final tHasConnection = Future.value(ConnectivityResult.mobile);
-      when(mockConnectivity.checkConnectivity()).thenAnswer((_) => tHasConnection);
+      final tHasConnection = [ConnectivityResult.mobile];
+      when(mockConnectivity.checkConnectivity()).thenAnswer((_) async => tHasConnection);
 
       // act
       final result = await networkInfoImpl.isConnected;
@@ -36,8 +36,8 @@ void main() {
     'menggunakan wifi',
     () async {
       // arrange
-      final tHasConnection = Future.value(ConnectivityResult.wifi);
-      when(mockConnectivity.checkConnectivity()).thenAnswer((_) => tHasConnection);
+      final tHasConnection = [ConnectivityResult.wifi];
+      when(mockConnectivity.checkConnectivity()).thenAnswer((_) async => tHasConnection);
 
       // act
       final result = await networkInfoImpl.isConnected;
@@ -53,8 +53,8 @@ void main() {
     'tidak terhubung sama sekali',
     () async {
       // arrange
-      final tHasConnection = Future.value(ConnectivityResult.none);
-      when(mockConnectivity.checkConnectivity()).thenAnswer((_) => tHasConnection);
+      final tHasConnection = [ConnectivityResult.none];
+      when(mockConnectivity.checkConnectivity()).thenAnswer((_) async => tHasConnection);
 
       // act
       final result = await networkInfoImpl.isConnected;

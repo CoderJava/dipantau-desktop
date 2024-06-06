@@ -18,7 +18,7 @@ class MemberSettingPage extends StatefulWidget {
   static const routePath = '/member-setting';
   static const routeName = 'member-setting';
 
-  const MemberSettingPage({Key? key}) : super(key: key);
+  const MemberSettingPage({super.key});
 
   @override
   State<MemberSettingPage> createState() => _MemberSettingPageState();

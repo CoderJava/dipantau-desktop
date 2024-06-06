@@ -12,8 +12,8 @@ class ResetPasswordSuccessPage extends StatelessWidget {
   static const routeName = 'reset-password-success';
 
   ResetPasswordSuccessPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final helper = sl<Helper>();
 
