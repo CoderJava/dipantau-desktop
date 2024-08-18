@@ -1,0 +1,14 @@
+{
+  "refreshed_urls": [
+    {
+      "original": {
+        "url": "testUrl",
+        "url_blur": "testUrlBlur"
+      },
+      "refreshed": {
+        "url": "testUrl",
+        "url_blur": "testUrlBlur"
+      }
+    }
+  ]
+}
