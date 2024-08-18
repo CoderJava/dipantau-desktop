@@ -5,6 +5,7 @@ class FlavorValues {
   String baseUrlTrack;
   String baseUrlProject;
   String baseUrlSetting;
+  String baseUrlScreenshot;
 
   FlavorValues({
     required this.baseUrl,
@@ -13,6 +14,7 @@ class FlavorValues {
     required this.baseUrlTrack,
     required this.baseUrlProject,
     required this.baseUrlSetting,
+    required this.baseUrlScreenshot,
   });
 }
 

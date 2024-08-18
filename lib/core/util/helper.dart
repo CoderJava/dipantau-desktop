@@ -72,6 +72,7 @@ class Helper {
         baseUrlTrack: '$domainApi/api/track',
         baseUrlProject: '$domainApi/api/project',
         baseUrlSetting: '$domainApi/api/setting',
+        baseUrlScreenshot: '$domainApi/api/screenshot',
       ),
     );
   }
