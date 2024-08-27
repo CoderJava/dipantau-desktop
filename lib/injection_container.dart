@@ -38,6 +38,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_setting/get_user_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_screenshot/refresh_screenshot.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
@@ -117,6 +118,7 @@ void init() {
     () => ReportScreenshotBloc(
       helper: sl(),
       getTrackUser: sl(),
+      refreshScreenshot: sl(),
     ),
   );
   sl.registerFactory(
@@ -195,6 +197,7 @@ void init() {
   sl.registerLazySingleton(() => GetAllUserSetting(repository: sl()));
   sl.registerLazySingleton(() => GetUserSetting(repository: sl()));
   sl.registerLazySingleton(() => UpdateUserSetting(repository: sl()));
+  sl.registerLazySingleton(() => RefreshScreenshot(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
