@@ -31,6 +31,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_setting/get_user_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_screenshot/refresh_screenshot.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
@@ -86,5 +87,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<GetAllUserSetting>(),
   MockSpec<GetUserSetting>(),
   MockSpec<UpdateUserSetting>(),
+  MockSpec<RefreshScreenshot>(),
 ])
 void main() {}
