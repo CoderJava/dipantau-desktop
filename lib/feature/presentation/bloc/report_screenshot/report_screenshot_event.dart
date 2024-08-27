@@ -16,3 +16,14 @@ class LoadReportScreenshotEvent extends ReportScreenshotEvent {
     return 'LoadReportScreenshotEvent{userId: $userId, date: $date}';
   }
 }
+
+class LoadDetailScreenshotReportScreenshotEvent extends ReportScreenshotEvent {
+  final ScreenshotRefreshBody body;
+
+  LoadDetailScreenshotReportScreenshotEvent({required this.body});
+
+  @override
+  String toString() {
+    return 'LoadDetailScreenshotReportScreenshotEvent{body: $body}';
+  }
+}

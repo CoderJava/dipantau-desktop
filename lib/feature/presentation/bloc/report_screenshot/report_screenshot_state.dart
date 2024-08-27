@@ -29,3 +29,14 @@ class SuccessLoadReportScreenshotState extends ReportScreenshotState {
     return 'SuccessLoadReportScreenshotState{response: $response}';
   }
 }
+
+class SuccessLoadDetailScreenshotReportScreenshotState extends ReportScreenshotState {
+  final ScreenshotRefreshResponse response;
+
+  SuccessLoadDetailScreenshotReportScreenshotState({required this.response});
+
+  @override
+  String toString() {
+    return 'SuccessLoadDetailScreenshotReportScreenshotState{response: $response}';
+  }
+}
