@@ -168,6 +168,9 @@ dev_dependencies:
   # This package provides a library that performs static analysis of Dart code.
   analyzer: ^6.4.1
 
+  # DevTools extension for Flutter: Manage SharedPreferences efficiently. Edit, search, and view keys.
+  shared_preferences_tools: 1.0.3
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
