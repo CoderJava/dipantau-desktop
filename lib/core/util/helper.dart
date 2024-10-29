@@ -101,4 +101,8 @@ class Helper {
         return ConstantErrorMessage().failureUnknown;
     }
   }
+
+  String removeTrailingSlash(String input) {
+    return input.replaceAll(RegExp(r'/+$'), '');
+  }
 }

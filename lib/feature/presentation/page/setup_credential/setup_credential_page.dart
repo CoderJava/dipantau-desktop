@@ -148,7 +148,7 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
         ) as bool?;
       }
       if (isContinue != null && isContinue) {
-        final hostname = controllerHostname.text.trim();
+        final hostname = helper.removeTrailingSlash(controllerHostname.text.trim()).trim();
         await sharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, hostname);
         helper.setDomainApiToFlavor(hostname);
         di.init();
