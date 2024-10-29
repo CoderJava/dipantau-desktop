@@ -170,4 +170,25 @@ void main() {
       expect(unknownFailure, constantErrorMessage.failureUnknown);
     },
   );
+
+  test(
+    'pastikan function removeTrailingSlash bisa menghapus karakter "/" diakhir dari sebuah string.',
+    () async {
+      // arrange
+      const input = 'https://example.com/';
+      const input2 = 'https://example.com';
+      const input3 = 'https://example.com////';
+      const output = 'https://example.com';
+
+      // act
+      final actual1 = helper.removeTrailingSlash(input);
+      final actual2 = helper.removeTrailingSlash(input2);
+      final actual3 = helper.removeTrailingSlash(input3);
+
+      // assert
+      expect(actual1, output);
+      expect(actual2, output);
+      expect(actual3, output);
+    },
+  );
 }
