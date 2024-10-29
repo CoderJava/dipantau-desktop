@@ -99,7 +99,7 @@ dependencies:
 
   # A cross platform plugin for displaying and scheduling local notifications for Flutter applications
   # with the ability to customize for each platform.
-  flutter_local_notifications: ^17.1.2
+  flutter_local_notifications: 13.0.0
 
   # The Font Awesome Icon pack available as Flutter Icons. Provides 1600 additional icons to use
   # in your apps.
