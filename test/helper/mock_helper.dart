@@ -10,6 +10,7 @@ import 'package:dipantau_desktop_client/feature/data/datasource/setting/setting_
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/setting/setting_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
@@ -30,6 +31,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_setting/get_user_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/ping/ping.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
@@ -60,6 +62,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<TrackRepository>(),
   MockSpec<ProjectRepository>(),
   MockSpec<SettingRepository>(),
+  MockSpec<GeneralRepository>(),
   MockSpec<GetProject>(),
   MockSpec<CreateTrack>(),
   MockSpec<Login>(),
@@ -84,5 +87,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<GetAllUserSetting>(),
   MockSpec<GetUserSetting>(),
   MockSpec<UpdateUserSetting>(),
+  MockSpec<Ping>(),
 ])
 void main() {}
