@@ -4,6 +4,7 @@ import 'package:dipantau_desktop_client/core/network/network_info.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/setting/setting_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
@@ -53,6 +54,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<TrackRemoteDataSource>(),
   MockSpec<ProjectRemoteDataSource>(),
   MockSpec<SettingRemoteDataSource>(),
+  MockSpec<GeneralRemoteDataSource>(),
   MockSpec<AuthRepository>(),
   MockSpec<UserRepository>(),
   MockSpec<TrackRepository>(),
