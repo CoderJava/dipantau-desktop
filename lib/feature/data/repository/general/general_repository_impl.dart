@@ -25,13 +25,13 @@ class GeneralRepositoryImpl implements GeneralRepository {
   }
 
   @override
-  Future<({Failure? failure, GeneralResponse? response})> ping() async {
+  Future<({Failure? failure, GeneralResponse? response})> ping(String baseUrl) async {
     Failure? failure;
     GeneralResponse? response;
     final isConnected = await networkInfo.isConnected;
     if (isConnected) {
       try {
-        response = await remoteDataSource.ping();
+        response = await remoteDataSource.ping(baseUrl);
       } on DioException catch (error) {
         final message = error.message ?? error.toString();
         if (error.response == null) {

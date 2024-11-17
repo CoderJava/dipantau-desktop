@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dipantau_desktop_client/core/error/failure.dart';
-import 'package:dipantau_desktop_client/core/usecase/usecase.dart';
 import 'package:dipantau_desktop_client/feature/data/model/general/general_response.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/ping/ping.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/setup_credential/setup_credential_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -39,8 +39,9 @@ void main() {
   );
 
   group('ping setup credential', () {
-    final params = NoParams();
-    final event = PingSetupCredentialEvent();
+    const baseUrl = 'https://example.com';
+    final params = ParamsPing(baseUrl: baseUrl);
+    final event = PingSetupCredentialEvent(baseUrl: baseUrl);
 
     blocTest(
       'pastikan emit [LoadingSetupCredentialState, SuccessPingSetupCredentialState] ketika terima event '

@@ -19,4 +19,15 @@ class FailureSetupCredentialState extends SetupCredentialState {
   }
 }
 
-class SuccessPingSetupCredentialState extends SetupCredentialState {}
+class SuccessPingSetupCredentialState extends SetupCredentialState {
+  final String baseUrl;
+
+  SuccessPingSetupCredentialState({
+    required this.baseUrl,
+  });
+
+  @override
+  String toString() {
+    return 'SuccessPingSetupCredentialState{baseUrl: $baseUrl}';
+  }
+}

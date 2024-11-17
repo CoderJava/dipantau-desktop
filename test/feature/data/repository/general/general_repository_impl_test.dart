@@ -105,6 +105,7 @@ void main() {
         fixture('general_response.json'),
       ),
     );
+    const hostname = 'https://example.com';
 
     test(
       'pastikan mengembalikan objek model GeneralResponse ketika RemoteDataSource berhasil menerima '
@@ -112,13 +113,13 @@ void main() {
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.ping()).thenAnswer((_) async => tResponse);
+        when(mockRemoteDataSource.ping(any)).thenAnswer((_) async => tResponse);
 
         // act
-        final result = await repository.ping();
+        final result = await repository.ping(hostname);
 
         // assert
-        verify(mockRemoteDataSource.ping());
+        verify(mockRemoteDataSource.ping(hostname));
         expect(result.response, tResponse);
       },
     );
@@ -129,14 +130,14 @@ void main() {
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.ping())
+        when(mockRemoteDataSource.ping(any))
             .thenThrow(DioException(requestOptions: tRequestOptions, message: 'testError'));
 
         // act
-        final result = await repository.ping();
+        final result = await repository.ping(hostname);
 
         // assert
-        verify(mockRemoteDataSource.ping());
+        verify(mockRemoteDataSource.ping(hostname));
         expect(result.failure, ServerFailure('testError'));
       },
     );
@@ -147,7 +148,7 @@ void main() {
       () async {
         // arrange
         setUpMockNetworkConnected();
-        when(mockRemoteDataSource.ping()).thenThrow(
+        when(mockRemoteDataSource.ping(any)).thenThrow(
           DioException(
             requestOptions: tRequestOptions,
             message: 'testError',
@@ -163,26 +164,26 @@ void main() {
         );
 
         // act
-        final result = await repository.ping();
+        final result = await repository.ping(hostname);
 
         // assert
-        verify(mockRemoteDataSource.ping());
+        verify(mockRemoteDataSource.ping(hostname));
         expect(result.failure, ServerFailure('400 testMessageError'));
       },
     );
 
     testServerFailureString(
-      () => mockRemoteDataSource.ping(),
-      () => repository.ping(),
-      () => mockRemoteDataSource.ping(),
+      () => mockRemoteDataSource.ping(any),
+      () => repository.ping(hostname),
+      () => mockRemoteDataSource.ping(hostname),
     );
 
     testParsingFailure(
-      () => mockRemoteDataSource.ping(),
-      () => repository.ping(),
-      () => mockRemoteDataSource.ping(),
+      () => mockRemoteDataSource.ping(any),
+      () => repository.ping(hostname),
+      () => mockRemoteDataSource.ping(hostname),
     );
 
-    testDisconnected(() => repository.ping());
+    testDisconnected(() => repository.ping(hostname));
   });
 }

@@ -8,7 +8,7 @@ abstract class GeneralRemoteDataSource {
   /// Throws [DioException] untuk semua error kode
   late String pathPing;
 
-  Future<GeneralResponse> ping();
+  Future<GeneralResponse> ping(String baseUrl);
 }
 
 class GeneralRemoteDataSourceImpl implements GeneralRemoteDataSource {
@@ -24,7 +24,7 @@ class GeneralRemoteDataSourceImpl implements GeneralRemoteDataSource {
   String pathPing = '';
 
   @override
-  Future<GeneralResponse> ping() async {
+  Future<GeneralResponse> ping(String baseUrl) async {
     pathPing = '$baseUrl/api/ping';
     final response = await dio.get(pathPing);
     if (response.statusCode.toString().startsWith('2')) {

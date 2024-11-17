@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:dipantau_desktop_client/core/usecase/usecase.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/ping/ping.dart';
 
 part 'setup_credential_event.dart';
+
 part 'setup_credential_state.dart';
 
 class SetupCredentialBloc extends Bloc<SetupCredentialEvent, SetupCredentialState> {
@@ -23,12 +23,17 @@ class SetupCredentialBloc extends Bloc<SetupCredentialEvent, SetupCredentialStat
     PingSetupCredentialEvent event,
     Emitter<SetupCredentialState> emit,
   ) async {
+    final baseUrl = event.baseUrl;
     emit(LoadingSetupCredentialState());
-    final result = await ping(NoParams());
+    final result = await ping(
+      ParamsPing(
+        baseUrl: baseUrl,
+      ),
+    );
     final response = result.response;
     final failure = result.failure;
     if (response != null) {
-      emit(SuccessPingSetupCredentialState());
+      emit(SuccessPingSetupCredentialState(baseUrl: baseUrl));
       return;
     }
 

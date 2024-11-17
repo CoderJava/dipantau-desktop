@@ -38,6 +38,7 @@ void main() {
 
   group('ping', () {
     const tPathResponse = 'general_response.json';
+    const hostname = baseUrl;
     final tResponse = GeneralResponse.fromJson(
       json.decode(
         fixture(tPathResponse),
@@ -64,10 +65,10 @@ void main() {
         setUpMockDioSuccess();
 
         // act
-        await remoteDataSource.ping();
+        await remoteDataSource.ping(hostname);
 
         // assert
-        verify(mockDio.get('$baseUrl/api/ping'));
+        verify(mockDio.get('$hostname/api/ping'));
       },
     );
 
@@ -79,7 +80,7 @@ void main() {
         setUpMockDioSuccess();
 
         // act
-        final result = await remoteDataSource.ping();
+        final result = await remoteDataSource.ping(hostname);
 
         // assert
         expect(result, tResponse);
@@ -98,7 +99,7 @@ void main() {
         when(mockDio.get(any)).thenAnswer((_) async => response);
 
         // act
-        final call = remoteDataSource.ping();
+        final call = remoteDataSource.ping(hostname);
 
         // assert
         expect(() => call, throwsA(const TypeMatcher<DioException>()));

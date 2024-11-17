@@ -16,4 +16,19 @@ void main() {
       },
     );
   });
+
+  group('SuccessPingSetupCredentialState', () {
+    final state = SuccessPingSetupCredentialState(baseUrl: 'https://example.com');
+
+    test(
+      'pastikan output dari fungsi toString',
+      () async {
+        // assert
+        expect(
+          state.toString(),
+          'SuccessPingSetupCredentialState{baseUrl: ${state.baseUrl}}',
+        );
+      },
+    );
+  });
 }
