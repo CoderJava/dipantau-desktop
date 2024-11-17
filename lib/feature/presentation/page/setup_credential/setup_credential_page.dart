@@ -2,10 +2,14 @@ import 'package:dipantau_desktop_client/core/util/enum/global_variable.dart';
 import 'package:dipantau_desktop_client/core/util/helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/setup_credential/setup_credential_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/widget/widget_loading_center_full_screen.dart';
 import 'package:dipantau_desktop_client/feature/presentation/widget/widget_primary_button.dart';
 import 'package:dipantau_desktop_client/injection_container.dart' as di;
+import 'package:dipantau_desktop_client/injection_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SetupCredentialPage extends StatefulWidget {
@@ -32,6 +36,7 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
   final controllerHostname = TextEditingController();
   final widgetHelper = WidgetHelper();
   final formState = GlobalKey<FormState>();
+  final setupCredentialBloc = sl<SetupCredentialBloc>();
 
   var isLogin = false;
   var defaultDomainApi = '';
@@ -52,37 +57,81 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
       appBar: AppBar(
         automaticallyImplyLeading: widget.isFromSplashScreen ? false : true,
       ),
-      body: Padding(
-        padding: EdgeInsets.only(
-          left: helper.getDefaultPaddingLayout,
-          top: helper.getDefaultPaddingLayoutTop,
-          right: helper.getDefaultPaddingLayout,
-          bottom: helper.getDefaultPaddingLayout,
+      body: BlocProvider(
+        create: (context) => setupCredentialBloc,
+        child: BlocListener<SetupCredentialBloc, SetupCredentialState>(
+          listener: (context, state) {
+            if (state is FailureSetupCredentialState) {
+              final errorMessage = 'invalid_hostname'.tr();
+              widgetHelper.showDialogMessage(
+                context,
+                'info'.tr(),
+                errorMessage,
+              );
+            } else if (state is SuccessPingSetupCredentialState) {
+              final hostname = state.baseUrl;
+              sharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, hostname).then((value) {
+                helper.setDomainApiToFlavor(hostname);
+                di.init();
+                if (mounted) {
+                  context.go('/');
+                }
+              });
+            }
+          },
+          child: Stack(
+            children: [
+              buildWidgetBody(),
+              buildWidgetLoadingOverlay(),
+            ],
+          ),
         ),
-        child: SizedBox(
-          width: double.infinity,
-          child: Form(
-            key: formState,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                buildWidgetTitle(),
-                const SizedBox(height: 8),
-                Text(
-                  'subtitle_set_hostname'.tr(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                buildWidgetTextFieldHostname(),
-                const SizedBox(height: 24),
-                buildWidgetButtonSave(),
-              ],
-            ),
+      ),
+    );
+  }
+
+  Widget buildWidgetLoadingOverlay() {
+    return BlocBuilder<SetupCredentialBloc, SetupCredentialState>(
+      builder: (context, state) {
+        if (state is LoadingSetupCredentialState) {
+          return const WidgetLoadingCenterFullScreen();
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget buildWidgetBody() {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: helper.getDefaultPaddingLayout,
+        top: helper.getDefaultPaddingLayoutTop,
+        right: helper.getDefaultPaddingLayout,
+        bottom: helper.getDefaultPaddingLayout,
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        child: Form(
+          key: formState,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildWidgetTitle(),
+              const SizedBox(height: 8),
+              Text(
+                'subtitle_set_hostname'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              buildWidgetTextFieldHostname(),
+              const SizedBox(height: 24),
+              buildWidgetButtonSave(),
+            ],
           ),
         ),
       ),
@@ -149,12 +198,11 @@ class _SetupCredentialPageState extends State<SetupCredentialPage> {
       }
       if (isContinue != null && isContinue) {
         final hostname = helper.removeTrailingSlash(controllerHostname.text.trim()).trim();
-        await sharedPreferencesManager.putString(SharedPreferencesManager.keyDomainApi, hostname);
-        helper.setDomainApiToFlavor(hostname);
-        di.init();
-        if (mounted) {
-          context.go('/');
-        }
+        setupCredentialBloc.add(
+          PingSetupCredentialEvent(
+            baseUrl: hostname,
+          ),
+        );
       }
     }
   }
