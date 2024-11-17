@@ -7,17 +7,20 @@ import 'package:dipantau_desktop_client/core/util/notification_helper.dart';
 import 'package:dipantau_desktop_client/core/util/shared_preferences_manager.dart';
 import 'package:dipantau_desktop_client/core/util/widget_helper.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/auth/auth_remote_data_source.dart';
+import 'package:dipantau_desktop_client/feature/data/datasource/general/general_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/project/project_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/setting/setting_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/track/track_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/datasource/user/user_remote_data_source.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/auth/auth_repository_impl.dart';
+import 'package:dipantau_desktop_client/feature/data/repository/general/general_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/project/project_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/setting/setting_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/track/track_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/data/repository/user/user_repository_impl.dart';
 import 'package:dipantau_desktop_client/feature/database/app_database.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/auth/auth_repository.dart';
+import 'package:dipantau_desktop_client/feature/domain/repository/general/general_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/project/project_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/setting/setting_repository.dart';
 import 'package:dipantau_desktop_client/feature/domain/repository/track/track_repository.dart';
@@ -38,6 +41,7 @@ import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user/ge
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_track_user_lite/get_track_user_lite.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/get_user_setting/get_user_setting.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/login/login.dart';
+import 'package:dipantau_desktop_client/feature/domain/usecase/ping/ping.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/refresh_token/refresh_token.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/reset_password/reset_password.dart';
 import 'package:dipantau_desktop_client/feature/domain/usecase/send_app_version/send_app_version.dart';
@@ -57,6 +61,7 @@ import 'package:dipantau_desktop_client/feature/presentation/bloc/project/projec
 import 'package:dipantau_desktop_client/feature/presentation/bloc/report_screenshot/report_screenshot_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/reset_password/reset_password_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/setting/setting_bloc.dart';
+import 'package:dipantau_desktop_client/feature/presentation/bloc/setup_credential/setup_credential_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sign_up/sign_up_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/sync_manual/sync_manual_bloc.dart';
 import 'package:dipantau_desktop_client/feature/presentation/bloc/tracking/tracking_bloc.dart';
@@ -169,6 +174,12 @@ void init() {
       getProjectTaskByUserId: sl(),
     ),
   );
+  sl.registerFactory(
+    () => SetupCredentialBloc(
+      helper: sl(),
+      ping: sl(),
+    ),
+  );
 
   // use case
   sl.registerLazySingleton(() => GetProject(repository: sl()));
@@ -195,6 +206,7 @@ void init() {
   sl.registerLazySingleton(() => GetAllUserSetting(repository: sl()));
   sl.registerLazySingleton(() => GetUserSetting(repository: sl()));
   sl.registerLazySingleton(() => UpdateUserSetting(repository: sl()));
+  sl.registerLazySingleton(() => Ping(repository: sl()));
 
   // repository
   sl.registerLazySingleton<AuthRepository>(
@@ -227,6 +239,12 @@ void init() {
       networkInfo: sl(),
     ),
   );
+  sl.registerLazySingleton<GeneralRepository>(
+    () => GeneralRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
 
   // data source
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -252,6 +270,11 @@ void init() {
   sl.registerLazySingleton<SettingRemoteDataSource>(
     () => SettingRemoteDataSourceImpl(
       dio: sl(instanceName: dioRefreshToken),
+    ),
+  );
+  sl.registerLazySingleton<GeneralRemoteDataSource>(
+    () => GeneralRemoteDataSourceImpl(
+      dio: sl(instanceName: dioLogging),
     ),
   );
 
